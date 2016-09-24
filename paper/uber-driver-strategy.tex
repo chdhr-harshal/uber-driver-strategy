@@ -1,0 +1,107 @@
+% Sys.setenv(RSTUDIO_PDFLATEX = "/usr/local/texlive/2015/bin/x86_64-linux/pdflatex")
+
+\newif\ifshownames
+\shownamestrue
+% \shownamesfalse
+
+
+\documentclass[11pt]{article}
+
+\newtheorem{question}{Question}
+\makeatletter
+\newcommand*{\centerfloat}{%
+  \parindent \z@
+  \leftskip \z@ \@plus 1fil \@minus \textwidth
+  \rightskip\leftskip
+  \parfillskip \z@skip}
+\makeatother
+
+\newcommand{\jb}[1]{{[\bf John's Note: #1]}}
+\newcommand{\et}[1]{{[\bf Evimaria's Note: #1]}}
+\newcommand{\hc}[1]{{[\bf Harshal's Note: #1]}}
+
+\newcommand{\cut}[1]{}
+
+\usepackage{natbib}
+ \bibpunct[, ]{(}{)}{,}{a}{}{,}%
+\def\bibfont{\small}%
+ \def\bibsep{\smallskipamount}%
+ \def\bibhang{24pt}%
+ \def\newbloc k{\ }%
+ \def\BIBand{and}%
+% \usepackage{hyperref}
+% \usepackage{hypernat}
+
+\usepackage[hyphens]{url}
+\usepackage{footmisc}
+\usepackage{color}
+\usepackage{tablefootnote}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage[margin=1in]{geometry}
+\usepackage{bm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{threeparttablex}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{eurosym}
+\usepackage{setspace}
+\usepackage{pdflscape}
+\usepackage{bigstrut}
+\usepackage{tabularx}
+\usepackage{chngpage}
+\usepackage{siunitx}
+\usepackage{pbox}
+
+\sisetup{group-separator={,},group-minimum-digits={3},output-decimal-marker={.}}
+%fix too many unprocessed float
+\usepackage{morefloats}
+%stretch a table over mutiple paages
+\usepackage{longtable}
+
+
+
+\include{estout}
+
+\makeatletter
+\renewcommand*{\@fnsymbol}[1]{\ensuremath{\ifcase#1\or \dagger\or \ddagger\or
+   \mathsection\or \mathparagraph\or \|\or **\or \dagger\dagger
+   \or \ddagger\ddagger \else\@ctrerr\fi}}
+\makeatother
+
+\title{Uber driver strategic behavior}
+
+% \ifshownames
+% \author{
+%   \textbf{Harshal Chaudhari, Evimaria Terzi, John Byers} \\
+%   Department of Computer Science\\
+%   Boston University
+% }
+% \fi
+
+% \ifshownames
+\date{\today}
+% \fi
+
+\begin{document}
+
+\maketitle	
+
+\input{formulation}
+
+% \doublespacing
+\onehalfspacing
+
+
+% \singlespacing
+\bibliographystyle{ormsv080}
+\bibliography{driver-strategy.bib}
+
+
+\end{document}

@@ -1,0 +1,35 @@
+%!TEX root = uber-driver-strategy.tex
+
+\section{Basic Model}
+
+Consider a set of \emph{n} nodes as vertices of a graph $G=(V,E)$ defined over a geographical area. We are interested in creating an optimal contingency plan of trips, for a particular driver who starts his day at node $v_0 \in V$. We assume that the driver decides the maximum units of service time $T$ that he would spend ferrying passengers at the beginning of the day. Let time $t$ denote the number of time units left for a driver before the end of his pre-decided service time.
+\begin{itemize}
+\item For $i,j \in V, d_{ij}$ is the Euclidean distance between the two nodes. The costs to the driver in terms of gas and vehicle depreciation value in traversing this edge is $c_{ij}$ and his earnings in ferrying a passenger from $i$ to $j$ is represented by $p_{ij}$. Time required to traverse the edge is denoted by $\tau_{ij}$. The costs, the earnings and the time required to make this ride are all proportional to the distance travelled.
+
+\item Let $S^{(t)}_{n \times 1}$ be the surge multiplier vector over the nodes of the graph. Each entry $s_i^{(t)}$ denotes the surge multiplier in effect at node $i$ at time $t$. When $s_i^{(t)} > 1$, the driver earning from ferrying a passenger from node $i$ to $j$ of the graph is $s_i^{(t)} \times p_{ij}$.
+
+\item The arrival process of passengers at node $i$ at time $t$ is a Poisson process with rate $\lambda_i^{(t)}$. Let vector $\Lambda^{(t)}_{n \times 1}$ denote the passenger arrival rates across all the vertices of $G$ at time $t$. While some passengers may arrive simultaneously (compound Poisson process), we assume that this effect is negligible. Furthermore, we assume that if the driver is present at node $i$ when a passenger arrives, he picks up the passenger with no further delay. As the inter-arrival times of passengers are exponentially distributed, the expected value of idle time for a driver waiting at node $i$ is $1/\lambda_i^{(t)}$. We implicitly assume that the passenger arrival process is stationary for a finite time slice around $t$.
+
+\item The matrix $M^{(t)}_{n \times n}$ represents the transition probabilites between the nodes of the graph such that the fraction of passengers at node $i$ whose destination is node $j$ at time $t$ is represented by entry $m_{ij}^{(t)}$, where $\forall t, m_{ij}^{(t)} \in \mathbb{R}_{\geq 0}, m_{ii}^{(t)}=0$ and $\sum\limits_{j}m_{ij}^{(t)}=1$.
+\end{itemize}
+
+We formulate a dynamic program to find the contingency plan to maximise the expected earnings of a driver in his service time $T$. Each entry $H(t,i)$ of the matrix $H$ represents the maximum expected earnings in the remaining $t$ units of service time when the driver is stationed at node $i$. The maximum expected revenue of the driver at the beginning of the day is thus $H(T, v_0)$.
+
+\begin{itemize}
+\item Initialization
+    $\forall i, H(0,i) = 0$.
+    
+\item While calculating each $H(t,i)$, our algorithm is faced with two possible choices.
+    \begin{enumerate}
+    \item Keep waiting at node $i$ for a passenger.
+    \item Traverse to some other node $j$ in search of a passenger.
+    \end{enumerate}
+\item It chooses whichever choice maximises the expected earnings in the remaining time units $t$. 
+\begin{eqnarray*}
+H(t,i) = \max
+    \begin{cases}
+    \sum\limits_{j\neq i}m_{ij}^{(t)}\bigg[\Big(s_{i}^{(t)} p_{ij} - c_{ij}\Big) + H(t-\tau_{ij},j)\bigg], & \text{if } \frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] < t,\\
+    \max\limits_{j}\Big[H(t-\tau_{ij},j) - c_{ij}\Big], & \text{if } \tau_{ij} < t
+    \end{cases}
+\end{eqnarray*}
+\end{itemize}
