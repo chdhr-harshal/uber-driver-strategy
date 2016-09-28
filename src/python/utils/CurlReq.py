@@ -9,7 +9,7 @@ import urllib
 from fake_useragent import UserAgent
 import pycurl
 import cStringIO
-from config.constants import constants
+from constants import constants
 
 class request:
     """
