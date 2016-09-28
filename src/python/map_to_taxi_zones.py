@@ -1,6 +1,8 @@
 #!/home/grad3/harshal/py_env/my_env/python2.7
 """
-Maps origin and destination co-ordinates of each trip from the data file to the taxi zones from taxi_zones.shp
+1. Processes the raw_data file
+2. Maps origin and destination co-ordinates of each trip from the data file to the taxi zones from taxi_zones.shp
+3. Pushes raw data to database
 """
 
 from utils.constants import constants
@@ -108,7 +110,7 @@ def process_df(df):
 
 
 if __name__ == "__main__":
-
+    # Create csv read iterator
     raw_data_iterator = read_trips_file("yellow_tripdata_2015-09.csv")
 
     # Create pool of 20 processes
