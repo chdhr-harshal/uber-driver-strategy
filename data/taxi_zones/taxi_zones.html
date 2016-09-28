@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+ <head>
+ <style>
+   #map-canvas { width:1000px; height:700px; }
+   .layer-wizard-search-label { font-family: sans-serif };
+ </style>
+ <script type="text/javascript"
+   src="http://maps.google.com/maps/api/js?sensor=false">
+ </script>
+ <script type="text/javascript">
+   var map;
+   var layer_0;
+   function initialize() {
+     map = new google.maps.Map(document.getElementById('map-canvas'), {
+       center: new google.maps.LatLng(40.70016799235727, -74.03101524040545),
+       zoom: 11,
+       mapTypeId: google.maps.MapTypeId.ROADMAP
+     });
+     layer_0 = new google.maps.FusionTablesLayer({
+       query: {
+         select: "col0",
+         from: "1kl4pj13KkYOlmSBTIwRax4S7syFABaU6-vc5wnk"
+       },
+       map: map
+     });
+   }
+   function changeMap_0() {
+     var whereClause;
+     var searchString = document.getElementById('search-string_0').value.replace(/'/g, "\\'");
+     if (searchString != '--Select--') {
+       whereClause = "'Taxi_zone' = '" + searchString + "'";
+     }
+     layer_0.setOptions({
+       query: {
+         select: "col0",
+         from: "1kl4pj13KkYOlmSBTIwRax4S7syFABaU6-vc5wnk",
+         where: whereClause
+       }
+     });
+   }
+   google.maps.event.addDomListener(window, 'load', initialize);
+ </script>
+ </head>
+ <body>
+   <div id="map-canvas"></div>
+   <div style="margin-top: 10px;">
+     <label class="layer-wizard-search-label">
+       Taxi Zone
+       <select id="search-string_0" onchange="changeMap_0(this.value);">
+         <option value="--Select--">--Select--</option>
+         <option value="Allerton/Pelham Gardens">Allerton/Pelham Gardens</option>
+         <option value="Alphabet City">Alphabet City</option>
+         <option value="Arden Heights">Arden Heights</option>
+         <option value="Arrochar/Fort Wadsworth">Arrochar/Fort Wadsworth</option>
+         <option value="Astoria">Astoria</option>
+         <option value="Astoria Park">Astoria Park</option>
+         <option value="Auburndale">Auburndale</option>
+         <option value="Baisley Park">Baisley Park</option>
+         <option value="Bath Beach">Bath Beach</option>
+         <option value="Battery Park">Battery Park</option>
+         <option value="Battery Park City">Battery Park City</option>
+         <option value="Bay Ridge">Bay Ridge</option>
+         <option value="Bay Terrace/Fort Totten">Bay Terrace/Fort Totten</option>
+         <option value="Bayside">Bayside</option>
+         <option value="Bedford">Bedford</option>
+         <option value="Bedford Park">Bedford Park</option>
+         <option value="Bellerose">Bellerose</option>
+         <option value="Belmont">Belmont</option>
+         <option value="Bensonhurst East">Bensonhurst East</option>
+         <option value="Bensonhurst West">Bensonhurst West</option>
+         <option value="Bloomfield/Emerson Hill">Bloomfield/Emerson Hill</option>
+         <option value="Bloomingdale">Bloomingdale</option>
+         <option value="Boerum Hill">Boerum Hill</option>
+         <option value="Borough Park">Borough Park</option>
+         <option value="Breezy Point/Fort Tilden/Riis Beach">Breezy Point/Fort Tilden/Riis Beach</option>
+         <option value="Briarwood/Jamaica Hills">Briarwood/Jamaica Hills</option>
+         <option value="Brighton Beach">Brighton Beach</option>
+         <option value="Broad Channel">Broad Channel</option>
+         <option value="Bronx Park">Bronx Park</option>
+         <option value="Bronxdale">Bronxdale</option>
+         <option value="Brooklyn Heights">Brooklyn Heights</option>
+         <option value="Brooklyn Navy Yard">Brooklyn Navy Yard</option>
+         <option value="Brownsville">Brownsville</option>
+         <option value="Bushwick North">Bushwick North</option>
+         <option value="Bushwick South">Bushwick South</option>
+         <option value="Cambria Heights">Cambria Heights</option>
+         <option value="Canarsie">Canarsie</option>
+         <option value="Carroll Gardens">Carroll Gardens</option>
+         <option value="Central Harlem">Central Harlem</option>
+         <option value="Central Harlem North">Central Harlem North</option>
+         <option value="Central Park">Central Park</option>
+         <option value="Charleston/Tottenville">Charleston/Tottenville</option>
+         <option value="Chinatown">Chinatown</option>
+         <option value="City Island">City Island</option>
+         <option value="Claremont/Bathgate">Claremont/Bathgate</option>
+         <option value="Clinton East">Clinton East</option>
+         <option value="Clinton Hill">Clinton Hill</option>
+         <option value="Clinton West">Clinton West</option>
+         <option value="Co-Op City">Co-Op City</option>
+         <option value="Cobble Hill">Cobble Hill</option>
+         <option value="College Point">College Point</option>
+         <option value="Columbia Street">Columbia Street</option>
+         <option value="Coney Island">Coney Island</option>
+         <option value="Corona">Corona</option>
+         <option value="Country Club">Country Club</option>
+         <option value="Crotona Park">Crotona Park</option>
+         <option value="Crotona Park East">Crotona Park East</option>
+         <option value="Crown Heights North">Crown Heights North</option>
+         <option value="Crown Heights South">Crown Heights South</option>
+         <option value="Cypress Hills">Cypress Hills</option>
+         <option value="DUMBO/Vinegar Hill">DUMBO/Vinegar Hill</option>
+         <option value="Douglaston">Douglaston</option>
+         <option value="Downtown Brooklyn/MetroTech">Downtown Brooklyn/MetroTech</option>
+         <option value="Dyker Heights">Dyker Heights</option>
+         <option value="East Chelsea">East Chelsea</option>
+         <option value="East Concourse/Concourse Village">East Concourse/Concourse Village</option>
+         <option value="East Elmhurst">East Elmhurst</option>
+         <option value="East Flatbush/Farragut">East Flatbush/Farragut</option>
+         <option value="East Flatbush/Remsen Village">East Flatbush/Remsen Village</option>
+         <option value="East Flushing">East Flushing</option>
+         <option value="East Harlem North">East Harlem North</option>
+         <option value="East Harlem South">East Harlem South</option>
+         <option value="East New York">East New York</option>
+         <option value="East New York/Pennsylvania Avenue">East New York/Pennsylvania Avenue</option>
+         <option value="East Tremont">East Tremont</option>
+         <option value="East Village">East Village</option>
+         <option value="East Williamsburg">East Williamsburg</option>
+         <option value="Eastchester">Eastchester</option>
+         <option value="Elmhurst">Elmhurst</option>
+         <option value="Elmhurst/Maspeth">Elmhurst/Maspeth</option>
+         <option value="Eltingville/Annadale/Prince's Bay">Eltingville/Annadale/Prince's Bay</option>
+         <option value="Erasmus">Erasmus</option>
+         <option value="Far Rockaway">Far Rockaway</option>
+         <option value="Financial District North">Financial District North</option>
+         <option value="Financial District South">Financial District South</option>
+         <option value="Flatbush/Ditmas Park">Flatbush/Ditmas Park</option>
+         <option value="Flatiron">Flatiron</option>
+         <option value="Flatlands">Flatlands</option>
+         <option value="Flushing">Flushing</option>
+         <option value="Flushing Meadows-Corona Park">Flushing Meadows-Corona Park</option>
+         <option value="Fordham South">Fordham South</option>
+         <option value="Forest Hills">Forest Hills</option>
+         <option value="Forest Park/Highland Park">Forest Park/Highland Park</option>
+         <option value="Fort Greene">Fort Greene</option>
+         <option value="Fresh Meadows">Fresh Meadows</option>
+         <option value="Freshkills Park">Freshkills Park</option>
+         <option value="Garment District">Garment District</option>
+         <option value="Glen Oaks">Glen Oaks</option>
+         <option value="Glendale">Glendale</option>
+         <option value="Governor's Island/Ellis Island/Liberty Island">Governor's Island/Ellis Island/Liberty Island</option>
+         <option value="Gowanus">Gowanus</option>
+         <option value="Gramercy">Gramercy</option>
+         <option value="Gravesend">Gravesend</option>
+         <option value="Great Kills">Great Kills</option>
+         <option value="Great Kills Park">Great Kills Park</option>
+         <option value="Green-Wood Cemetery">Green-Wood Cemetery</option>
+         <option value="Greenpoint">Greenpoint</option>
+         <option value="Greenwich Village North">Greenwich Village North</option>
+         <option value="Greenwich Village South">Greenwich Village South</option>
+         <option value="Grymes Hill/Clifton">Grymes Hill/Clifton</option>
+         <option value="Hamilton Heights">Hamilton Heights</option>
+         <option value="Hammels/Arverne">Hammels/Arverne</option>
+         <option value="Heartland Village/Todt Hill">Heartland Village/Todt Hill</option>
+         <option value="Highbridge">Highbridge</option>
+         <option value="Highbridge Park">Highbridge Park</option>
+         <option value="Hillcrest/Pomonok">Hillcrest/Pomonok</option>
+         <option value="Hollis">Hollis</option>
+         <option value="Homecrest">Homecrest</option>
+         <option value="Howard Beach">Howard Beach</option>
+         <option value="Hudson Sq">Hudson Sq</option>
+         <option value="Hunts Point">Hunts Point</option>
+         <option value="Inwood">Inwood</option>
+         <option value="Inwood Hill Park">Inwood Hill Park</option>
+         <option value="JFK Airport">JFK Airport</option>
+         <option value="Jackson Heights">Jackson Heights</option>
+         <option value="Jamaica">Jamaica</option>
+         <option value="Jamaica Bay">Jamaica Bay</option>
+         <option value="Jamaica Estates">Jamaica Estates</option>
+         <option value="Kensington">Kensington</option>
+         <option value="Kew Gardens">Kew Gardens</option>
+         <option value="Kew Gardens Hills">Kew Gardens Hills</option>
+         <option value="Kingsbridge Heights">Kingsbridge Heights</option>
+         <option value="Kips Bay">Kips Bay</option>
+         <option value="LaGuardia Airport">LaGuardia Airport</option>
+         <option value="Laurelton">Laurelton</option>
+         <option value="Lenox Hill East">Lenox Hill East</option>
+         <option value="Lenox Hill West">Lenox Hill West</option>
+         <option value="Lincoln Square East">Lincoln Square East</option>
+         <option value="Lincoln Square West">Lincoln Square West</option>
+         <option value="Little Italy/NoLiTa">Little Italy/NoLiTa</option>
+         <option value="Long Island City/Hunters Point">Long Island City/Hunters Point</option>
+         <option value="Long Island City/Queens Plaza">Long Island City/Queens Plaza</option>
+         <option value="Longwood">Longwood</option>
+         <option value="Lower East Side">Lower East Side</option>
+         <option value="Madison">Madison</option>
+         <option value="Manhattan Beach">Manhattan Beach</option>
+         <option value="Manhattan Valley">Manhattan Valley</option>
+         <option value="Manhattanville">Manhattanville</option>
+         <option value="Marble Hill">Marble Hill</option>
+         <option value="Marine Park/Floyd Bennett Field">Marine Park/Floyd Bennett Field</option>
+         <option value="Marine Park/Mill Basin">Marine Park/Mill Basin</option>
+         <option value="Mariners Harbor">Mariners Harbor</option>
+         <option value="Maspeth">Maspeth</option>
+         <option value="Meatpacking/West Village West">Meatpacking/West Village West</option>
+         <option value="Melrose South">Melrose South</option>
+         <option value="Middle Village">Middle Village</option>
+         <option value="Midtown Center">Midtown Center</option>
+         <option value="Midtown East">Midtown East</option>
+         <option value="Midtown North">Midtown North</option>
+         <option value="Midtown South">Midtown South</option>
+         <option value="Midwood">Midwood</option>
+         <option value="Morningside Heights">Morningside Heights</option>
+         <option value="Morrisania/Melrose">Morrisania/Melrose</option>
+         <option value="Mott Haven/Port Morris">Mott Haven/Port Morris</option>
+         <option value="Mount Hope">Mount Hope</option>
+         <option value="Murray Hill">Murray Hill</option>
+         <option value="New Dorp/Midland Beach">New Dorp/Midland Beach</option>
+         <option value="Newark Airport">Newark Airport</option>
+         <option value="North Corona">North Corona</option>
+         <option value="Norwood">Norwood</option>
+         <option value="Oakland Gardens">Oakland Gardens</option>
+         <option value="Oakwood">Oakwood</option>
+         <option value="Ocean Hill">Ocean Hill</option>
+         <option value="Ocean Parkway South">Ocean Parkway South</option>
+         <option value="Old Astoria">Old Astoria</option>
+         <option value="Ozone Park">Ozone Park</option>
+         <option value="Park Slope">Park Slope</option>
+         <option value="Parkchester">Parkchester</option>
+         <option value="Pelham Bay">Pelham Bay</option>
+         <option value="Pelham Bay Park">Pelham Bay Park</option>
+         <option value="Pelham Parkway">Pelham Parkway</option>
+         <option value="Penn Station/Madison Sq West">Penn Station/Madison Sq West</option>
+         <option value="Port Richmond">Port Richmond</option>
+         <option value="Prospect Heights">Prospect Heights</option>
+         <option value="Prospect Park">Prospect Park</option>
+         <option value="Prospect-Lefferts Gardens">Prospect-Lefferts Gardens</option>
+         <option value="Queens Village">Queens Village</option>
+         <option value="Queensboro Hill">Queensboro Hill</option>
+         <option value="Queensbridge/Ravenswood">Queensbridge/Ravenswood</option>
+         <option value="Randalls Island">Randalls Island</option>
+         <option value="Red Hook">Red Hook</option>
+         <option value="Rego Park">Rego Park</option>
+         <option value="Richmond Hill">Richmond Hill</option>
+         <option value="Ridgewood">Ridgewood</option>
+         <option value="Rikers Island">Rikers Island</option>
+         <option value="Riverdale/North Riverdale/Fieldston">Riverdale/North Riverdale/Fieldston</option>
+         <option value="Rockaway Park">Rockaway Park</option>
+         <option value="Roosevelt Island">Roosevelt Island</option>
+         <option value="Rosedale">Rosedale</option>
+         <option value="Rossville/Woodrow">Rossville/Woodrow</option>
+         <option value="Saint Albans">Saint Albans</option>
+         <option value="Saint George/New Brighton">Saint George/New Brighton</option>
+         <option value="Saint Michaels Cemetery/Woodside">Saint Michaels Cemetery/Woodside</option>
+         <option value="Schuylerville/Edgewater Park">Schuylerville/Edgewater Park</option>
+         <option value="Seaport">Seaport</option>
+         <option value="Sheepshead Bay">Sheepshead Bay</option>
+         <option value="SoHo">SoHo</option>
+         <option value="Soundview/Bruckner">Soundview/Bruckner</option>
+         <option value="Soundview/Castle Hill">Soundview/Castle Hill</option>
+         <option value="South Beach/Dongan Hills">South Beach/Dongan Hills</option>
+         <option value="South Jamaica">South Jamaica</option>
+         <option value="South Ozone Park">South Ozone Park</option>
+         <option value="South Williamsburg">South Williamsburg</option>
+         <option value="Springfield Gardens North">Springfield Gardens North</option>
+         <option value="Springfield Gardens South">Springfield Gardens South</option>
+         <option value="Spuyten Duyvil/Kingsbridge">Spuyten Duyvil/Kingsbridge</option>
+         <option value="Stapleton">Stapleton</option>
+         <option value="Starrett City">Starrett City</option>
+         <option value="Steinway">Steinway</option>
+         <option value="Stuy Town/Peter Cooper Village">Stuy Town/Peter Cooper Village</option>
+         <option value="Stuyvesant Heights">Stuyvesant Heights</option>
+         <option value="Sunnyside">Sunnyside</option>
+         <option value="Sunset Park East">Sunset Park East</option>
+         <option value="Sunset Park West">Sunset Park West</option>
+         <option value="Sutton Place/Turtle Bay North">Sutton Place/Turtle Bay North</option>
+         <option value="Times Sq/Theatre District">Times Sq/Theatre District</option>
+         <option value="TriBeCa/Civic Center">TriBeCa/Civic Center</option>
+         <option value="Two Bridges/Seward Park">Two Bridges/Seward Park</option>
+         <option value="UN/Turtle Bay South">UN/Turtle Bay South</option>
+         <option value="Union Sq">Union Sq</option>
+         <option value="University Heights/Morris Heights">University Heights/Morris Heights</option>
+         <option value="Upper East Side North">Upper East Side North</option>
+         <option value="Upper East Side South">Upper East Side South</option>
+         <option value="Upper West Side North">Upper West Side North</option>
+         <option value="Upper West Side South">Upper West Side South</option>
+         <option value="Van Cortlandt Park">Van Cortlandt Park</option>
+         <option value="Van Cortlandt Village">Van Cortlandt Village</option>
+         <option value="Van Nest/Morris Park">Van Nest/Morris Park</option>
+         <option value="Washington Heights North">Washington Heights North</option>
+         <option value="Washington Heights South">Washington Heights South</option>
+         <option value="West Brighton">West Brighton</option>
+         <option value="West Chelsea/Hudson Yards">West Chelsea/Hudson Yards</option>
+         <option value="West Concourse">West Concourse</option>
+         <option value="West Farms/Bronx River">West Farms/Bronx River</option>
+         <option value="West Village">West Village</option>
+         <option value="Westchester Village/Unionport">Westchester Village/Unionport</option>
+         <option value="Westerleigh">Westerleigh</option>
+         <option value="Whitestone">Whitestone</option>
+         <option value="Willets Point">Willets Point</option>
+         <option value="Williamsbridge/Olinville">Williamsbridge/Olinville</option>
+         <option value="Williamsburg (North Side)">Williamsburg (North Side)</option>
+         <option value="Williamsburg (South Side)">Williamsburg (South Side)</option>
+         <option value="Windsor Terrace">Windsor Terrace</option>
+         <option value="Woodhaven">Woodhaven</option>
+         <option value="Woodlawn/Wakefield">Woodlawn/Wakefield</option>
+         <option value="Woodside">Woodside</option>
+         <option value="World Trade Center">World Trade Center</option>
+         <option value="Yorkville East">Yorkville East</option>
+         <option value="Yorkville West">Yorkville West</option>
+       </select>
+     </label> 
+   </div>
+ </body>
+</html>
