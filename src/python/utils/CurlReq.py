@@ -63,7 +63,7 @@ class request:
             self.socks_proxy_list.remove(self.last_sent_proxy)
 
 
-    def fetch(self, url, data=None):
+    def fetch(self, url, data=None, header=None):
         """
         Fetches html webpage for given url
 
@@ -86,6 +86,9 @@ class request:
 
         if data:
             c.setopt(pycurl.POSTFIELDS, urllib.urlencode(data))
+
+        if header:
+            c.setopt(pycurl.HTTPHEADER, header)
         
         if self.use_proxy:
             if self.proxy_authentication:
