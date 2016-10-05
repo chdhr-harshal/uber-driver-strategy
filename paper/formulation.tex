@@ -1,6 +1,17 @@
 %!TEX root = uber-driver-strategy.tex
+\section{Uber Driver strategies}
+In this study, we compare four kinds of Uber drivers, 
+\begin{enumerate}
+    \item Naive Uber driver with no strategy.
+    \item Uber driver with re-location strategy.
+    \item Uber driver with flexible work schedule strategy.
+    \item Uber driver with both flexible work schedule and re-location strategy.
+\end{enumerate}
+In the following sections, we formulate each of the above four problems.
 
-\section{Basic Model}
+\section{Uber Driver with re-location strategy}
+
+\note{Need to re-formulate to include the last home trip of Uber driver at the end of the day.}\\
 
 Consider a set of \emph{n} nodes as vertices of a graph $G=(V,E)$ defined over a geographical area. We are interested in creating an optimal contingency plan of trips, for a particular driver who starts his day at node $v_0 \in V$. We assume that the driver decides the maximum units of service time $T$ that he would spend ferrying passengers at the beginning of the day. Let time $t$ denote the number of time units left for a driver before the end of his pre-decided service time.
 \begin{itemize}
@@ -37,7 +48,6 @@ $\tau_{ij}$&:& Travel time from node $i$ to node $j$  \\
 $s_{i}^{(t)}$&:& Surge multiplier active at node $i$ at time $t$ \\
 $\lambda_{i}^{(t)}$&:& Poisson passenger arrival rate at node $i$ at time $t$ \\
 $m_{ij}^{(t)}$&:& Fraction of passengers at node $i$ destined to node $j$ at time $t$ \\
-$OPT(t,i)$&:& Maximum expected earnings in remaining time units $t$, while at node $i$ \\
 $H(.)$&:& Heaviside function \\
 \bottomrule
 \end{tabular}
@@ -59,16 +69,115 @@ We formulate a dynamic program to find the contingency plan to maximise the expe
 \begin{eqnarray*}
 OPT(t,i) = \max
     \begin{cases}
-    \sum\limits_{j\neq i}m_{ij}^{(t)}\bigg[\Big(s_{i}^{(t)} p_{ij} - c_{ij}\Big) + OPT(t-\tau_{ij},j)\bigg], & \text{if } \frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t,\\
+    \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j)\bigg], & \text{if } \mathbf{E}[\tau_i|M] \leq t',\\ \\
     \max\limits_{j}\Big[\Big(OPT(t-\tau_{ij},j) - c_{ij}\Big)\times H(t - \tau_{ij})\Big], & \text{otherwise}
     \end{cases}
 \end{eqnarray*}
+where $t' = t - \frac{1}{\lambda_i^{(t)}}$, denoting the expected time units left after waiting for a passenger at node $i$.
 
 \item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting for a passenger at his current node $i$ or taking an empty ride to some other node $j$.
 \end{itemize}
 
-\textbf{Some issues:}
-\begin{enumerate}
-\item What happens when the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is not satisfied, while at the same time $\forall j, H(t-\tau_{ij})=0$ i.e., there is no node $j$ such that $t-\tau_{ij}>0$? Should the driver stay at node $i$ (first condition is probabilistic in nature) or should he simply call it a day? \\
-\item If the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is satisfied, to calculate the quantity $OPT(t-\tau_{ij},j)$, we will need future values of transition matrix $M^{(t -\tau_{ij})}$ and surge multiplier vector $S^{(t - \tau_{ij})}$. Either, we will have to assume that a driver has complete knowledge of how the system will behave during the day, right at the beginning of the day or make some assumption e.g., transition matrix and surge multiplier vector remain fixed at the initial values throughout the day, $\forall t, M^{(t)} = M^{(T)}, S^{(t)} = S^{(T)}$. \\
-\end{enumerate}
+% \textbf{Some issues:}
+% \begin{enumerate}
+% \item What happens when the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is not satisfied, while at the same time $\forall j, H(t-\tau_{ij})=0$ i.e., there is no node $j$ such that $t-\tau_{ij}>0$? Should the driver stay at node $i$ (first condition is probabilistic in nature) or should he simply call it a day? \\
+% \item If the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is satisfied, to calculate the quantity $OPT(t-\tau_{ij},j)$, we will need future values of transition matrix $M^{(t -\tau_{ij})}$ and surge multiplier vector $S^{(t - \tau_{ij})}$. Either, we will have to assume that a driver has complete knowledge of how the system will behave during the day, right at the beginning of the day or make some assumption e.g., transition matrix and surge multiplier vector remain fixed at the initial values throughout the day, $\forall t, M^{(t)} = M^{(T)}, S^{(t)} = S^{(T)}$. \\
+% \end{enumerate}
+
+\section{Uber Driver with flexible work schedule strategy}
+
+In this section, we formulate a dynamic program to find optimal work schedule for an Uber driver with a fixed budget of $B$ units of service time. We asssume that the driver uses up his budget before the end of maximum $T$ units of time. For example, a driver who works for a maximum of 40 hours per week shall have $B=40$ and $T=168$ hours. Each entry $OPT(t, i, b)$ of the matrix $OPT$ represents the maximum expected earnings with $b$ time units of budget and $t$ time units of week left. The maximum expected revenue of the driver at the beginning of the week is thus $OPT(T, v_0, B)$.
+\begin{itemize}
+\item Initialization
+        $\forall it, OPT(t, i, 0)=0$.
+        
+\item While calculating each $OPT(t, i, b)$, our algorithm is faced with distinct possibilities depending on $i$. \\ \\
+If $i=v_0$ (driver is at home node),
+    \begin{enumerate}
+    \item Stay out of system, waiting for a better time to enter the system.
+    \item Enter the system, wait for a passenger at node $v_0$.
+    \end{enumerate}
+If $i \neq v_0$ (driver is not at home node),
+    \begin{enumerate}
+    \item Stay in the system, wait for a passenger at node $i$.
+    \item Exit the system, drive back to home node $v_0$.
+    \end{enumerate}
+    
+\item The driver chooses whichever choice maximises the expected earnings in remaining $b$ units of his budget. \\
+        \begin{eqnarray*}
+        \text{if }i=v_0 \text{ and } t>b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        OPT(t-1, i, b)\\ \\
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\
+        \end{cases} \\ \\ \\
+        \text{if }i=v_0 \text{ and } t=b, \\ 
+        OPT(t, i, b) &=& 
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\ \\
+        \text{if }i\neq v_0 \text{ and } t>b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+        \Big(OPT(t-\tau_{iv_0}, v_0, b - \tau_{iv_0}) - c_{iv_0}\Big) \times H(b - \tau_{iv_0})
+        \end{cases} \\ \\ \\
+        \text{if }i=v_0 \text{ and } t=b, \\ 
+        OPT(t, i, b) &=& 
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\ \\
+        \end{eqnarray*}
+where $b' = b - \frac{1}{\lambda_i^{(t)}}$, denoting the expected budget time units left after waiting for a passenger at node $i$.
+
+\item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting at home node, waiting for a passenger at his current node or taking an empty ride back home.
+\end{itemize}
+
+\section{Uber Driver with both re-location and flexible work schedule strategy}
+
+Here, we formulate a dynamic program to find optimal work schedule and re-location strategy for an Uber driver with fixed budget of $B$ units of service time. Like the previous section, we assume that the driver uses up his budget before the end of maximum $T$ units of time. We maintain a matrix $OPT$ where each entry, $OPT(t, i, b)$ represents the maximum expected earnings with $b$ time units of budget and $t$ time units of the week left. Similar to previous section, the maximum expected revenue of the driver at the beginning of the week is thus $OPT(T, v_0, B)$.
+\begin{itemize}
+\item Initialization
+        $\forall it, OPT(t, i, 0)=0$.
+\item While calculating each $OPT(t, i, b)$, our algorithm is faced with distinct possibilities depending on $i$. \\ \\
+If $i=v_0$ (driver is at home node),
+    \begin{enumerate}
+    \item Stay out of system, waiting for a better time to enter the system.
+    \item Enter the system, wait for a passenger at node $v_0$.
+    \item Enter the system, traverse to some other node $j$ in search of a passenger.
+    \end{enumerate}
+If $i \neq v_0$ (driver is not at home node),
+    \begin{enumerate}
+    \item Stay in the system, wait for a passenger at node $i$.
+    \item Stay in the system, traverse to some other node $j$ in search of a passenger.
+    \item Exit the system, drive back to home node $v_0$.
+    \end{enumerate}
+    
+\item The driver chooses whichever choice maximises the expected earnings in remaining $b$ units of his budget. \\
+        \begin{eqnarray*}
+        \text{if }i=v_0 \text{ and } t>b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        OPT(t-1, i, b)\\ \\
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+        \max\limits_{j\neq i}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big]
+        \end{cases} \\ \\ \\
+        \text{if }i=v_0 \text{ and } t=b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+        \max\limits_{j\neq i}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big]
+        \end{cases} \\ \\ \\
+        \text{if }i\neq v_0 \text{ and } t>b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+        \max\limits_{j\neq i}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big] \\ \\
+        \Big(OPT(t-\tau_{iv_0}, v_0, b - \tau_{iv_0}) - c_{iv_0}\Big) \times H(b - \tau_{iv_0})
+        \end{cases} \\ \\ \\
+        \text{if }i=v_0 \text{ and } t=b, \\ 
+        OPT(t, i, b) &=& \max
+        \begin{cases}
+        \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+        \max\limits_{j\neq i}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big]
+        \end{cases} \\ \\ \\
+        \end{eqnarray*}
+        
+\item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting at home node, waiting for a passenger at his current node , taking an empty ride to some other node in search of a passenger or taking an empty ride back home.
+\end{itemize}

@@ -103,7 +103,7 @@ def process_df(df):
     Process the dataframe    
     """
     df = filter_missing_coordinate_rows(df)
-    df['duration_secons'] = df.apply(get_duration, axis=1)
+    df['duration_seconds'] = df.apply(get_duration, axis=1)
     df = pd.concat([df, df.apply(get_taxi_zones, axis=1)], axis=1)
     push_to_database(df)
     return 0
