@@ -10,6 +10,7 @@ from fake_useragent import UserAgent
 import pycurl
 import cStringIO
 from constants import constants
+from collections import namedtuple
 
 class request:
     """
@@ -102,4 +103,5 @@ class request:
                 self.remove_proxy()
                 c = self.set_proxy(c)
             else:
-                return (c.getinfo(pycurl.HTTP_CODE), buff.getvalue())
+                Response = namedtuple('Response', ['response_code', 'response_body'], verbose=False)
+                return Response(c.getinfo(pycurl.HTTP_CODE), buff.getvalue())

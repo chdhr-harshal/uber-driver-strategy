@@ -1,5 +1,7 @@
 #!/home/grad3/harshal/py_env/my_env/python2.7
 
+import json
+
 class ErrorDetails(object):
     """Class to standardize errors"""
 
@@ -9,78 +11,36 @@ class ErrorDetails(object):
         self.title = title
 
     def __repr__(self):
-        return "Error Details: {} {} {}".format(
-            str(self.status),
+        return "Error Details: {} {}".format(
             str(self.code),
             str(self.title)
         )
 
 class APIError(Exception):
-    """Parent class of all Uber API errors"""
-    pass
-
-
-class HTTPError(APIError):
-    """Parent class of all HTTP errors"""
-
-    def _adapt_response(self, response):
-        """Convert error responses to standard ErrorDetails"""
-        status = response[0]
-        body = response[1]
+    def __init__(self, response):
+        """Convert error response to standard ErrorDetails"""
+        status = response.response_code
+        body = eval(response.response_body)
 
         code = body.pop('code')
         title = body.pop('message')
         meta = body # save whatever is left in the response
 
-        e = [ErrorDetails(status, code, title)]
+        self.e = ErrorDetails(status, code, title)
 
-        return e, meta
+    def _get_adapted_response(self):
+        return self.e
    
-class ClientError(HTTPError):
+class UberError(APIError):
     """Raise for 4XX Errors"""
 
-    def __init__(self, response, message=None):
+    def __init__(self, response):
         """
         Parameters
             response
-                The 4XX HTTP response
-            message
-                An error message string. If not provided,
-                use default one.
+                The HTTP response
         """
-        if not message:
-            message = (
-                    'The request could not be fulfilled due to fault from '
-                    'client sending the request.'
-            )
 
-        super(ClientError, self).__init__(message)
-        errors, meta = super(ClientError, self)._adapt_response(response)
-        self.errors = errors
-        self.meta = meta
+        super(ClientError, self).__init__(response)
+        self.error = super(ClientError, self)._get_adapted_response()
 
-class ServerError(HTTPError):
-    """Raise for 5XX Errors"""
-
-    def __init__(self, response, message=None):
-        """
-        Parameters
-            response
-                The 5XX HTTP response
-            message
-                An error message string. If not provided,
-                use default one.
-        """
-        if not message:
-            message = (
-                    'The server encountered an error or,
-                    is unable to process request.'
-            )
-
-        super(ServerError, self).__init__(message)
-        self.error, self.meta = self._adapt_response(response)
-
-    def __adapt_response(self, response):
-        """Convert error responses to standard ErrorDetails"""
-        errors, meta = super(ServerError, self)._adapt_response(response)
-        return errors[0], meta

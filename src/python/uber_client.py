@@ -5,6 +5,8 @@
 from collections import OrderedDict
 from utils.CurlReq import request
 from urllib import urlencode
+from requests import codes
+from utils.UberErrors import *
 
 
 API_HOST = "https://api.uber.com"
@@ -68,7 +70,13 @@ class UberRidesClient(object):
         url = self._build_url(target, args)
         response = req.fetch(url, header=['Authorization: Token {0}'.format(self.session.server_token)])
 
-        # To be done : Process errors and response 
+        if response.response_code != codes.ok:
+            try:
+                raise UberError(response)
+            except UberError, e:
+                print e.error
+        else:
+            return response.response_body
         
 
 
@@ -113,7 +121,7 @@ class UberRidesClient(object):
         start_longitude,
         end_latitude,
         end_longitude,
-        seat_count=None,
+        seat_count=2,
         ):
         """Get price estimates for products at a particular location.
 
@@ -147,14 +155,12 @@ class UberRidesClient(object):
         self,
         start_latitude,
         start_longitude,
-        product_id=None,
         ):
         """Get pickup time estimates for products at given location.
 
         Parameters
             start_latitude (float)
             start_longitude (float)
-            product_id (str)
 
         Returns
             (Response)
@@ -162,8 +168,7 @@ class UberRidesClient(object):
         """
         args = OrderedDict([
             ('start_latitude', start_latitude),
-            ('start_longitude', start_longitude),
-            ('product_id', product_id)
+            ('start_longitude', start_longitude)
         ])
 
         return self._api_call('GET', '/v1/estimates/time', args=args)         

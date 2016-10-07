@@ -51,3 +51,28 @@ class constants:
     database_username = 'amazon_appstore'
     database_password = 'sP7sw8chuchu'
 
+class uber:
+
+    # Uber API constants
+    
+    apps = [
+    {
+        'name' : 'HC_test_app_1',
+        'client_id' : 'IcxHByeHX6iVv_7yxbzqLVkQ8Qq-bwE-',
+        'client_secret' : 'eITxIs1Q41LzXq1FYJqNLvAV97Xg85hFHfhA27TY',
+        'server_token' : 'b07-fP6i4IaLW_DuG5LXjVNtMdtupHJ_2FL_LQmM'
+    },
+    {
+        'name' : 'HC_test_app_2',
+        'client_id' : 'ot0B2PJc60TIgI4--vnWfWcK4Jyo1ef_',
+        'client_secret' : '45xkaNszvMi2m9ZSic9gMZxXAAdKQZzMd9kT_NlJ',
+        'server_token' : 'Bz2bdWuD5QBE2XhI5VM5QNMuzyJXpb6XrMFRw4NZ'
+    },
+    {
+        'name' : 'HC_test_app_3',
+        'client_id' : 'Cmo3979xbaSgfPDBm1t3JO9l8h8dHB__',
+        'client_secret' : 'SYsNDC4zgi9IXX1q2c0RRf_Bk1ig4iFSTpvsuZsx',
+        'server_token' : 'CPNCJjx4Rp2bR5E1M1K7Yx_C6ffP7-Brts5OpSKv'
+    }
+    ]
+
