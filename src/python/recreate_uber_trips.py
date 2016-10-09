@@ -72,15 +72,15 @@ def get_zone_representative_pickup_point(time_slice, conn):
 
     Returns
         df (DataFrame)
-            A pandas dataframe with columns pickup_zone, representative_latitude, representative_longitude.
+            A pandas dataframe with columns pickup_zone, rep_latitude, rep_longitude.
             Rows correspond to randomly chosen representative points for different taxi zones.
     """
     
     query = """
-            select pickup_zone, pickup_latitude as representative_latitude, pickup_longitude as representative_longitude
-            from `yellow-taxi-trips-september-15` where tpep_pickup_datetime between '{0}' and '{1}'
-            group by pickup_zone
-            order by RAND();
+            select pickup_zone, pickup_latitude as rep_latitude, pickup_longitude as rep_longitude
+            from (select * `yellow-taxi-trips-september-15` where tpep_pickup_datetime between '{0}' and '{1}'
+            order by RAND()) temp
+            group by temp.pickup_zone;
             """
     query = query.format(time_slice.start, time_slice.end)
 
@@ -100,15 +100,15 @@ def get_zone_representative_dropoff_point(time_slice, conn):
 
     Returns
         df (DataFrame)
-            A pandas dataframe with columns dropoff_zone, representative_latitude, representative_longitude.
+            A pandas dataframe with columns dropoff_zone, rep_latitude, rep_longitude.
             Rows correspond to randomly chosen representative points for different taxi zones.
     """
     
     query = """
-            select dropoff_zone, dropoff_latitude as representative_latitude, dropoff_longitude as representative_longitude
-            from `yellow-taxi-trips-september-15` where tpep_dropoff_datetime between '{0}' and '{1}'
-            group by dropoff_zone
-            order by RAND();
+            select dropoff_zone, dropoff_latitude as rep_latitude, dropoff_longitude as rep_longitude
+            from (select * `yellow-taxi-trips-september-15` where tpep_dropoff_datetime between '{0}' and '{1}'
+            order by RAND()) temp
+            group by temp.dropoff_zone;
             """
     query = query.format(time_slice.start, time_slice.end)
 
