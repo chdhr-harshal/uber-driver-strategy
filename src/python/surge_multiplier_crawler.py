@@ -48,6 +48,10 @@ def create_uber_fake_trip(pickup_latitude,
         prices = pd.DataFrame(response['prices'])
         prices = prices.drop('product_id', axis=1)
         prices['timestamp'] = current_time_2015_str
+        prices['pickup_latitude'] = pickup_latitude
+        prices['pickup_longitude'] = pickup_longitude
+        prices['dropoff_latitude'] = dropoff_latitude
+        prices['dropoff_longitude'] = dropoff_longitude
         prices['pickup_zone'] = pickup_zone
         prices['dropoff_zone'] = dropoff_zone
         
