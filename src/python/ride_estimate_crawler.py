@@ -1,8 +1,8 @@
 #!/home/grad3/harshal/py_env/my_env/bin/python2.7
 
 """
-1. Queries the Uber API for surge rates at every taxi zone.
-2. Pushes the responses to `surge-multiplier-crawl` table.
+1. Queries the Uber API for fake trip ride estimates.
+2. Pushes the responses to `ride-estimate-crawl` table.
 """
 # Get the exact start time of the script before importing all the packages
 from datetime import datetime, timedelta
@@ -20,14 +20,12 @@ import pandas as pd
 import json
 import random
 import json
+import itertools
 
 # Project directory structure
 ROOT_DIR = os.path.abspath("/home/grad3/harshal/Desktop/uber_driver_strategy")
 LOG_DIR = os.path.join(ROOT_DIR, "logs")
 DATA_DIR = os.path.join(ROOT_DIR, "data")
-
-# Global list to store fake trips
-FAKE_TRIPS = []
 
 def create_uber_fake_trip(pickup_latitude, 
                         pickup_longitude, 
@@ -37,11 +35,12 @@ def create_uber_fake_trip(pickup_latitude,
                         dropoff_zone,
                         conn):
     """
-    Creates fake trip on Uber to get surge pricing multiplier
-    Pushes response to database
+    Creates fake trip on Uber
+    Pushes the response to database
     
     Parameters
         Self-explanatory
+
     """
     try:
         response = json.loads(client.get_price_estimates(pickup_latitude, pickup_longitude, dropoff_latitude, dropoff_longitude))
@@ -50,15 +49,19 @@ def create_uber_fake_trip(pickup_latitude,
         prices['timestamp'] = current_time_2015_str
         prices['pickup_zone'] = pickup_zone
         prices['dropoff_zone'] = dropoff_zone
+        prices['pickup_latitude'] = pickup_latitude
+        prices['pickup_longitude'] = pickup_longitude
+        prices['dropoff_latitude'] = dropoff_latitude
+        prices['dropoff_longitude'] = dropoff_longitude
         
         # Append to the table in database
-        prices.to_sql('surge-multiplier-crawl', conn, if_exists='append', index=False)
+        prices.to_sql('ride-estimate-crawl', conn, if_exists='append', index=False)
     except:
         pass
 
 if __name__=="__main__":
     # Create uber session
-    server_token = uber.apps[0]['server_token']
+    server_token = uber.apps[1]['server_token']
     session = UberSession(server_token, use_proxy=False)
 
     # Create uber rides client
@@ -74,15 +77,10 @@ if __name__=="__main__":
     representative_points_df = get_zone_representatives(time_slice, conn)
 
     # Get zones list
-    start_zones = get_zones()
-    end_zones = get_zones()
-
-    # Generate fake trip endpoints
-    for start_zone in start_zones:
-        end_zones.remove(start_zone)
-        end_zone = random.choice(end_zones)
-        FAKE_TRIPS.append((start_zone, end_zone))
-        end_zones.append(start_zone)
+    taxi_zones = get_zones()
+    
+    # Create permutations of zones for fake uber trips
+    FAKE_TRIPS = list(itertools.permutations(taxi_zones, 2)) 
 
     # Create fake trip on uber
     for trip in FAKE_TRIPS:
