@@ -13,14 +13,17 @@ API_HOST = "https://api.uber.com"
 
 class UberSession(object):
     """Class to store credentials. """
-    def __init__(self, server_token):
+    def __init__(self, server_token, use_proxy=False):
         """Initialize UberSession.
         
         Parameters
             server_token (str)
                 Application's server token
+            use_proxy (Boolean)
+                default False. Use proxies if True.
         """
         self.server_token = server_token
+        self.use_proxy = use_proxy
     
 
 class UberRidesClient(object):
@@ -66,7 +69,7 @@ class UberRidesClient(object):
             (Response)
                 API server's response to the query.
         """
-        req = request(use_proxy=True)
+        req = request(use_proxy=self.session.use_proxy)
         url = self._build_url(target, args)
         response = req.fetch(url, header=['Authorization: Token {0}'.format(self.session.server_token)])
 
