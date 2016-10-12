@@ -42,5 +42,5 @@ class UberError(APIError):
         """
 
         super(ClientError, self).__init__(response)
-        self.error = super(ClientError, self)._get_adapted_response()
+        self.error = super(UberError, self)._get_adapted_response()
 
