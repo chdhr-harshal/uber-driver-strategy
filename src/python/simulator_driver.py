@@ -1,8 +1,9 @@
-#!/home/grad3/harshal/py_env/my_env/python2.7
+#!/home/grad3/harshal/py_env/my_env/bin/python2.7
 
 import argparse
-from strategy import RelocationStrategy
-
+from reloc_strategy import RelocationStrategy
+from utils.constants import constants
+from sqlalchemy import *
 import logging
 import os
 import pandas as pd
@@ -40,28 +41,32 @@ def get_argument_parser():
     """
     parser = argparse.ArgumentParser(description='Uber driver strategy simulator')
 
-    parser.add_argument('strategy',
+    parser.add_argument('--strategy',
                         type=str,
                         help='Strategy of the driver.\
                             1. Relocation \
                             2. Schedule \
                             3. Relocation+Schedule')
 
-    parser.add_argument('start-time',
+    parser.add_argument('--start-time',
                         type=str,
                         help='Start time in %Y-%m-%d %H:%M:%S')
 
-    parser.add_argument('fake-time-unit',
+    parser.add_argument('--fake-time-unit',
                         type=int,
                         help='1 fake minute = ? real minutes')
 
-    parser.add_argument('service-time',
+    parser.add_argument('--service-time',
                         type=int,
                         help='Maximum fake minutes')
 
-    parser.add_argument('time-slice-duration',
+    parser.add_argument('--time-slice-duration',
                         type=int,
                         help='Time slice duration in real minutes')
+
+    parser.add_argument('--home-zone',
+                        type=str,
+                        help='Driver home zone')
 
     return parser
 
@@ -73,12 +78,14 @@ if __name__ == "__main__":
     args = args_parser.parse_args()
     conn = create_database_connection()
 
-    if args.startegy == "Relocation":
+    print args
+
+    if args.strategy == "Relocation":
         reloc_strat = RelocationStrategy(args.start_time,
                                         args.fake_time_unit,
                                         args.service_time,
-                                        args.time_slice_duration,
-                                        conn
-                                        )
-        reloc_start.start_strategy()
+                                        args.time_slice_duration,   
+                                        args.home_zone,
+                                        conn)
+        reloc_strat.start_strategy()
    

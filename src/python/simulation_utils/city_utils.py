@@ -1,8 +1,9 @@
-#!/home/grad3/harshal/py_env/my_env/python2.7
+#!/home/grad3/harshal/py_env/my_env/bin/python2.7
 
 import pandas as pd
 import numpy as np
 from scipy.stats import expon
+import random
 
 class TransitionMatrix(object):
     """
@@ -10,14 +11,27 @@ class TransitionMatrix(object):
     and the associated methods.
     """
 
-    def __init__(self, df):
+    def __init__(self, df, zones):
         """
         Init method for class
 
         Parameters
             df (DataFrame)
                 A pandas dataframe with columns pickup_zone, dropoff_zone
+            zones (list)
+                A list of all city zones
         """
+        # Drop within zone trips so that they don't mess up with transition probabilities
+        df = df[df['pickup_zone'] != df['dropoff_zone']]
+        df = df.reset_index(drop=True)
+
+        # Get unique pickup zones
+        pickup_zone_set = set(df['pickup_zone'].values)
+        all_zone_set = set(zones)
+
+        # Creating one fake trip from every pickup zone just to have complete dataframe
+        for zone in all_zone_set - pickup_zone_set:
+            df.loc[len(df)] = [zone, zone]
 
         # Aggregate number of trips between ordered pairs of zones
         trips_df = pd.DataFrame({'trips' : df.groupby(['pickup_zone', 'dropoff_zone']).size()})
@@ -36,6 +50,11 @@ class TransitionMatrix(object):
                                         index='pickup_zone',
                                         columns='dropoff_zone',
                                         values='probability')
+
+        self.transition_matrix = self.transition_matrix.fillna(0)
+
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.transition_matrix.values, 0.0)
  
     def get_transition_probability(self, start_zone, end_zone):
         """
@@ -82,6 +101,11 @@ class DurationMatrix(object):
                                             columns='dropoff_zone',
                                             values='mean_duration')
 
+        self.duration_matrix = self.duration_matrix.fillna(15)
+
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.duration_matrix.values, 0.0)
+
     def get_trip_duration(self, start_zone, end_zone):
         """
         Get trip duration from start_zone to end_zone
@@ -123,6 +147,11 @@ class DistanceMatrix(object):
                                             index='pickup_zone',
                                             columns='dropoff_zone',
                                             values='mean_distance')
+
+        self.distance_matrix = self.distance_matrix.fillna(3)
+
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.distance_matrix.values, 0.0)
 
     def get_trip_distance(self, start_zone, end_zone):
         """
@@ -167,6 +196,9 @@ class EstimatedCostMatrix(object):
                                             index='pickup_zone',
                                             columns='dropoff_zone',
                                             values='mean_cost')
+
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.estimated_cost_matrix.values, 0.0)
 
     def get_estimated_cost(self, start_zone, end_zone):
         """
@@ -329,8 +361,11 @@ class DriverWaitingVector(object):
             waiting_time (float)
                 Waiting time in minutes at the particular zone
         """
-        waiting_time = 1/self.pickup_poisson_rate_series[zone]
-        return waiting_time
+        try:
+            waiting_time = 1.0/self.pickup_poisson_rate_series[zone]
+            return waiting_time
+        except:
+            return 10000
 
     def get_poisson_parameters(self, data):
         """
@@ -374,10 +409,16 @@ class CalculatedCostMatrix(object):
                                     (self.minute_fare * dm.duration_matrix))
 
         # Apply surge multiplier
-        surge_func = lambda x: np.asarray(x) * np.asarray(sv.surge_vector)
-        self.calculated_cost_matrix = self.calculated_cost_matrix.apply(surge_func)
-                                        
+        # surge_func = lambda x: np.asarray(x) * np.asarray(sv.surge_vector)
+        # self.calculated_cost_matrix = self.calculated_cost_matrix.apply(surge_func)
+        self.calculated_cost_matrix = self.calculated_cost_matrix.apply(self.surge_func, args=(sv.surge_vector,))
 
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.calculated_cost_matrix.values, 0.0)
+                                        
+    def surge_func(self, row, surge_vector):
+        return np.asarray(row) * np.asarray(surge_vector)
+        
     def get_calculated_cost(self, start_zone, end_zone):
         """
         Get calculated cost from start_zone to end_zone
@@ -413,6 +454,9 @@ class DrivingCostMatrix(object):
         self.mile_fare = 0.57
 
         self.driving_cost_matrix = self.mile_fare * distm.distance_matrix
+
+        # Drop all within zone trips for fake trips created by us
+        np.fill_diagonal(self.driving_cost_matrix.values, 0.0)
 
     def get_driving_cost(self, start_zone, end_zone):
         """
