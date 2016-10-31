@@ -12,8 +12,8 @@ from utils.constants import constants
 import json
 import pandas as pd
 import numpy as np
-import cPickle as pickle
-#import dill as pickle
+# import cPickle as pickle
+import dill
 
 # Project directory structure
 ROOT_DIR = os.path.abspath("/home/grad3/harshal/Desktop/uber_driver_strategy")
@@ -27,8 +27,14 @@ class RelocationStrategy(object):
     """
     Relocation strategy
     """
-    def __init__(self, start_time, fake_time_unit, service_time,
-                time_slice_duration, home_zone, conn):
+    def __init__(self, 
+                start_time, 
+                fake_time_unit, 
+                service_time,
+                time_slice_duration, 
+                home_zone, 
+                conn,
+                city_state_file=None):
         """
         Init method for relocation strategy
 
@@ -56,21 +62,43 @@ class RelocationStrategy(object):
         # Process the start_time
         start_time = datetime.strptime(start_time, "%Y-%m-%d %H:%M:%S")
         self.zones = self.get_zones()
-    
+
         self.time_structure = self.create_time_structure(start_time,
                                                     fake_time_unit,
                                                     service_time,
                                                     time_slice_duration)
         print "Created time structures"
+        
+        if not city_state_file:
+            # Store city state for each value of service time left
+            self.city_states = self.create_city_states(self.time_structure, self.zones, conn)
     
-        # Store city state for each value of service time left
-        self.city_states = self.create_city_states(self.time_structure, self.zones, conn)
-    
-        print "Created city states"
+            print "Created city states"
+        else:
+            self.city_states = city_state_file
         
         # Initialize DP matrix
         self.OPT = self.initialize_dp_matrix(self.zones, self.time_structure)
         print "Initiazlied DP matrix"
+
+    @classmethod
+    def fromDillFile(cls, home_zone, conn, filename):
+        """
+        Creates RelocationStrategy object from existing city states dill file
+        """
+        with open(filename, 'rb') as f:
+            city_states = dill.load(f)
+
+        states = city_states.keys()
+        start_time = city_states[states[-1]].start_time.strftime("%Y-%m-%d %H:%M:%S")
+        fake_time_unit = city_states[states[-1]].fake_time_unit
+        service_time = city_states[states[-1]].service_time_total
+        time_slice_duration = city_states[states[-1]].time_slice_duration
+        
+        return cls(start_time, fake_time_unit, service_time, time_slice_duration,
+                    home_zone, conn, city_states)
+        
+        
 
     def create_city_states(self, time_structure, zones, conn):
         """
@@ -90,13 +118,14 @@ class RelocationStrategy(object):
         """
         city_states = {}
         for time_dict in time_structure:
-            city_states[time_dict['service_time_left']] = City(time_dict['real_time'],
-                                                            time_dict['fake_time'],
-                                                            time_dict['service_time_left'],
-                                                            time_dict['time_slice'],
-                                                            zones,
-                                                            conn)
+            city_states[time_dict['service_time_left']] = City(time_dict=time_dict,
+                                                            zones=zones,
+                                                            conn=conn)
         return city_states
+
+    def export_city_states(self):
+        with open(DATA_DIR + "/reloc_city_states.dill", 'w') as f:
+            dill.dump(self.city_states, f)
     
     def create_time_structure(self, start_time, fake_time_unit, service_time, time_slice_duration):
         """
@@ -121,6 +150,12 @@ class RelocationStrategy(object):
 
         for fake_time in xrange(service_time):
             time_dict = {}
+            time_dict['start_time'] = start_time
+            time_dict['service_time_total'] = service_time
+            time_dict['budget_total'] = None
+            time_dict['fake_time_unit'] = fake_time_unit
+            time_dict['time_slice_duration'] = time_slice_duration
+
             time_dict['fake_time'] = fake_time
             time_dict['service_time_left'] = service_time - fake_time
             real_time = start_time + fake_time*timedelta(minutes=fake_time_unit)
@@ -301,7 +336,7 @@ class RelocationStrategy(object):
                 Number of fake time units left in simulation
     
         Returns
-            avg_pax_ride (namedtuple)
+            pax_ride_tuple (namedtuple)
                 A named tuple with fields start_zone, expected_revenue
         """
 
@@ -309,7 +344,7 @@ class RelocationStrategy(object):
                                     verbose=False)
 
         if service_time_left <= 0:
-            return avg_pax_ride(current_zone, 0)
+            return pax_ride_tuple(current_zone, 0)
 
         current_city_state = self.city_states[service_time_left]
         zones = self.get_zones()
@@ -321,7 +356,7 @@ class RelocationStrategy(object):
         t_dash = service_time_left - waiting_time
 
         if t_dash <= 0:
-            return avg_pax_ride(current_zone, 0)
+            return pax_ride_tuple(current_zone, 0)
 
         new_city_state = self.city_states[t_dash]
         expected_revenue = 0
