@@ -11,6 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 import dill
+import copy
 
 # Project directory structure
 ROOT_DIR = os.path.abspath("/home/grad3/harshal/Desktop/uber_driver_strategy")
@@ -79,8 +80,12 @@ class FlexiTimeStrategy(object):
 
         # Initialize DP matrix
         self.OPT = self.initialize_dp_matrix()
-
         print "Initialized DP matrix"
+
+        self.OPT_ACTIONS = copy.deepcopy(self.OPT)
+        print "Initialized ACTIONS matrix"
+
+        
 
     @classmethod
     def fromDillFile(cls, home_zone, conn, filename):
@@ -169,6 +174,7 @@ class FlexiTimeStrategy(object):
             
 
             time_dict['budget_left'] = budget - budget_unit
+            time_dict['service_time_left'] = None
             real_time = start_time + budget_unit*timedelta(minutes=fake_time_unit)
             time_dict['real_time'] = real_time.strftime("%Y-%m-%d %H:%M:%S")
             time_dict['time_slice'] = self.get_time_slice(real_time, time_slice_duration)
@@ -241,6 +247,22 @@ class FlexiTimeStrategy(object):
             OPT[budget_unit].loc[0] = 0
 
         return OPT
+
+    def update_actions_cell(self, budget_left, service_time_left, zone, value):
+        """
+        Update a cell in the OPT_ACTIONS matrix
+
+        Parameters
+            budget_left (int)
+                Budget left
+            service_time_left (int)
+                Fake time units left in driver's service time
+            zone (str)
+                The city zone name
+            value (float)
+                Value to store in the OPT matrix cell
+        """
+        self.OPT_ACTIONS[budget_left][zone][service_time_left] = value
 
     def update_dp_cell(self, budget_left, service_time_left, zone, value):
         """ 
@@ -347,8 +369,17 @@ class FlexiTimeStrategy(object):
             expected_logging_out_revenue = self.get_logging_out_revenue(zone, budget_left, service_time_left)
             expected_waiting_revenue = self.get_expected_waiting_revenue(zone, budget_left, service_time_left)
 
-            max_expected_revenue = max(expected_logging_out_revenue, expected_waiting_revenue)
+            if expected_logging_out_revenue > expected_waiting_revenue:
+                max_expected_revenue = expected_logging_out_revenue
+                action_value = ("log_out", zone, zone)
+                self.update_actions_cell(budget_left, service_time_left, zone, action_value)
+            else:
+                max_expected_revenue = expected_waiting_revenue
+                action_value = ("busy_waiting", zone, zone)
+                self.update_actions_cell(budget_left, service_time_left, zone, action_value)
+
             self.update_dp_cell(budget_left, service_time_left, zone, max_expected_revenue)
+
             return max_expected_revenue
             # 1. Log out of system - Wait at home node, budget keeps reducing but service time doesnt
             # 2. Wait for a passenger 
@@ -358,12 +389,29 @@ class FlexiTimeStrategy(object):
             expected_going_home_revenue = self.get_going_home_revenue(zone, budget_left, service_time_left)
 
             max_expected_revenue = max(expected_logging_out_revenue, expected_waiting_revenue, expected_going_home_revenue)
+            max_index = np.argmax([expected_logging_out_revenue, expected_waiting_revenue, expected_going_home_revenue])
+
+            if max_index == 0:
+                action_value = ("log_out", zone, zone)
+            elif max_index == 1:
+                action_value = ("busy_waiting", zone, zone)
+            else:
+                action_value = ("go_home", zone, self.home_zone)
+
+            self.update_actions_cell(budget_left, service_time_left, zone, action_value)
             self.update_dp_cell(budget_left, service_time_left, zone, max_expected_revenue)
+
             return max_expected_revenue
 
             # 1. Log out of system - Wait at current node, budget keeps decreasing but service time doesnt
             # 2. Go back home and exit system
             # 3. Wait for a passenger
+
+    def fill_dp_matrix(self):
+        for budget_left in sorted(self.OPT.keys().values):
+            for service_time_left in self.OPT[budget_left].index.values:
+                for zone in self.OPT[budget_left].columns.values:
+                    self.OPT[budget_left][zone][service_time_left] = self.calculate_max_expected_revenue(budget_left, service_time_left, zone)
 
     def start_strategy(self):
         """

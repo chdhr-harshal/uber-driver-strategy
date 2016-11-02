@@ -1,7 +1,6 @@
 #!/home/grad3/harshal/py_env/my_env/python2.7
 
 import argparse
-from driver import Driver
 from city import City
 import logging
 from datetime import datetime, timedelta
@@ -12,8 +11,8 @@ from utils.constants import constants
 import json
 import pandas as pd
 import numpy as np
-# import cPickle as pickle
 import dill
+import copy
 
 # Project directory structure
 ROOT_DIR = os.path.abspath("/home/grad3/harshal/Desktop/uber_driver_strategy")
@@ -79,7 +78,10 @@ class RelocationStrategy(object):
         
         # Initialize DP matrix
         self.OPT = self.initialize_dp_matrix(self.zones, self.time_structure)
-        print "Initiazlied DP matrix"
+        print "Initialized DP matrix"
+
+        self.OPT_ACTIONS = copy.deepcopy(self.OPT)
+        print "Initialized ACTIONS matrix"
 
     @classmethod
     def fromDillFile(cls, home_zone, conn, filename):
@@ -123,8 +125,9 @@ class RelocationStrategy(object):
                                                             conn=conn)
         return city_states
 
-    def export_city_states(self):
-        with open(DATA_DIR + "/reloc_city_states.dill", 'w') as f:
+    def export_city_states(self, filename='reloc_city_states.dill'):
+        
+        with open(DATA_DIR + "/"+ filename, 'w') as f:
             dill.dump(self.city_states, f)
     
     def create_time_structure(self, start_time, fake_time_unit, service_time, time_slice_duration):
@@ -247,6 +250,19 @@ class RelocationStrategy(object):
 
         return OPT
 
+    def update_actions_cell(self, time, zone, value):
+        """
+        Update a cell in the OPT_ACTIONS matrix
+
+        Parameters
+            time (int)
+                Fake time units left.
+            zone (str)
+                The city zone name.
+        """
+        self.OPT_ACTIONS[zone][time] = value
+
+
     def update_dp_cell(self, time, zone, value):
         """
         Update a cell in the OPT matrix
@@ -257,7 +273,6 @@ class RelocationStrategy(object):
             zone (str)
                 The city zone name. 
         """
-        print "Updated zone : {0} time : {1} with value : {2}".format(zone, time, value)
         self.OPT[zone][time] = value
 
     def get_dp_cell(self, time, zone):
@@ -309,6 +324,7 @@ class RelocationStrategy(object):
         # 1. Driver travels to some other zone with empty ride
         empty_ride = self.get_expected_empty_ride_revenue(zone, time)
         expected_empty_ride_revenue = empty_ride.expected_revenue
+        empty_ride_destination = empty_ride.end_zone
 
         # 2. Driver waits at current zone for a passenger
         pax_ride = self.get_expected_pax_ride_revenue(zone, time)
@@ -316,8 +332,12 @@ class RelocationStrategy(object):
 
         if expected_empty_ride_revenue > expected_pax_ride_revenue:
             max_expected_revenue = expected_empty_ride_revenue
+            action_value = ("empty_ride", zone, empty_ride_destination)
+            self.update_actions_cell(time, zone, action_value)
         else:
             max_expected_revenue = expected_pax_ride_revenue
+            action_value = ("busy_waiting", zone, zone)
+            self.update_actions_cell(time, zone, action_value)
             
         self.update_dp_cell(time, zone, max_expected_revenue)
         
@@ -366,7 +386,10 @@ class RelocationStrategy(object):
             trip_duration = self.real_time_to_fake_time(trip_duration)
             
             trip_driving_cost = new_city_state.dcm.get_driving_cost(current_zone, zone)
-            transition_probability = new_city_state.tm.get_transition_probability(current_zone, zone)
+            try: 
+                transition_probability = new_city_state.tm.get_transition_probability(current_zone, zone)
+            except:
+                transition_probability = 0
             calculated_cost = new_city_state.ccm.get_calculated_cost(current_zone, zone)
 
             expected_revenue += transition_probability*(calculated_cost - trip_driving_cost + self.get_dp_cell(t_dash - trip_duration, zone))
@@ -419,6 +442,10 @@ class RelocationStrategy(object):
         expected_empty_ride = sorted(empty_rides, key=lambda x: x[2], reverse=True)[0]
         return expected_empty_ride
 
+    def fill_dp_matrix(self):
+        for service_time_left in sorted(self.OPT.index.values):
+            for zone in self.OPT.columns.values:
+                self.calculate_max_expected_revenue(service_time_left, zone)
 
     def start_strategy(self):
         """

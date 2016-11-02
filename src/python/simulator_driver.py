@@ -2,6 +2,8 @@
 
 import argparse
 from reloc_strategy import RelocationStrategy
+from flexi_strategy import FlexiTimeStrategy
+from reloc_flexi_strategy import RelocFlexiTimeStrategy
 from utils.constants import constants
 from sqlalchemy import *
 import logging
@@ -58,7 +60,11 @@ def get_argument_parser():
 
     parser.add_argument('--service-time',
                         type=int,
-                        help='Maximum fake minutes')
+                        help='Maximum service time')
+    
+    parser.add_argument('--budget',
+                        type=int,
+                        help='Maximum budget')
 
     parser.add_argument('--time-slice-duration',
                         type=int,
@@ -67,6 +73,18 @@ def get_argument_parser():
     parser.add_argument('--home-zone',
                         type=str,
                         help='Driver home zone')
+
+    parser.add_argument('--city-states-file',
+                        type=str,
+                        help='Path to dill file containing city states')
+    
+    parser.add_argument('--export-city-state',
+                        action='store_true',
+                        help='Export city states file')
+
+    parser.add_argument('--run-driver-simulator',
+                        action='store_true',
+                        help='Run a driver simulation')
 
     return parser
 
@@ -78,14 +96,56 @@ if __name__ == "__main__":
     args = args_parser.parse_args()
     conn = create_database_connection()
 
-    print args
-
     if args.strategy == "Relocation":
-        reloc_strat = RelocationStrategy(args.start_time,
+        if args.city_states_file:
+            reloc_start = RelocationStrategy.fromDillFile(args.home_zone,
+                                                        conn,
+                                                        args.city_states_file)
+        else:
+            reloc_strat = RelocationStrategy(args.start_time,
                                         args.fake_time_unit,
                                         args.service_time,
                                         args.time_slice_duration,   
                                         args.home_zone,
                                         conn)
-        reloc_strat.start_strategy()
+        if args.export_city_state:
+            reloc_strat.export_city_states()
+
+
+    elif args.strategy == "Schedule":
+        if args.city_states_file:
+            flexi_strat = FlexiTimeStrategy.fromDillFile(args.home_zone,
+                                                        conn,
+                                                        args.city_states_file)
+        else:
+            flexi_strat = FlexiTimeStrategy(args.start_time,
+                                        args.fake_time_unit,
+                                        args.service_time,
+                                        args.budget,
+                                        args.time_slice_duration,
+                                        args.home_zone,
+                                        conn)
+        if args.export_city_state:
+            flexi_strat.export_city_states()
+
+
+    elif args.strategy == "Relocation+Schedule":
+        if args.city_states_file:
+            reloc_flexi_strat = RelocFlexiTimeStrategy(args.home_zone,
+                                                    conn,
+                                                    args.city_states_file)
+        else:
+            reloc_flexi_strat = RelocFlexiTimeStrategy(args.start_time,
+                                                args.fake_time_unit,
+                                                args.service_time,
+                                                args.budget,
+                                                args.time_slice_duration,
+                                                args.home_zone,
+                                                conn)
+        if args.export_city_state:
+            reloc_flexi_strat.export_city_states()
+
+
+    else:
+        print "Unknown strategy passed."
    

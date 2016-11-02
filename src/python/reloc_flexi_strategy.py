@@ -11,6 +11,7 @@ import json
 import pandas as pd
 import numpy as np
 import dill
+import copy
 
 # Project directory structure
 ROOT_DIR = os.path.abspath("/home/grad3/harshal/Desktop/uber_driver_strategy")
@@ -79,8 +80,10 @@ class RelocFlexiTimeStrategy(object):
 
         # Initialize DP matrix
         self.OPT = self.initialize_dp_matrix()
-
         print "Initialized DP matrix"
+
+        self.OPT_ACTIONS = copy.deepcopy(self.OPT)
+        print "Initialized OPT_ACTIONS matrix"
 
     @classmethod
     def fromDillFile(cls, home_zone, conn, filename):
@@ -244,6 +247,23 @@ class RelocFlexiTimeStrategy(object):
 
         return OPT
 
+    def update_actions_cell(self, budget_left, service_time_left, zone, value):
+        """ 
+        Update a cell in the OPT matrix
+
+        Parameters
+            budget_left (int)
+                Budget left
+            service_time_left (int)
+                Fake time units left in driver's service time
+            zone (str)
+                The city zone name
+            value (float)
+                Value to store in the OPT matrix cell
+        """
+        self.OPT_ACTIONS[budget_left][zone][service_time_left] = value
+        
+
     def update_dp_cell(self, budget_left, service_time_left, zone, value):
         """ 
         Update a cell in the OPT matrix
@@ -258,6 +278,7 @@ class RelocFlexiTimeStrategy(object):
             value (float)
                 Value to store in the OPT matrix cell
         """
+        print "Updated budget = {} service_time = {} zone = {} with value = {}".format(budget_left, service_time_left, zone, value)
         self.OPT[budget_left][zone][service_time_left] = value
 
     def get_dp_cell(self, budget_left, service_time_left, zone):
@@ -341,8 +362,11 @@ class RelocFlexiTimeStrategy(object):
         return expected_revenue * self.heaviside_function(budget_left - trip_duration)
 
     def get_expected_empty_ride_revenue(self, current_zone, budget_left, service_time_left):
+        empty_ride_tuple = namedtuple('EmptyRide', ['start_zone', 'end_zone', 'expected_revenue'],
+                                    verbose=False)
+
         if budget_left <= 0 or service_time_left <= 0:
-            return 0
+            return empty_ride_tuple(None, None, 0)
 
         current_city_state = self.city_states[budget_left]
         zones = self.get_zones()
@@ -370,21 +394,35 @@ class RelocFlexiTimeStrategy(object):
                 revenue = 0
 
             revenue = revenue * self.heaviside_function(budget_left - trip_duration)
-            empty_rides.append(revenue)
+            empty_rides.append(empty_ride_tuple(current_zone, zone, revenue))
 
-        return max(empty_rides)
+        expected_empty_ride = sorted(empty_rides, key=lambda x: x[2], reverse=True)[0]
+        return expected_empty_ride
 
     def calculate_max_expected_revenue(self, budget_left, service_time_left, zone):
         if budget_left <= 0 or service_time_left <= 0:
             self.update_dp_cell(budget_left, service_time_left, zone, 0)
+            return 0
 
         # Calculate expected revenue in two conditions 1. if zone == home zone 2. if zone != home_zone
         if zone == self.home_zone:
             expected_logging_out_revenue = self.get_logging_out_revenue(zone, budget_left, service_time_left)
             expected_waiting_revenue = self.get_expected_waiting_revenue(zone, budget_left, service_time_left)
-            expected_empty_ride_revenue = self.get_expected_empty_ride_revenue(zone, budget_left, service_time_left)
+            expected_empty_ride = self.get_expected_empty_ride_revenue(zone, budget_left, service_time_left)
+            expected_empty_ride_revenue = expected_empty_ride.expected_revenue
+            empty_ride_destination = expected_empty_ride.end_zone
 
             max_expected_revenue = max(expected_logging_out_revenue, expected_waiting_revenue, expected_empty_ride_revenue)
+            max_index = np.argmax([expected_logging_out_revenue, expected_waiting_revenue, expected_empty_ride_revenue])
+
+            if max_index == 0:
+                action_value = ('log_out', zone, zone)
+            elif max_index == 1:
+                action_value = ('busy_waiting', zone, zone)
+            else:
+                action_value = ('empty_ride', zone, empty_ride_destination)
+
+            self.update_actions_cell(budget_left, service_time_left, zone, action_value)
             self.update_dp_cell(budget_left, service_time_left, zone, max_expected_revenue)
             return max_expected_revenue
             # 1. Log out of system - Wait at home node, budget keeps reducing but service time doesnt
@@ -393,9 +431,21 @@ class RelocFlexiTimeStrategy(object):
         else:
             expected_logging_out_revenue = self.get_logging_out_revenue(zone, budget_left, service_time_left)
             expected_waiting_revenue = self.get_expected_waiting_revenue(zone, budget_left, service_time_left)
-            expected_empty_ride_revenue = self.get_expected_empty_ride_revenue(zone, budget_left, service_time_left)
+            expected_empty_ride = self.get_expected_empty_ride_revenue(zone, budget_left, service_time_left)
+            expected_empty_ride_revenue = expected_empty_ride.expected_revenue
+            empty_ride_destination = expected_empty_ride.end_zone
 
             max_expected_revenue = max(expected_logging_out_revenue, expected_waiting_revenue, expected_empty_ride_revenue)
+            max_index = np.argmax([expected_logging_out_revenue, expected_waiting_revenue, expected_empty_ride_revenue])
+
+            if max_index == 0:
+                action_value = ('log_out', zone, zone)
+            elif max_index == 1:
+                action_value = ('busy_waiting', zone, zone)
+            else:
+                action_value = ('empty_ride', zone, empty_ride_destination)
+
+            self.update_actions_cell(budget_left, service_time_left, zone, action_value)
             self.update_dp_cell(budget_left, service_time_left, zone, max_expected_revenue)
             return max_expected_revenue
 
@@ -411,7 +461,7 @@ class RelocFlexiTimeStrategy(object):
 
     def start_strategy(self):
         """
-        Starts the flexible work schedule strategy
+        Starts the flexible work schedule + relocation strategy
         """
         # Initialize DP matrix
         self.OPT = self.initialize_dp_matrix()

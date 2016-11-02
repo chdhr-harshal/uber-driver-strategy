@@ -27,11 +27,16 @@ class TransitionMatrix(object):
 
         # Get unique pickup zones
         pickup_zone_set = set(df['pickup_zone'].values)
+        dropoff_zone_set = set(df['dropoff_zone'].values)
         all_zone_set = set(zones)
 
         # Creating one fake trip from every pickup zone just to have complete dataframe
         for zone in all_zone_set - pickup_zone_set:
             df.loc[len(df)] = [zone, zone]
+
+        for zone in all_zone_set - dropoff_zone_set:
+            df.loc[len(df)] = [zone, zone]
+
 
         # Aggregate number of trips between ordered pairs of zones
         trips_df = pd.DataFrame({'trips' : df.groupby(['pickup_zone', 'dropoff_zone']).size()})
@@ -72,6 +77,20 @@ class TransitionMatrix(object):
         """
 
         return self.transition_matrix[end_zone][start_zone]
+
+    def get_transition_vector(self, start_zone):
+        """
+        Get a vector of transition probabilities from start_zone
+
+        Parameters
+            start_zone (str)
+                Start zone of the transition
+
+        Returns
+            transition_probability_vector (Series)
+                A pandas series with index as end_zones as values as transition_probabilities.
+        """
+        return self.transition_matrix.loc[start_zone]
 
 class DurationMatrix(object):
     """
