@@ -1,0 +1,57 @@
+%!TEX root = uber-driver-strategy.tex
+\section{Problem Setup}
+Consider a finite horizon Markov decision process with finite decision horizon $T = \{0,1,2, ..., N-1\}$. At each stage, the driver occupies a state $i \in \mathcal{X}$, where $n = |\mathcal{X}|$ is finite, and a driver is allowed to choose an action $a$ from finite set of allowable actions $\mathcal{A} = \{a_1, a_2, ..., a_m\}$. The system starts in a given initial state $i_0$. The states make Markov transitions according to a collection of time-dependent transition matrices $\tau := (P^{a}_t)_{a \in \mathcal{A}, t \in \mathcal{T}}$, the $n \times n$ transition matrix $P^{a}_t$ contains the probabilities of transitioning under action $a$ at stage $t$. Let $\pi = (\textbf{a}_0, ..., \textbf{a}_{N-1})$ denote a policy, where $\textbf{a}_t(i)$ denotes the action of the driver while at state $i$ at time $t$. Define by $r_t(i,a)$, the reward corresponding to state $i$ and action $a$ at time $t$, and by $r_N$ the reward at the final stage (end of time). We assume that $r_t(i,a)$ is non-negative and finite (negative cost of take empty ride action can be accounted for by considering all the rewards relative to the highest negative cost of empty ride i.e., moving the zero to the left.)
+
+For a given set of transition matrices $\tau$, if $R_N(\pi, \tau)$ denotes the \textit{expected total rewards} under the policy $\pi$ and transition matrices $\tau$, then,
+\begin{eqnarray*}
+R_N(\pi, \tau) &:=& \textbf{E}\bigg(\sum_{t=0}^{N-1} r_t(i_t,\textbf{a}_t(i)) + r_N(i_N)\bigg)
+\end{eqnarray*}
+When the set of transition matrices $\tau$ is known,  $R_N(\pi, \tau)$ maximising policy $\pi$ can be found via dynamic programming algorithm, with a complexity of $O(mnN)$. The \textit{nominal} problem giving the corresponding maximum expected total reward is,
+\begin{eqnarray*}
+\phi_N(\Pi, \tau) &:=& \max_{\pi \in \Pi} R_N(\pi, \tau),
+\end{eqnarray*}
+where $\Pi = \mathcal{A}^{nN}$ is the entire policy space.
+
+In our case, the transition matrix under each action $a$ and time $t$ is known to lie in some given subset $\mathcal{P}^{a}_t$, where $\mathcal{P}^{a}_t$ can be thought of as \textit{sets of confidence} for the transition matrices. Given this uncertainty in the transition matrices, we are interested in maximising the lower bound on the expected total rewards for the driver. This leads to a game between the driver and \textit{nature}, where the driver seeks to maximise the minimum expected reward, with nature being the minimizing player. Formally, \textit{policy of nature} refers to specific collection of time-dependent transition matrices $\tau = (P^{a}_t)_{a \in \mathcal{A}, t \in \mathcal{T}}$ chosen by nature, and the set of admissible policies of nature is $\mathcal{T} := (\otimes_{a \in \mathcal{A}} \mathcal{P}^{a}_t)^N$. The maximum lower bound can be given by,
+\begin{eqnarray}
+\phi_N(\Pi, \mathcal{T}) &:=& \max_{\pi \in \Pi} \min_{\tau \in \mathcal{T}} R_N(\pi, \tau)
+\end{eqnarray}
+
+\section{Robust Finite Horizon Dynamic programming} \label{section:robust-dynamic-programming}
+
+For a given state $i \in \mathcal{X}$, action $a \in \mathcal{A}$ and $P^{a}_t \in \mathcal{P}^{a}_t$, we denote by $p^{a}_{i,t}$ the next-state distribution drawn from $P^{a}_t$ corresponding to state $i \in \mathcal{X}$, the $i$-th row of the matrix. Furthermore, we define $\mathcal{P}^{a}_{i,t}$ as the projection of the set $\mathcal{P}^{a}_{t}$ onto the set of $p^{a}_{i,t}$ variables. Using the robust dynamic programming theorem from \cite{nilim2003robustness}, we can show that perfect duality holds, i.e.,
+\begin{eqnarray}
+\phi_N(\Pi, \mathcal{T}) = \max_{\pi \in \Pi} \min_{\tau \in \mathcal{T}} R_N(\pi, \tau) = \min_{\tau \in \mathcal{T}} \max_{\pi \in \Pi} R_N(\pi, \tau) = \psi_N(\Pi, \mathcal{T})
+\end{eqnarray}
+The problem can be solved via recursion. The worst case optimal value function in state $i$ at time $t$, $v_t(i)$ is given by, 
+\begin{eqnarray}
+v_t(i) &=& \max_{a \in \mathcal{A}} \bigg(r_t(i,a) + \sigma_{\mathcal{P}^{a}_{i,t}}(v_{t+1})\bigg), i \in \mathcal{X}, t \in T
+\end{eqnarray}
+where, $\sigma_{\mathcal{P}(v)} = \inf\{p^Tv : p \in \mathcal{P}\}$. It should be noted in that solving $\sigma_{\mathcal{P}(v)} = \inf\{p^Tv : p \in \mathcal{P}\}$ is the inner problem in every step of the above recursion. A corresponding optimal driver policy $\pi^* = (\textbf{a}^*_0, ..., \textbf{a}^*_{N-1})$ is obtained by,
+\begin{eqnarray}
+\textbf{a}^*_t(i) &=& \arg \max_{a \in \mathcal{A}} \bigg\{r_t(i,a) + \sigma_{\mathcal{P}^{a}_{i,t}}(v_{t+1})\bigg\}, i \in \mathcal{X}
+\end{eqnarray}
+Furthermore, the effect of uncertainty on some other policy $\pi = (\textbf{a}_0, ..., \textbf{a}_{N-1})$ can be evaluated as follows,
+\begin{eqnarray}
+v^{\pi}_t(i) &=& r_t(i,\textbf{a}_t(i)) + \sigma_{\mathcal{P}^{\textbf{a}_t(i)}_{i,t}}(v^{\pi}_{t+1}), i \in \mathcal{X}
+\end{eqnarray}
+
+\section{Likelihood Model} \label{section:likelihood}
+We use a likelihood constraint to describe the uncertainty in the transition matrix for the action $a$ (when driver takes a passenger ride). Let $F^{a}_t$ denote the matrix of observed frequencies of transitions in our data (in time slice centered around time $t$), and let $f^{a}_{i,t}$ be its $i$-th row. We have $F^{a}_t \geq 0$ and $F^{a}_t\textbf{1} = \textbf{1}$, where \textbf{1} denotes the vector of ones. For simplicity, let us assume that $F^{a}_t > 0$, which is same as assuming $f^{a}_{i,t} > 0$, $f^{a}_{i,t} \in \textbf{R}^n_+$ and $(f^{a}_{i,t})^T\textbf{1} = 1$. To simplify the notation in this section, we shall drop the subscript $t$ denoting the time slice as we estimate the likelihood models independently for each time slice. Furthermore, we shall also drop the superscript $a$ denoting action, because there is uncertainty associated with only one of the actions in our model i.e, driver taking a passenger ride. \hc{The other category of actions is `taking empty ride to some other state'. There is no uncertainty involved in the transition matrix coresponding to this action, as exactly one value in every row is exactly 1. Another type of action in flexible work schedule involves driver going offline in the system. Again, there is either no transition in this action, or taking a definite transition to home node of the driver.}Plug-in estimates for the transition matrix $P$ with uncertainty level $\beta$ is given by,
+\begin{eqnarray*}
+\bigg\{P \in \textbf{R}^{n \times n}: P \geq 0, P\textbf{1} = \textbf{1}, \sum_{i,j}F(i,j)\log P(i,j) \geq \beta \bigg\}
+\end{eqnarray*}
+where $\beta < \beta_{max} = \sum_{i,j}F(i,j)\log F(i,j)$. From \cite{lehmann2006testing}, for a $(1-U_L)$ level of confidence, $\beta$ is solution of the equation,
+\begin{eqnarray*}
+(1 - U_L) &=& F_{\mathcal{X}^{2}_{n(n-1)}}(2(\beta_{max} - \beta))
+\end{eqnarray*}
+where $F_{\mathcal{X}^{2}_{d}}$ is the cumulative density function of the $\mathcal{X}^2$-distribution with $d$ degrees of freedom. In the inner problem, we only need to work with uncertainty on each row $p_{i}$. Due to separable nature of the log-likelihood function, the projection of the above set onto the $p_{i}$ variables of the matrix $P$ can be given as,
+\begin{eqnarray*}
+\mathcal{P}_{i}(\beta_i) &=& \bigg\{p \in \Delta^n: \sum_{j}f_{i}(j)\log p_{i}(j) \geq \beta_i \bigg\}
+\end{eqnarray*}
+where,
+\begin{eqnarray*}
+\beta_i &=& \beta - \sum_{k \neq i} \sum_{j} F(k,j) \log F(k,j). \\
+\Delta^n &=& \{p \in \textbf{R}^n_+ : p^T\textbf{1} = 1\}
+\end{eqnarray*}
+In the following section, as we deal with each row of the matrix separately, we drop the subscript $i$ in the observed frequencies $f_i$ and in the lower bound $\beta_i$. Hence $\beta_{max} = \sum_{j} f(j)\log f(j)$. We assume that $\beta < \beta_{max}$ along with $f > 0$. \hc{Unsure what happens if we relax this constraint to $f \geq 0$, which would be more appropriate in our cases, as during some time slices there no transitions to/from airport zone of the city.} Without loss of generality, we can also assume that $v \in \textbf{R}^n_+$.

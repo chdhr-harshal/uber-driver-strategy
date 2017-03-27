@@ -1,0 +1,154 @@
+%!TEX root = uber-driver-strategy.tex
+\section{Bisection Algorithm} \label{section:bisection}
+
+The inner problem of the robust dynamic program is as follows: 
+\begin{eqnarray*}
+\sigma^* &:=& \min_p p^Tv : p \in \Delta^n, \sum_j f(j)\log p(j) \geq \beta
+\end{eqnarray*}
+The Lagrangian $\textbf{L}: \textbf{R}^n \times \textbf{R}^n \times \textbf{R} \times \textbf{R} \rightarrow \textbf{R}$ associated with the inner optimization problem is 
+\begin{eqnarray*}
+\textbf{L}(v, \zeta, \mu, \lambda) = p^Tv - \zeta^Tp + \mu(1 - p^T\textbf{1}) + \lambda(\beta - f^T\log p)
+\end{eqnarray*}
+where $\zeta, \mu,$ and $\lambda$ are Lagrange multipliers. The dual function $d: \textbf{R}^n \times \textbf{R} \times \textbf{R} \rightarrow \textbf{R}$ is the minimum value of the Lagrangian over $p$ for $\zeta \in \textbf{R}^n, \mu \in \textbf{R},$ and $\lambda \in \textbf{R}$,
+\begin{eqnarray*}
+d(\zeta, \mu, \lambda) &=& \inf_p \textbf{L}(v, \zeta, \mu, \lambda) \\
+&=& \inf_p(p^Tv - \zeta^Tp + \mu(1 - p^T\textbf{1}) + \lambda(\beta - f^T\log p))
+\end{eqnarray*}
+The optimal $p^*$ minimizing the above dual function is obtained by solving $\frac{\partial \textbf{L}}{\partial p} = 0$, which gives us,
+\begin{eqnarray*}
+p^*(i) &=& \frac{\lambda f(i)}{v(i) - \zeta(i) - \mu}
+\end{eqnarray*}
+Plugging in the value of $p^*(i)$ into the dual function $d$, after some simplification, gives us the dual problem,
+\begin{eqnarray*}
+\bar{\sigma} &:=& \max_{\zeta, \mu, \lambda} \lambda(1 + \beta) + \mu - \lambda \sum_{j}f(j) \log\bigg(\frac{\lambda f(j)}{v(j) - \zeta(j) - \mu}\bigg) : \lambda \geq 0, \zeta \geq 0, v \geq \zeta + \mu\textbf{1} 
+\end{eqnarray*}
+As the above problem is concave, has a feasible set with non-empty interior (checked by plotting), there is no duality gap, that is $\sigma^* = \bar{\sigma}$. \hc{Previous statement needs clarification. The problem is upper convex, i.e., concave, not convex. Not sure how to argue the no duality gap}. Moreover, by a monotonicity argument ($\zeta$ increasing causes the function value to decrease monotonically), we can conclude that $\zeta$ is zero. Thus, the last constraint of the dual problem can be expressed as $\mu \leq v_{min} := \min_j v(j)$. Hence, we get,
+\begin{eqnarray}
+\sigma^* &=& \max_{\lambda, \mu} h(\lambda, \mu) \nonumber \\
+\textrm{where,} \nonumber \\
+h(\lambda, \mu) &:=& \begin{cases}
+					 \lambda(1+\beta) + \mu - \lambda \sum_{j}f(j) \log\bigg(\frac{\lambda f(j)}{v(j) - \mu}\bigg), &\text{if } \lambda > 0, \mu < v_{min}, \\
+					 -\infty, &\text{otherwise}
+				     \end{cases}
+\end{eqnarray}
+The gradient of $h$ is given by, 
+\begin{eqnarray}
+\frac{\partial h(\lambda, \mu)}{\partial \lambda} &=& \beta - \sum_{j}f(j) \log\bigg(\frac{\lambda f(j)}{v(j) - \mu}\bigg) \\
+\frac{\partial h(\lambda, \mu)}{\partial \mu} &=& 1 - \lambda \sum_{j} \bigg(\frac{f(j)}{v(j) - \mu}\bigg)
+\end{eqnarray}
+From (3), we obtain the optimal value of $\lambda$ for a fixed value of $\mu$, $\lambda(\mu)$ given by,
+\begin{eqnarray*}
+\lambda(\mu) &=& \bigg(\sum_{j}\frac{f(j)}{v(j) - \mu}\bigg)^{-1}
+\end{eqnarray*}
+which further reduces the problem to a 1-dimensional optimization problem,
+\begin{eqnarray*}
+\sigma^* &=& \max_{\mu < v_{min}} \sigma(\mu) \\
+\textrm{where, } \\
+\sigma(\mu) &=& h(\lambda(\mu), \mu)
+\end{eqnarray*}
+$\sigma(\mu)$ is a concave function. Now, we may use a bisection algorithm to maximise this function.
+
+To initialize the bisection algorithm, we need upper and lower bounds $\mu_+$ and $\mu_-$ on a minimizer of $\sigma$. When $\mu \rightarrow v_{min}, \sigma(\mu) \rightarrow v_{min}$ and $\sigma^{'}(\mu) \rightarrow -\infty$ \hc{To be proved analytically, verified by graphing}. Thus, we may set upper bound $\mu_+ = v_{min}$. The lower bound $\mu_-$ must be chosen such that $\sigma^{'}(\mu_-) > 0$.
+\begin{eqnarray*}
+\sigma^{'}(\mu) &=& \frac{\partial h}{\partial \mu} (\lambda(\mu), \mu) + \frac{\partial h}{\partial \lambda} (\lambda(\mu), \mu) \frac{\partial \lambda(\mu)}{\partial \mu}
+\end{eqnarray*}
+By construction of $\lambda(\mu)$, the first term of the above derivative is zero. Furthermore, $\frac{\partial \lambda(\mu)}{\partial \mu} < 0$. Hence, we need $\mu$ such that $\frac{\partial h}{\partial \lambda} (\lambda(\mu), \mu) < 0$. Using the bounds on $\lambda(\mu)$, $v_{min} - \mu \leq \lambda(\mu) \leq v_{max} - \mu$, we can show that,
+\begin{eqnarray*}
+\frac{\partial h}{\partial \lambda} (\lambda(\mu), \mu) &=& \beta - \sum_{j}f(j) \log\bigg(\frac{\lambda(\mu) f(j)}{v(j) - \mu}\bigg) \\
+&=& \beta - \sum_{j}f(j)\log f(j) - \sum_{j}f(j)\log\bigg(\frac{\lambda(\mu)}{v(j) - \mu}\bigg) \\
+&=& \beta - \beta_{max} - \sum_{j}f(j)\log\bigg(\frac{\lambda(\mu)}{v(j) - \mu}\bigg) \textrm{(Need to verify this step)}\\
+&\leq& \beta - \beta_{max} - \log\bigg(\sum_{j}\frac{f(j)\lambda(\mu)}{v(j) - \mu}\bigg) \\
+&\leq& \beta - \beta_{max} - \log\bigg(\sum_{j}\frac{\lambda(\mu)}{v(j) - \mu}\bigg) \\
+&\leq& \beta - \beta_{max} - \log\bigg(\sum_{j}\frac{v_{min} - \mu}{v(j) - \mu}\bigg) \\
+&\leq& \beta - \beta_{max} - \log\bigg(\sum_{j}\frac{v_{min} - \mu}{v_{max} - \mu}\bigg) \\
+&\leq& \beta - \beta_{max} - \log\bigg(n \times \frac{v_{min} - \mu}{v_{max} - \mu}\bigg) \\
+&<& \beta - \beta_{max} - \log\bigg(\frac{v_{min} - \mu}{v_{max} - \mu}\bigg) \textrm{(n $>$ 1)}\\
+\end{eqnarray*}
+Therefore, the sufficient condition is,
+\begin{eqnarray*}
+0 &>& \beta - \beta_{max} - \log\bigg(\frac{v_{min} - \mu}{v_{max} - \mu}\bigg) \\
+\log\bigg(\frac{v_{min} - \mu}{v_{max} - \mu}\bigg) &>& \beta - \beta_{max} \\
+\bigg(\frac{v_{min} - \mu}{v_{max} - \mu}\bigg) &>& e^{\beta - \beta_{max}} \\
+(v_{min} - \mu) &>& e^{\beta - \beta_{max}}(v_{max} - \mu) \\
+v_{min} - e^{\beta - \beta_{max}}v_{max} &>& \mu(1 - e^{\beta - \beta_{max}}) \\
+\end{eqnarray*}
+Hence,
+\begin{eqnarray*}
+\mu_{-}^0 := \frac{v_{min} - e^{\beta - \beta_{max}}v_{max}}{1 - e^{\beta - \beta_{max}}} &>& \mu
+\end{eqnarray*}
+By construction, the interval [$\mu_-^0, v_{min}$) is guaranteed to contain the global maximiser of $\sigma$ over $(-\infty, v_{min})$. The bisection algorithm is as follows:
+% \begin{enumerate}
+% 	\item Set $\mu_+ = v_{min}$ and $\mu_- = \mu_-^0$. Let $\delta > 0$.
+% 	\item While \hc{Fill termination condition}, repeat
+% 	\begin{enumerate}
+% 		\item Set $\mu = (\mu_+ + \mu_-)/2$.
+% 		\item If $\sigma^{'}(\mu) > 0$, set $\mu_- = \mu$, otherwise $\mu_+ = \mu$.
+% 		\item go to 2a.
+% 	\end{enumerate}
+% \end{enumerate}
+\begin{enumerate}
+	\item Set $\mu_+ = v_{min}$ and $\mu_- = \mu_-^0$. Let $k=1, \mu_1 = (\mu_+ + \mu_-)/2$.
+	\item While $k \leq N$:
+	\begin{enumerate}
+		\item If $\sigma^{'}(\mu_1) > 0$, set $\mu_- = \mu_1$, if $\sigma^{'}(\mu_1) < 0$ then $\mu_+ = \mu_1$, else break
+		\item $k = k + 1$, 
+		\item $\mu_{k} = (\mu_+ + \mu_-)/2$
+	\end{enumerate}
+	\item $\hat{\mu}^* = \arg \max_{i} \{\sigma(\mu_i)\}$
+\end{enumerate}
+\textbf{Lemma}: After $N \approx \log_2(V/\delta)$ where $V = \max\big(\sigma^* - \sigma(\mu_+), \sigma^* - \sigma(\mu_-)\big)$, the bisection algorithm provides optimal solution to the inner problem within an accuracy $\delta > 0$ i.e., $\sigma^* - \sigma(\hat{\mu}^*) \leq \delta$ which we call as the $\delta$-solution. \\ \\
+\textbf{Proof}: Let the interval $[\mu_-,\mu_+]$ from step 1 of the bisection algorithm be denoted by $G$. At each iteration, the length of the interval that contains the global maximiser of $\sigma$ is exactly halved. Hence, let $[\mu_{N-}, \mu_{N+}]$ be the corresponding interval after $N$ iterations of the bisection algorithm. Length of the interval $G_N$ is $2^{-N}$ times the length of $G$. Using the bisection algorithm, we know that,
+\begin{eqnarray*}
+\forall \mu: \mu \in G\setminus G_N \rightarrow \sigma(\mu) \leq \sigma(\hat{\mu}^*) 
+\end{eqnarray*}
+Let $2^{-N} < \alpha < 1$. $\alpha$-contraction of $G$ to $\mu^*$ is the segment given by points,
+\begin{eqnarray*}
+G^{\alpha} = (1 - \alpha)\mu^* + \alpha G = \big\{ (1-\alpha)\mu^* + \alpha z \big| z \in G \big\}
+\end{eqnarray*}
+Since, $\alpha > 2^{-N}$, we know that length of $G^{\alpha} > G_N$, in fact, length of $G^{\alpha}$ is $\alpha(\mu_+ - \mu_-)$. Hence, $\exists y \in G^{\alpha}$ such that $y \notin G_N$. Furthermore, $\exists z \in G$ such that $y = (1 - \alpha)\mu^* + \alpha z$. By the concavity of $\sigma(\mu)$ function,
+\begin{eqnarray*}
+\sigma(y) &\geq& (1 - \alpha)\sigma(\mu^*) + \alpha \sigma(z) \\
+\sigma(\mu^*) - \sigma(y) &\leq& \alpha(\sigma(z) - \sigma(\mu^*)) \\
+&\leq& \alpha V 
+\end{eqnarray*}
+Hence, $y$ is an $\alpha V$-solution to our problem.
+\begin{eqnarray*}
+\sigma(\hat{\mu}^*) &\geq& \sigma(y) \\
+\sigma(\mu^*) - \sigma(\hat{\mu}^*) &\leq& \sigma(\mu^*) - \sigma(y) \leq \alpha V
+\end{eqnarray*}
+Hence, sufficient condition for obtaining a $\delta$-solution is, $\alpha V \leq \delta$ i.e., $N \geq \log_2 (V / \delta)$. However, $V$ is unknown by itself. But, the objective function of the inner problem, $p^Tv$, is bounded from above by $v_{max}$. Therefore, the lemma still holds for $V = \max\big(v_{max} - \sigma(\mu_+), v_{max} - \sigma(\mu_-)\big)$.
+\section{$\epsilon$-suboptimal Algorithm}
+
+Each step of the robust dynamic programming algorithm from Section \ref{section:robust-dynamic-programming} involves finding the solution of an optimization problem, referred to as the `inner problem', of the form,
+\begin{eqnarray*}
+\sigma_{\mathcal{P}}(v) &:=& \min_{p \in \mathcal{P}} p^Tv,
+\end{eqnarray*}
+where $p$ corresponds to particular row of a transition matrix, $\mathcal{P} = \mathcal{P}^{a}_{i,t}$ is the set that describes the uncertainty of this row, and $v$ contains the elements of the value function at this step. Section \ref{section:likelihood} provides a criterion for the choice of uncertainty model that represents accurately the statistical uncertainty on the transition matrices. Section \ref{section:bisection} describes a bisection algorithm that provides an optimal solution to the inner problem within an accuracy $\delta > 0$. \hc{This should be ensured by the stopping criterion of the algorithm}. Thus, for a given $v \in \textbf{R}^n_+$ and $\delta > 0$, the bisection algorithm gives output of the form,
+\begin{eqnarray*}
+\hat{\sigma}_{\mathcal{P}}(v) &=& \sigma_{\mathcal{P}}(v) - \delta_{\mathcal{P}}(v) \textrm{ where } 0 \leq \delta_{\mathcal{P}}(v) \leq \delta
+\end{eqnarray*}
+An $\epsilon$-suboptimal policy, $\hat{\pi}$ is a policy such that the worst-case expected total reward under policy $\hat{\pi}$, namely, $\phi_N(\hat{\pi},\mathcal{T}) = \min_{\tau \in \mathcal{T}}R_N(\hat{\pi}, \tau)$, satisfies 
+\begin{eqnarray*}
+\phi_N(\hat{\pi},\mathcal{T}) \leq \phi_N(\Pi,\mathcal{T}) \leq \phi_N(\hat{\pi},\mathcal{T}) + \epsilon
+\end{eqnarray*}
+Here, $\epsilon > 0$ is given. Using the uncertainty model from Section \ref{section:likelihood}, we solve the bisection algorithm with an accuracy $\delta := \epsilon /N$. This gives us the robust finite horizon dynamic programming algorithm as follows,
+
+\begin{enumerate}
+	\item Set $\epsilon > 0$. Initialize the value function to its terminal value $\hat{v}_N = r_N$
+	\item Repeat until t=0:
+	\begin{enumerate}
+		\item For every state $i \in \mathcal{X}$ and action $a \in \mathcal{A}$, compute, using the bisection algorithm described in the previous section, a value $\hat{\sigma}^{a}_i$ such that,
+		\begin{eqnarray*}
+		\hat{\sigma}^{a}_i \leq \sigma_{\mathcal{P}^{a}_{i,t}}(v_{t}) \leq \hat{\sigma}^{a}_i + \frac{\epsilon}{N}
+		\end{eqnarray*}
+		\item Update the value function by,
+		\begin{eqnarray*}
+		v_{t-1}(i) &=& \max_{a \in \mathcal{A}} \bigg(r_{t-1}(i,a) + \hat{\sigma}^{a}_i\bigg), i \in \mathcal{X}
+		\end{eqnarray*}
+		\item t = t - 1
+	\end{enumerate}
+	\item For every $i \in \mathcal{X}$ and $t \in T$, set $\pi^{\epsilon} = (\textbf{a}^{\epsilon}_0, ..., \textbf{a}^{\epsilon}_{N-1})$, where
+	\begin{eqnarray*}
+	\textbf{a}^{\epsilon}_t &=& \arg \min_{a \in \mathcal{A}} \big\{r_{t-1}(i,a) + \hat{\sigma}^{a}_i\big\}, i \in \mathcal{X}, a \in \mathcal{A}
+	\end{eqnarray*}
+\end{enumerate}
