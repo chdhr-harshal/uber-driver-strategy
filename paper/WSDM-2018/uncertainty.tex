@@ -1,0 +1,147 @@
+%!TEX root = main.tex
+
+\section{Sensitivity of Strategies to Uncertainty in MDP parameters}
+\label{sec:sensitivity_of_strategies}
+
+In the previous section we define four strategies for taxi drivers, each providing a driver with a contingency plan suggesting an optimal action to take based on location and time. This contingency plan however relies on transition matrices $\matr{F}$ that are empirically observed using historical data. The empirically observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic program solution to the nominal problem described above is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\vec{f}_{i}^{t}.\vec{v}_{i}^{t,b}$ corresponding to the \textit{busy wait} action affects the optimal action choice in every strategy, due to the uncertainty in the transition matrix row vector $\vec{f}_{i}^{t}$.
+
+\subsection{Likelihood model}
+\label{sec:likelihood_model}
+
+In this section, for brevity of notation, we drop the superscript $t$ from transition matrices. Thus, empirically observed transition matrix is denoted by $\matr{F}$. If $\matr{P}$ is the underlying true transition matrix, the ``plug-in'' estimate $\matr{\hat{P}} = \matr{F}$ is the solution to the maximum likelihood problem
+
+\begin{eqnarray}
+\max_\matr{P} L(\matr{P}) &:=& \sum_{i,j}f_{ij} \log{p_{ij}} : \matr{P}\geq 0, \matr{P}\vec{1} = \vec{1} 
+\end{eqnarray}
+
+The optimal log-likelihood is $\beta_{\max} = \sum_{i,j}f_{ij}\log{f_{ij}}$.
+A classical description of uncertainty in a maximum-likelihood setting is via the likelihood region (\cite{lehmann2006theory}, \cite{poor2013introduction})
+
+\begin{eqnarray}
+\mathcal{P(\beta)} &:=& \bigg\{\matr{P} \in \mathbb{R}^{n \times n}: \matr{P} \geq 0, \matr{P}\vec{1}=\vec{1}, \sum_{i,j}f_{ij}\log{p_{ij}} \geq \beta\bigg\} \label{eq:likelihood_region}
+\end{eqnarray}
+where $\beta < \beta_{\max}$ is a user provided number, which represents the uncertainty level. In practice, a user can choose uncertainty level and $\beta$ using the information provided in the Appendix. 
+
+We only need to work with uncertainty on each row $\vec{p}_i$, that is projection of the set (\ref{eq:likelihood_region}). Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\vec{p}_i$ variables of the matrix $\matr{P}$ can be given as,
+
+\begin{eqnarray}
+\mathcal{P}_i(\beta_i) &:=& \bigg\{p \in \Delta^n : \sum_{j}f_{ij}\log{p_{ij}} \geq \beta_i \bigg\}
+\end{eqnarray}
+where,
+\begin{eqnarray}
+\beta_i &=& \beta - \sum_{k \neq i}\sum_{j}f_{kj}\log{f_{kj}}
+\end{eqnarray}
+
+\subsection{The robust control problem}
+
+In this section, we formally define the uncertainty model, wherein every empirically observed time-varying transition matrix $\matr{F}^t$ has an associated uncertainty level of $\beta$, and a corresponding likelihood region denoted by $\mathcal{P}^t$. Given this uncertainty in the transition matrices, we are interested in maximising the worst-case total expected rewards. We define \textit{policy of nature} as a specific collection of time-varying transition matrices $\matr{P} = [\matr{P}^t]$, the set of admissible policies of nature is $\mathcal{T} := (\mathcal{P}^t)^N$. Using these notations, we define the robust control problem as follows,
+
+\begin{eqnarray}
+\phi^N(\Pi, \mathcal{T}, \matr{T}, \matr{R}) &:=& \max_{\pi \in \Pi} \min_{\matr{P} \in \mathcal{T}} R^N(\pi, \matr{P}, \matr{T}, \matr{R})
+\end{eqnarray}
+
+As the uncertainty in transition matrix only affects the expected total reward of \textit{busy wait} action, in our most general \textit{relocation with flexible schedule} strategy, this robust control problem can be solved via the recursion,
+
+\begin{eqnarray}
+v_{i}^{t,b} &=& \max
+    \begin{cases}
+    \sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
+    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
+    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    \end{cases}
+\label{eq:robust_dynamic_program}
+\end{eqnarray}
+
+where, $\vec{v}_{i}^{t,b}$ is the \textit{induced total reward vector} and 
+
+\begin{eqnarray*}
+\sigma_{\mathcal{P}}(\vec{v}) &=& \inf\big\{ \transpose{p}\vec{v}: \vec{p} \in \mathcal{P} \big\}
+\end{eqnarray*}
+
+It should be noted that solving $\sigma_{\mathcal{P}}(\vec{v})$ is the inner problem in every step of the above recursion. A corresponding optimal in expectation driver policy is,
+
+\begin{eqnarray}
+{\textbf{a}_{i}^{t,b}}^* &=& \textrm{arg}\max_{a \in \mathcal{A}}
+    \begin{cases}
+    \sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
+    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
+    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    \end{cases}
+\end{eqnarray}
+
+Furthermore, the effect of uncertainty on some other policy, apart from the optimal in expecatation policy, can be evaluated as well using (\ref{eq:robust_dynamic_program}).
+
+\subsection{The bisection algorithm}
+
+Each step of the dynamic program involves the solution of an optimization problem, referred to as the ``inner problem'', of the form
+
+\begin{eqnarray}
+\sigma_{\mathcal{P}}(\vec{v}) &=& \min_{\vec{p} \in \mathcal{P}} \transpose{p}\vec{v}
+\label{eq:inner_problem}
+\end{eqnarray}
+
+where $\vec{p}$ corresponds to a particular row of a specific transtition matrix, $\mathcal{P} = \mathcal{P}^t$ is the set that describes uncertainty on this row, and $\vec{v}$ contains the value function at some given stage. 
+
+% The complexity of the sets $\mathcal{P}^t$ is an important component in t{}he complexity of the robust dynamic programming algorithm. 
+
+% As explained by \cite{nilim2004robustness}, we can safely replace $\mathcal{P}^t$ by its convex hull, so that convexity of the sets $\mathcal{P}^t$ is not required; the algorithm only requires the knowledge of their convex hulls. \hc{I have low confidence in my understanding of this concept in the above sentence.}
+
+In the Appendix, we provide a bisection algorithm that can solve the inner problem with an accuracy $\delta > 0$. Thus, for a given induced total rewards vector $\vec{v} \in \mathbb{R}^n_+$, the bisection algorithm gives the output of the form,
+
+\begin{eqnarray}
+\hat{\sigma}_{\mathcal{P}} (\vec{v}) &=& \sigma_{\mathcal{P}} (\vec{v}) - \delta_{\mathcal{P}}(\vec{v})
+\end{eqnarray} 
+where $0 \leq \delta_{\mathcal{P}}(\vec{v}) \leq \delta$.
+
+\subsection{\texorpdfstring{$\epsilon$}{epsilon}-suboptimal algorithm}
+
+An $\epsilon$-suboptimal policy, $\pi^\epsilon$ is a policy such that the worst-case expected total reward under it, i.e., 
+\begin{eqnarray*}
+\phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) = \min_{\matr{P} \in \mathcal{T}} R^N(\pi^\epsilon, \matr{P}, \matr{T}, \matr{R})
+\end{eqnarray*}
+
+satisfies the condition,
+
+\begin{eqnarray}
+\phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) \leq \phi^N(\Pi, \mathcal{T}, \matr{T}, \matr{R}) \leq \phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) + \epsilon
+\end{eqnarray}
+
+Here, $\epsilon > 0$ is user input to the algorithm. Using the uncertainty model from section (\ref{sec:likelihood_model}), we solve the bisection algorithm with an accuracy $\delta = \epsilon / N$. This gives us the robust finite horizon dynamic programming algorithm. The algorithm for the most general \textit{relocation with flexible schedule} strategy is shown below. However, it can be adapted for any of the other strategies by using the appropriate value function.
+
+\begin{enumerate}
+	\item Set $\epsilon > 0$. Initialize the value function to its terminal value $v_i^N = r_i^N$, $t=N-1$ and $b=B-1$. \\
+	\item Repeat until $t=0$: \\
+		\begin{enumerate}
+			\item Repeat until $b=0$: \\	
+		\begin{enumerate}
+			\item For every state $i \in \mathcal{X}$, use the bisection algorith algorithm to compute a value $\hat{\sigma}_i^t$ such that,
+			\begin{eqnarray*}
+				\hat{\sigma}_i^{t,b} \leq \sigma_{\mathcal{P}_i^t}(\vec{v}_i^{t,b}) \leq \hat{\sigma}_i^{t,b} + \frac{\epsilon}{N}
+			\end{eqnarray*}
+			\item Update the value function by,
+			\begin{eqnarray*}
+			{v_{i}^{t,b}}^\epsilon &=& \max
+    			\begin{cases}
+    			\sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
+    			r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
+    			\max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    			\end{cases}
+			\end{eqnarray*}
+			\item b = b - 1 \\
+		\end{enumerate}
+		\item t = t - 1 \\
+		\end{enumerate}
+	\item For every $i \in \mathcal{X}, t \leq N, b \leq B$,
+	\begin{eqnarray*}
+	{\textbf{a}_{i}^{t,b}}^\epsilon &=& \textrm{arg}\max_{a \in \mathcal{A}}
+    	\begin{cases}
+    	\sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
+    	r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
+    	\max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    	\end{cases}
+	\end{eqnarray*}
+\end{enumerate}
+
+
+
+

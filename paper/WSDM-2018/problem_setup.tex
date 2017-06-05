@@ -1,0 +1,32 @@
+%!TEX root = main.tex
+
+\section{Problem Setup}
+\label{sec:problem_setup}
+
+In this section, we describe the basics of our problem setup and provide the necessary notations.
+
+\subsection{Actions}
+
+Consider a taxi driver operating over a finite time duration of $N$ time units, out of which he is willing to work for a maximum of $B$ time units. Whenever idle, the driver is present in a zone $i \in \mathcal{X}$ of a city, where $n = |\mathcal{X}|$ is finite. The driver starts in a given initial home zone $i_0$. At each stage, the driver chooses an action $a$ from a finite set of allowable actions, $\mathcal{A} =\{a_0, a_1, a_2\}$. The three possible actions are defined below,
+
+\begin{itemize}
+    \item {\getpassenger} $a_0$: In this action, an idle taxi driver waits in his current city zone waiting for a passenger .
+    \item {\gohome} $a_1$: In this action, an idle taxi driver logs out of the system i.e., Uber driver app, returns to home zone and waits in it .
+    \item {\relocate} $a_2$: In this action, an idle taxi driver travels to some other city zone suggested by our strategy in search of a passenger .
+\end{itemize}
+
+The frequency of passenger destinations is denoted by the empirical transition matrix $\matr{F}$, with each element $f_{ij}$ denoting the probability of a passenger in zone $i$ who wish to travel to zone $j$, whereas $f_{ii}$ element denotes the probability of a driver failing to pickup any passenger at a given time and thereby staying in the same zone. We assume that the empirically observed transition matrix $\matr{F}$ changes over the entire duration of the finite horizon, and hence we use $\matr{F}^{t}$ to denote the matrix at a given time $t$. The travel time duration matrix is denoted by $\matr{T}$, with its each element $\tau_{ij}$ denoting the journey durations from zone $i$ to $j$. Finally, a rewards matrix $\matr{R}$ has elements denoting the rewards for a taxi driver (his share of earnings from passenger payment minus sundry expenses like gas, vehicle depreciation, etc.). As with transition matrix, $\matr{T}$ and $\matr{R}$ also vary over the finite horizon, and we use superscripted time notation to refer to their particular time instance. Obviously, each of the above described matrices are $n \times n$ in dimensions. We assume that $\matr{R} > 0$ and $\matr{T} > 0$. In particular, we also assign $\forall i, \tau_{ii}=1, r_{ii}=0$, denoting the action of waiting in the same zone for one time unit. We denote by $\pi =(\textbf{a}^0, \dots, \textbf{a}^{N-1})$ a generic driver policy (ordered set of actions taken at each time step, $0 \dots N-1$), while $\textbf{a}_{i}^{t}$ denotes the action chosen by driver when inside zone $i$ at time $t$. The corresponding policy space is denoted by $\Pi = \mathcal{A}^{nN}$. In the strategy section of the paper, we define by $r_{i}^{t}(a)$ the immediate expected reward of choosing action $a$ inside zone $i$ at time $t$, and $r^{N}$, the reward of returning back to home zone $i_0$ at the end of finite horizon.
+
+For given matrices $\matr{F}, \matr{T}$ and $\matr{R}$, the finite-horizon nominal problem is defined as,
+
+\begin{eqnarray}
+\phi^{N}(\Pi, \matr{F}, \matr{T}, \matr{R}) := \max_{\pi \in \Pi} R^{N}(\pi, \matr{F}, \matr{T}, \matr{R})
+\end{eqnarray}
+
+where $R^{N}(\pi, \matr{F}, \matr{T}, \matr{R})$ denotes the \textit{expected total net rewards} under the driver strategy $\pi$:
+
+\begin{eqnarray}
+R^{N}(\pi, \matr{F}, \matr{T}, \matr{R}) := \mathbf{E}\Bigg(\sum_{t=0}^{N-1}r_{i_t}^{t}(\textbf{a}_{i_t}^{t}) + r^{N}_{i_N}\Bigg)
+\end{eqnarray}
+
+When the transition matrices, the duration matrices and the reward matrices are exactly known, the corresponding nominal problem can be solved via a dynamic programming algorithm in the finite horizon case. However, before we can do that, let us define various driver strategies and the expected net rewards for actions corresponding to each strategy.
