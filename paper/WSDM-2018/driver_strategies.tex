@@ -13,110 +13,75 @@ driver strategies.
     \item {\earningsgoal}
 \end{enumerate}
 
-In each of the strategy, a driver has different sets of actions available to choose from at any stage. Our goal is to compare the optimal policies for each of the above strategies, allowing us to devise an optimal in expectation strategy for a driver.
+In each of the above strategy, a driver has different sets of actions available to choose from at any stage. Our goal is to compare the optimal policies for each of the strategies, allowing us to devise an overall optimal in expectation strategy for a driver.
 
 \subsection{\naive}
-In the naive strategy, a driver essentially performs a random walk over the city. At the end of every passenger ride, the driver waits in the current zone for next passenger pickup. Hence, the set of allowable actions is single element set with \textit{busy wait} action i.e., $\mathcal{A} = \{a_0\}$. Hence, the immediate expected reward is $r_{i}^{t}(a_0) = \vec{f}_{i}^{t} \bigcdot \vec{r}_{i}^{t}$, dot product of the $i$-th row vectors of $\matr{F}^{t}$ and $\matr{R}^{t}$ respectively. 
-
-We define an \textit{induced total reward vector}, $\vec{v}_i^{t}$ for a ride from zone $i$ which is the sum of total expected rewards of all zones a driver could reach at the end of the ride, weighted by the probability of reaching those zones. To construct the \textit{induced total reward vector}, we first define the \textit{destination time vector} as $\vec{t'} = t + [\vec{\tau}_i^t]$. Each element of the \textit{destination time vector}, $t'_j$ denotes the time at which the driver reaches zone $j$ given that the trip started from zone $i$ at time $t$. Hence, the \textit{induced total rewards vector} can be defined as $\vec{v}_{i}^{t} = [v_{j}^{t'_j}]$. Using this construct, we can express the total expected rewards for a driver in zone $i$ at time $t$ in recursive manner as follows,
-
+In the naive strategy, a driver performs a random walk over the city. At the end of every passenger ride, the driver waits in the current zone for next passenger pickup. Hence, the only allowable action is {\getpassenger}.
+\begin{equation}
+\actionsset = \{\getpassengeraction\}
+\end{equation}
+We can calculate cumulative earnings of a driver following a naive strategy at any stage as follows,
 \begin{eqnarray}
-v_{i}^{t} &=& r_{i}^{t}(a_0) + \vec{f}_{i}^{t} \bigcdot \vec{v}_{i}^{t} \nonumber \\
-&=& \vec{f}_{i}^{t} \bigcdot (\vec{r}_{i}^{t} + \vec{v}_{i}^{t})
+\label{eq:naive_strategy}
+\cumulativeearning{i}{t} &=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t}{\getpassengeraction})
 \end{eqnarray}
-
-Note that naive strategy accounts for an unsuccessful \textit{busy wait} where a driver fails to get a passenger in the current time unit as well.
+The naive strategy accounts for unsuccessful cases where a driver fails to get a passenger in the current time unit as well. It should be noted that, a driver in this strategy does not have flexibility to choose working times. Hence, $B=N$. This allows us to drop the superscript $b$ from Eq.(\ref{eq:naive_strategy}) without any loss of generality.
 
 \subsection{\relocation}
-In the relocation strategy, an idle taxi driver has two choices. 
+In the relocation strategy, an idle driver in zone $i$ has two choices viz., {\getpassenger} and {\relocate}. Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone. 
+\begin{equation}
+\actionsset =  \{\getpassengeraction\} \cup \{\relocateaction | \forall j \in \cityzones, j \neq i \}
+\end{equation}
+We can further restrict the number of {\relocate} actions by removing from consideration the zones where relocating causes a situation where $t \geq N$.
 
-\begin{enumerate}
-    \item \textit{Busy wait} for a passenger ride in the current zone ($a_0$).
-    \item Take an \textit{empty ride} to some other city zone suggested by our strategy in search of a passenger ($a_2$). Since, an empty ride could be taken to any other zone in the city, we denote the destination zone of the action by an extra argument. For example, $a_2(j)$ refers to taking an empty ride to zone $j$ where $j \neq i$.
-\end{enumerate}
-
-Hence, in the relocation strategy, the set of available actions for a driver $\mathcal{A}$ is a set of $n$ elements. Depending on the chosen action, the immediate expected reward is given by,
-
-\begin{enumerate}
-    \item $r_{i}^{t}(a_0) = \vec{f}_{i}^{t} \bigcdot \vec{r}_{i}^{t}$ \\
-    \item $r_{i}^{t}(a_2(j)) = r_{ij}^{t}$
-\end{enumerate}
-
-Similar to the naive strategy, we define the \textit{induced total reward vector}, $\vec{v}_i^{t}$ for each of the above actions. The taxi driver following relocation strategy chooses the action that maximises his rewards. This choice is expressed in recursive manner as follows,
-
+A driver following relocation strategy chooses the action that maximises {\totalexpectedearnings}. This choice is expressed in recursive manner as follows,
 \begin{eqnarray}
-v_{i}^{t} &=& \max
+\label{eq:relocation_strategy}
+\cumulativeearning{i}{t} &=& \max_{a \in \actionsset}
     \begin{cases}
-    r_{i}^{t}(a_0) + \vec{f}_{i}^{t}.\vec{v}_{i}^{t}, \\ \\
-    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_j}\bigg\}, j \neq i, t'_{j} \leq N
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t}{a}), \textrm{  if } a = \getpassengeraction\\ \\
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t'}\bigg\}, \textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
-
-Note that the second condition $t'_{j} \leq N$ ensures that a taxi driver does not take an empty ride to some other city zone if destination time overflows the finite horizon.
+While solving Eq.(\ref{eq:relocation_strategy}), we also get an optimal policy for relocation strategy by keeping track of optimal action choices. Similar to the {\naive}, the driver does not have flexibility to choose work timings, hence we drop the superscript $b$ from Eq.(\ref{eq:relocation_strategy}).
 
 \subsection{\flexible}
 
-In the flexible schedule strategy, along with the finite horizon of duration $N$ time units, we impose an additional budget constraint that the driver is willing to drive for only a maximum of $B$ time units within the finite horizon such that, $B \leq N$. The rationale behind this additional constraint is as follows. Consider an example of a typical taxi driver who desires to work for a maximum of 40 hours per week. It is a non-trivial problem to determine the optimal 40 hours he should work, due to varying demand and surge rates over the week. The flexible schedule strategy aims to figure out the optimal in expectation work schedule of 40 hours in a week of total 168 hours. In this strategy, we assume that a driver can log out of the system any time to return to home zone. Hence, an idle taxi driver has following set of available choices,
-
-\begin{itemize}
-    \item If driver is in home zone,
-    \begin{enumerate}
-        \item \textit{Busy wait} for a passenger ride in the home zone ($a_0$).
-        \item \textit{Idle wait} in the home zone ($a_1$). Idle waiting involves logging out of the system till a more optimal time to re-enter the system occurs.
-    \end{enumerate}
-    \item If driver is not in home zone,
-    \begin{enumerate}
-        \item \textit{Busy wait} for a passenger ride in the current zone ($a_0$).
-        \item Log out of the system, drive back to home zone to \textit{idle wait} over there ($a_1$).
-    \end{enumerate}
-\end{itemize}
-
-However, we can merge the above two situations into a single set of actions by accounting for the extra cost of an empty ride to home zone while calculating the rewards matrix seperately for the two actions. Hence, in the flexible schedule strategy, we define the set of available actions for a driver is $\mathcal{A} = \{a_0, a_1\}$. Depending on the chosen action, the immediate expected reward is given by,
-
-\begin{enumerate}
-    \item $r_{i}^{t}(a_0) = \vec{f}_{i}^{t} \bigcdot \vec{r}_{i}^{t}$ \\
-    \item $r_{i}^{t}(a_1) = r_{ij}^{t}$
-\end{enumerate}
-
-Again, similar to naive strategy, we define the \textit{induced total reward vector}, $\vec{v}_i^{t,b}$ for each of the above actions. It is worth noting that we also use the budget constraint in its construction. We do this using the textit{destination budget vector} as $\vec{b'} = b + [\tau_{i}^{t}]$. The taxi driver following this strategy chooses action that maximises his rewards. The choice is expressed in recursive manner as follows,
-
+In the flexible schedule strategy, a driver has flexibility to decided working times. As a result, we impose an additional constraint of a working time budget $B$ that a driver can split over a finite horizon of $N$ time units. Thus, this strategy aims to figure out an optimal in expectation work schedule for the driver. At any stage, a driver can log out of the on-demand ride service and return to home zone. Hence, the set of allowable actions for a driver contains 2 different actions, {\getpassenger} and {\gohome}. 
+\begin{equation}
+\actionsset = \{\getpassengeraction, \gohomeaction\}
+\end{equation}
+A driver following this strategy chooses action that maximises {\totalexpectedearnings}. This choice is expressed in recursive manner as follows,
 \begin{eqnarray}
-v_{i}^{t,b} &=& \max
+\label{eq:flexible_strategy}
+\cumulativeearning{i}{t,b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    r_{i}^{t}(a_0) + \vec{f}_{i}^{t}.\vec{v}_{i}^{t,b} \\ \\
-    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}}
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), \textrm{  if } a = \getpassengeraction\\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, \textrm{  if } a = \gohomeaction
     \end{cases}
 \end{eqnarray}
-
-Note that the \textit{induced total reward vector} is constructed in slightly different manner for the \textit{idle wait} action where $\vec{b'} = [b]$, because idle waiting does not consume budget time units for a driver.
+Similar to the {\relocation}, we can find an optimal in expectation work schedule by keeping track of optimal action choices while solving Eq.(\ref{eq:flexible_strategy}).
 
 \subsection{\relocationflexible}
 
-This is the most general strategy formed by combining the relocation as well as the flexible schedule strategy described in previous sections. In this strategy, a driver has complete freedom for choices regarding work schedule as well relocation to different zones using empty rides, in order to maximize total expected reward. Just like the flexible schedule strategy, a driver has a budget constraint of $B$ time units along with the finite horizon length of $N$ time units. An idle driver in zone $i$ following this strategy has folowing set of available choices,
+This is the most general strategy formed by combining the {\relocation} as well as the {\flexible} described earlier. In this strategy, a driver has complete freedom for choices regarding work schedule as well relocation to different zones, in order to maximize {\totalexpectedearnings}. Just like the {\flexible}, a driver has a budget constraint of $B$ time units to be consumed over a finite horizon $N$ time units. An idle driver in zone $i$ following this strategy has folowing set of available choices,
+\begin{equation}
+\actionsset =  \{\getpassengeraction, \gohomeaction\} \cup \{\relocateaction | \forall j \in \cityzones, j \neq i \}
+\end{equation}
+Similar to {\relocation}, we restrict the {\relocate} actions to ones which do not result in $t \geq N$ or $b \geq B$.
 
-\begin{enumerate}
-    \item \textit{Busy wait} for a passenger ride in the current zone ($a_0$).
-    \item \textit{Idle wait} in the home zone ($a_1$).
-    \item Take an \textit{empty ride} to some other city zone $j$ suggested by our strategy in search of a passenger ($a_2(j)$) where $j \neq i$. \\
-\end{enumerate}
-
-Hence, in this strategy, the set of available actions of an idle driver, $\mathcal{A}$ is a set of $n+1$ elements. Depending on the chosen action, the immediate expected reward is given by,
-
-\begin{enumerate}
-    \item $r_{i}^{t}(a_0) = \vec{f}_{i}^{t} \bigcdot \vec{r}_{i}^{t}$ \\
-    \item $r_{i}^{t}(a_1) = r_{ij}^{t}$ \\
-    \item $r_{i}^{t}(a_2(j)) = r_{ij}^{t}$
-\end{enumerate}
-
-Constructing the \textit{induced total reward vector} as described in previous strategies, the driver chooses the action that maximises expected total reward. The choice can be expressed as follows,
-
+A driver following the relocation with flexible schedule strategy chooses the action that maximises {\totalexpectedearnings}. This choice can be expressed as follows,
 \begin{eqnarray}
-v_{i}^{t,b} &=& \max
+\label{eq:relocationflexible_strategy}
+\cumulativeearning{i}{t,b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    r_{i}^{t}(a_0) + \vec{f}_{i}^{t}.\vec{v}_{i}^{t,b} \\ \\
-    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
-    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), \textrm{  if } a = \getpassengeraction\\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, \textrm{  if } a = \gohomeaction \\ \\
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\}, \textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
+As earlier, we can find an optimal in expectation policy by keeping track of optimal action choices while solving Eq.(\ref{eq:relocationflexible_strategy})
 
-Having defined the recursive relationships for all the aforementioned strategies, we can now use dynamic programming to find an optimal in expectation set of actions corresponding to each strategy.
+\subsection{\earningsgoal}
+In the fixed earnings goal strategy, a driver sets an earnings goal before logging in into the on-demand ride service and drives until fixed goal is reached.
+\todo[HC]{Write in this section how this strategy solution is already a part of the previous strategies already discussed.}

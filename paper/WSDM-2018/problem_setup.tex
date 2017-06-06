@@ -138,7 +138,7 @@ Using this formulation, for each of the driver actions, we can recursively expre
 	\begin{eqnarray}
 	\cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\getpassengeraction} + \empiricaltransitionmatrix_{i}^{t} \bigcdot \inducedearningvector{i}{t,b}{\getpassengeraction} \\
 	\nonumber\\
-	&=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \empiricaltransitionmatrix_{i}^{t} \bigcdot \inducedearningvector{i}{t,b}{\getpassengeraction})
+	&=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction})
 	\end{eqnarray}
 	where $\empiricaltransitionmatrix_{i}^{t}$ and $\rewardsmatrix_{i}^{t}$ denote the $i$-th rows of $\empiricaltransitionmatrix^{t}$ and $\rewardsmatrix^{t}$ respectively. \\
 
