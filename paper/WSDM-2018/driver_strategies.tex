@@ -3,15 +3,17 @@
 \section{Driver Strategies}
 \label{sec:driver_strategies}
 
-In this paper, we consider four kinds of taxi drivers:
+In this section, we discuss five kinds of on-demand ride service
+driver strategies.
 \begin{enumerate}
     \item {\naive} 
     \item {\relocation} 
     \item {\flexible} 
-    \item {\relocationflexible} 
+    \item {\relocationflexible}
+    \item {\earningsgoal}
 \end{enumerate}
 
-While modeling each of these strategies, we use a dynamic program construct to calculate the total expected rewards ($v_{i}^{t,b}$) for a driver in zone $i$ at time $t$ and $b$ budget time units consumed. We are interested in finding a set of time and location dependent actions for a driver that maximizes the $v_{i_0}^{N,B}$. Finally, a driver the budget constraint described in the problem setup is only applicable to strategies with flexible work schedule, hence, without loss of generality, we drop the superscript $b$ from total expected rewards for the naive and the relocation strategy.
+In each of the strategy, a driver has different sets of actions available to choose from at any stage. Our goal is to compare the optimal policies for each of the above strategies, allowing us to devise an optimal in expectation strategy for a driver.
 
 \subsection{\naive}
 In the naive strategy, a driver essentially performs a random walk over the city. At the end of every passenger ride, the driver waits in the current zone for next passenger pickup. Hence, the set of allowable actions is single element set with \textit{busy wait} action i.e., $\mathcal{A} = \{a_0\}$. Hence, the immediate expected reward is $r_{i}^{t}(a_0) = \vec{f}_{i}^{t} \bigcdot \vec{r}_{i}^{t}$, dot product of the $i$-th row vectors of $\matr{F}^{t}$ and $\matr{R}^{t}$ respectively. 

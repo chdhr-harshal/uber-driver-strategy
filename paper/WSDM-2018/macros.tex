@@ -1,7 +1,9 @@
+%!TEX root = main.tex
+
 % notations
-\renewcommand{\vec}[1]{\mathbf{#1}} % vector
-\newcommand{\matr}[1]{\mathbf{#1}} % matrix
-\newcommand{\transpose}[1]{\mathbf{#1}^\intercal} % transpose
+\renewcommand{\vec}[1]{\ensuremath{\mathbf{#1}}} % vector
+\newcommand{\matr}[1]{\ensuremath{\mathbf{#1}}} % matrix
+\newcommand{\transpose}[1]{\ensuremath{\mathbf{#1}^\intercal}} % transpose
 
 % Dot product notation
 \makeatletter
@@ -9,30 +11,45 @@
 \newcommand*\bigcdot@[2]{\mathbin{\vcenter{\hbox{\scalebox{#2}{$\m@th#1\bullet$}}}}}
 \makeatother
 
+% special terms
+\newcommand{\markovchain}{{\it Markov Chain}}
+\newcommand{\mdp}{{\it Markov Decision Process}}
+\newcommand{\totalexpectedearnings}{{\it total expected earnings}}
+
 % strategies
 \newcommand{\naive}{{\textsc{Naive Strategy}}}
 \newcommand{\relocation}{{\textsc{Relocation Strategy}}}
 \newcommand{\flexible}{{\textsc{Flexible Schedule Strategy}}}
 \newcommand{\relocationflexible}{{\textsc{Relocation with Flexible Schedule Strategy}}}
+\newcommand{\earningsgoal}{{\textsc{Fixed Earnings Goal Strategy}}}
 
 % actions
-\newcommand{\getpassenger}{{\sc Get Passenger}}
-\newcommand{\gohome}{{\sc Go Home}}
-\newcommand{\relocate}{{\sc Relocate}}
+\newcommand{\getpassenger}{{\it Get Passenger}}
+\newcommand{\gohome}{{\it Go Home}}
+\newcommand{\relocate}{{\it Relocate}}
 
-%symbols
-\newcommand{\parents}{\ensuremath{\pi}}
-\newcommand{\children}{\ensuremath{\kappa}}
-\newcommand{\transition}{\ensuremath{\mathbf{P}}}
-\newcommand{\steadystate}{\ensuremath{\mathbf{p}}}
-\newcommand{\initial}{\ensuremath{\mathbf{x}}}
-\newcommand{\final}{\ensuremath{\mathbf{z}}}
-\newcommand{\uncertainty}{\ensuremath{F}}
-\newcommand{\objective}{\ensuremath{\mathbf{F}}}
-\newcommand{\variance}{\ensuremath{\mathbf{var}}}
-\newcommand{\rvFinal}{\ensuremath{\mathbf{Z}}}
-\newcommand{\actualtransitions}{\ensuremath{\mathbf{T}}}
-\newcommand{\prob}{\ensuremath{\mathbf{Pr}}}
+% symbols
+\newcommand{\cityzones}{\ensuremath{\mathcal{X}}}
+\newcommand{\empiricaltransitionmatrix}{{\matr{F}}}
+\newcommand{\traveltimematrix}{{\matr{T}}}
+\newcommand{\rewardsmatrix}{{\matr{R}}}
+\newcommand{\homezone}{{\ensuremath{i_0}}}
+\newcommand{\actionsset}{\ensuremath{\mathcal{A}}}
+\newcommand{\policy}{\ensuremath{\pi}}
+\newcommand{\policyspace}{\ensuremath{\Pi}}
+\newcommand{\getpassengeraction}{\ensuremath{a_0}}
+\newcommand{\gohomeaction}{\ensuremath{a_1}}
+\newcommand{\relocateaction}{\ensuremath{a_2(j)}}
+\newcommand{\actualaction}{\ensuremath{\hat{a}}}
+\newcommand{\actuallocation}{\ensuremath{\hat{i}}}
+\newcommand{\actualtime}{\ensuremath{\hat{t}}}
+\newcommand{\earnings}{\ensuremath{\mathcal{E}}}
+
+% For action reward #1 is subscript (zone) #2 is superscript (time) #3 is action.
+\newcommand{\actionearning}[3]{\ensuremath{e_{#1}^{#2}({#3})}}
+\newcommand{\cumulativeearning}[2]{\ensuremath{v_{#1}^{#2}}}
+\newcommand{\inducedearningvector}[3]{\ensuremath{\mathbf{v}_{#1}^{#2}({#3})}}
+
 
 \DeclareMathOperator*{\argmin}{arg\,min}
 \DeclareMathOperator*{\argmax}{arg\,max}
@@ -43,3 +60,5 @@
 \newcommand{\spara}[1]{\smallskip\noindent{\bf{#1}}}
 \newcommand{\mpara}[1]{\medskip\noindent{\bf{#1}}}
 \newcommand{\bpara}[1]{\bigskip\noindent{\bf{#1}}}
+
+

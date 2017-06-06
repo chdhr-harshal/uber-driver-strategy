@@ -70,19 +70,23 @@
 %stretch a table over mutiple paages
 \usepackage{longtable}
 
+
+
+\include{estout}
+
 \makeatletter
 \renewcommand*{\@fnsymbol}[1]{\ensuremath{\ifcase#1\or \dagger\or \ddagger\or
    \mathsection\or \mathparagraph\or \|\or **\or \dagger\dagger
    \or \ddagger\ddagger \else\@ctrerr\fi}}
 \makeatother
 
-\title{Uber Driver Strategies}
+\title{Uber driver strategic behavior}
 
 \ifshownames
 \author{
-  Harshal Chaudhari, Evimaria Terzi, John W. Byers\\
+  Harshal Chaudhari, Evimaria Terzi, John Byers \\
   Department of Computer Science\\
-  Boston University \\
+  Boston University
 }
 \fi
 
@@ -94,7 +98,9 @@
 
 \maketitle	
 
-\input{intro}
+\input{formulation}
+\input{problem}
+\input{bisetion_algorithm}
 % \doublespacing
 \onehalfspacing
 

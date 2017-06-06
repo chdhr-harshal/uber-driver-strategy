@@ -1,0 +1,371 @@
+%!TEX root = uber-driver-strategy.tex
+\section{Uber Driver strategies}
+In this study, we compare four kinds of Uber drivers, 
+\begin{enumerate}
+    \item Naive Uber driver with no strategy.
+    \item Uber driver with re-location strategy.
+    \item Uber driver with flexible work schedule strategy.
+    \item Uber driver with both flexible work schedule and re-location strategy.
+\end{enumerate}
+In the following sections, we formulate each of the above four problems.
+
+\section{Problem Formulation}
+Consider a set of $n$ discrete zones of a city denoted by $\mathcal{X}$. During our data collection we sample rides for each pair of zones to collect information for the route suggested by Uber every 15 minutes. Since the optimal route suggested by Uber to its drivers can change based on the traffic conditions prevalent at the given time of the day, it is essential to model each of the variables for every time step. Hence, there is an implied time superscript for each of the variables described in the table below.
+\begin {table}[h]
+\caption {Description of Notation} 
+\label{tab:notation1} 
+\centering
+\begin{tabular}{l c p{.5\textwidth}}
+\toprule
+       &                  & Definition \\
+\midrule
+$\mathcal{X}_0$&:& Home zone of the Uber driver \\
+$N$&:& Maximum work time units for Uber driver \\
+$B$&:& Overall budget time units within which to consume $N$ work time units. \\
+$d_{ij}$&:& Distance between zones $i$ and $j$  \\
+$c_{ij}$&:& Driver cost for trip from zone $i$ to zone $j$ \\
+$e_{ij}$&:& Driver earnings from a passenger trip from zone $i$ to zone $j$ \\
+$\tau_{ij}$&:& Travel time from zone $i$ to zone $j$  \\
+$s_{i}$&:& Surge multiplier active at zone $i$ \\
+$\lambda_{i}$&:& Poisson passenger arrival rate at zone $i$ \\
+$\mu_{i}$&:& Poisson driver arrival rate at zone $i$ \\
+$f_{ij}$&:& Fraction of passengers at zone $i$ destined to zone $j$ \\
+\bottomrule
+\end{tabular}
+\end {table}
+
+To simplify the notation, let us denote the net reward of a trip from zone $i$ to zone $j$ with $r_{ij} = s_i e_{ij} - c_{ij}$. However, the driver earnings in case of an empty ride (without a passenger) are zero resulting into a negative net reward. Our algorithms described in subsequent sections assume non-negativity of rewards. A slight modification allows us bypass this problem. Let $C = \max_{i,j}\{c_{ij}\}$\footnote{We take maximum of $c_{ij}$ over all time intervals.}. Our modified net reward $r'_{ij} = r_{ij} + C$ ensures the non-negativity of the net reward for every ride. Since every reward is offset by equal amount, our modification does not affect the optimal decision at any step in the Markov Decision Process. However, we take this modification into account while calculating overall driver earnings in each of the strategies. Here onwards, we drop the prime notation while refering to this modified net reward.
+\subsection{Interpreting empirically observed transition frequencies matrix $F$}
+The empirically observed transition matrix is denoted by $F$, each of its entries being $f_{ij}$ as described in the table above. By adjusting the size of city zones such that the diameter of the city zone is maximum walking distance, we can ensure that there are no within-zone passenger rides i.e., $f_{ii} = 0$. We modify the matrix $F$, denoting it by $F'$, such that the entry $f'_{ii}$ indicates the probability that an Uber driver unsuccessfully `busy-waits' for a passenger within zone $i$, i.e., driver does not find a passenger in a unit time interval. Furthermore, for every row of the matrix we re-normalize the entries $f'_{ij}, i \neq j$ such that they denote conditional probabilities of a driver from node $i$ taking a ride to node $j$, given that he finds a passenger.
+
+\subsection{Modeling probability of successful busy-wait}
+For brevity, again, we drop the time superscript in this section. Let $\lambda$ and $\mu$ denote the poisson arrival rates of passengers and drivers within a given zone. Let the number of passenger and driver arrivals in a unit time interval be denoted by $N(\lambda)$ and $N(\mu)$ respectively. Assuming that passenger and driver arrivals follow independent Poisson processes, the random variable $K = N(\lambda) - N(\mu)$ follows a Skellam distribution.
+\begin{eqnarray}
+\mathrm{Pr}[K=k] &=& e^{-(\lambda +\mu)} \bigg(\frac{\lambda}{\mu}\bigg)I_{k}\Big(2\sqrt{\lambda \mu}\Big)
+\end{eqnarray}
+where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the values taken by the random variable $K$ as states of a Markov Chain. Using this, we can model the entry $f'_{ii}$ of the modified transition frequency matrix.
+\hc{Although for simplicity, we assume the independence of the passenger and driver arrival processes, we can accomodate correlated processes as well with slight modification.}
+\begin{center}
+\begin{tikzpicture}[->, >=stealth', auto, semithick, node distance=2.5cm]
+\tikzstyle{every state}=[fill=white,draw=black,thick,text=black,scale=1]
+\node[state]    (-inf)               {$...$};
+\node[state]    (-2)[right of=-inf]   {$-2$};
+\node[state]    (-1)[right of=-2]   {$-1$};
+\node[state]    (0)[right of=-1]   {$0$};
+\node[state]    (+1)[right of=0]   {$1$};
+\node[state]    (+2)[right of=+1]   {$2$};
+\node[state]    (+inf) [right of=+2] {$...$};
+\path
+(-inf)  edge[bend left]         node{$\lambda$}   (-2)
+(-2)    edge[bend left]         node{$\lambda$}   (-1)
+        edge[bend left,below]   node{$\mu$}       (-inf)
+(-1)    edge[bend left]         node{$\lambda$}   (0)
+        edge[bend left,below]   node{$\mu$}       (-2)
+(0)     edge[bend left]         node{$\lambda$}   (+1)
+        edge[bend left,below]   node{$\mu$}       (-1)
+(+1)    edge[bend left]         node{$\lambda$}   (+2)
+        edge[bend left,below]   node{$\mu$}       (0)
+(+2)     edge[bend left]        node{$\lambda$}   (+inf)
+        edge[bend left,below]   node{$\mu$}       (+1)
+(+inf)  edge[bend left,below]   node{$\mu$}       (+2);
+\end{tikzpicture}
+\end{center}
+
+Whenever the above Markov Chain is in non-positive state, there are more drivers than passengers in a zone. We assume the worst case scenario in which our strategic driver is at the last position in a FIFO queue. Hence, for a state $k \leq 0$ of the Markov Chain, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time interval for a successful busy-wait resulting in a passenger ride in the same time interval. Since the passenger arrival process is a Poisson process with rate $\lambda$, the probability of $k$ passengers arriving in a unit time interval is given by,
+\begin{eqnarray*}
+\mathrm{Pr}[N(\lambda) = k] &=& \frac{\lambda^{k}e^{-\lambda}}{k!}
+\end{eqnarray*}
+Hence, probability of a driver finding a passenger in a unit time interval within zone $i$ is given by,
+\begin{eqnarray}
+1 - f'_{ii} &=& \sum_{k \leq 0} \mathrm{Pr}[K = k] \times \mathrm{Pr}\big[N(\lambda) = |k| + 1 \big] \nonumber \\
+f'_{ii} &=& 1 - \sum_{k \leq 0} \mathrm{Pr}[K = k] \times \mathrm{Pr}\big[N(\lambda) = |k| + 1 \big] \\
+f'_{ij} &=& (1 - f'_{ii}) \times f_{ij}
+\end{eqnarray}
+The above algebraic transformation maintains the row stochasticity of the matrix $F'$. Furthermore, $\forall i,j: f'_{ij} > 0$ (assuming that there is at least one passenger ride between each pair of zones in any time interval). Here onwards, for simplicity of notations, we always refer to this modified empirically observed transition matrix as $F$.
+
+\section{Naive Strategy}
+
+In the naive strategy, an Uber driver essentially performs a random walk over the city zones. At the end of every ride, the driver waits in the same zone for his next passenger pickup. We refer to the action of waiting for a passenger pickup in current zone as `busy-waiting' and denote it by $a_{bw}$. Hence, in the naive strategy, the set of available actions for a driver at any stage is a singleton set, $\mathcal{A} = \{a_{bw}\}$. Let $R(i, a)$ denote the expected immediate reward of taking action $a$ while within zone $i$. In the naive strategy, for the only action $a_{bw}$, we have $R(i,a_{bw}) = \vec{f}_i.\vec{r}_{i}$ where $\vec{f}_i = \{f_{i1}, ..., f_{in}\}$ is the row vector of the transition matrix $F$, and $\vec{r}_{i} = \{r_{i1}, ..., r_{in}\}$ is the net reward vector associated with each transition, such that $r_{ii} = 0$.\\
+
+In the dynamic program modeling of the naive strategy, the expected overall earnings i.e., value function at time $t$, for a zone $i$, $v_t(i)$ is given by,
+\begin{eqnarray*}
+v_t(i) &=& R(i, a_{bw}) + \vec{f}_i.\vec{v}_{t'}
+\end{eqnarray*}
+where $\vec{v}_{t'} = \{v_{t + \tau_{i1}}(1), ..., v_{t + \tau_{in}}(n)\}$ is the value function value at time $t + \tau_{ij}$ corresponding to each transition from zone $i$ to zone $j$. Note that $v_{t + \tau_{ii}}(i) = v_{t+1}(i)$ as it simply implies unsuccessful busy-wait.
+
+\section{Relocation Strategy}
+In the relation strategy, an idle Uber driver in zone $i$ can perform one of the two actions: 
+\begin{enumerate}
+    \item Busy wait for a passenger ride request in the current zone, denoted by $a_{bw}$.
+    \item Take an empty ride to a different zone $j$ in the city, denoted by $a_j$, where $j \neq i$.
+\end{enumerate}
+Hence, in the relocation strategy, the set of available actions for a driver at any stage, $\mathcal{A}$ is a set of $n$ elements. Like the previous strategy, let $R(i, a)$ denote the expected immediate reward of taking action $a$ while within the zone $i$. Hence, we have,
+\begin{enumerate}
+\item $R(i, a_{bw}) = \vec{f}_i.\vec{r}_{i}$ where $\vec{f}_i$ and $\vec{r}_i$ are as defined for the naive strategy.
+\item $R(i, a_j)_{j \neq i} = r_{ij}$
+\end{enumerate}
+
+In the dynamic program modeling of the relocation strategy, the value function at time $t$, for a zone $i$, is given by,
+\begin{eqnarray*}
+v_t(i) &=& \max
+    \begin{cases}
+    R(i, a_{bw}) + \vec{f}_i.\vec{v}_{t'}, \\ \\
+    \max_{a_j} \bigg\{R(i,a_j) + v_{t + \tau_{ij}}(j)\bigg\}, j \neq i, t + \tau_{ij} \leq N
+    \end{cases}
+\end{eqnarray*}
+where $\vec{v}_{t'}$ is same as defined for the naive strategy.
+
+\section{Flexible Schedule Strategy}
+In the flexible schedule strategy, every Uber driver has an allocated overall budget of $B$ time units within which he works for a maximum of $N$ time units. The motivation of this strategy is as follows. A typical Uber driver desires to work for a maximum of 40 hours per week. However, it is a non-trivial problem to determine which are the optimal 40 hours due to varying demand and surge rates all through the week. The flexible schedule strategy aims to figure out the optimal in expectation work schedule for 40 hours in a week of a total 168 hours. In this strategy, we assume that a driver can log out of the system any time to return to his home zone as a part of his flexible schedule. Hence depending on the current zone of the driver, he has following set of actions available to him.
+\begin{itemize}
+    \item \textbf{If driver is in home zone}
+    \begin{enumerate}
+        \item Idle wait in the home zone, $a_{iw}$. Idle waiting involves logging out of the system till a more optimal in expectation time to re-enter the system occurs.
+        \item Log into the system and busy wait for a passenger ride request in the home zone, denoted by $a_{bw}$.
+    \end{enumerate}
+    \item \textbf{If driver is not in home zone}
+    \begin{enumerate}
+        \item Busy wait for a passenger ride request in the current zone, $a_{bw}$.
+        \item Log out of the system, drive back to home zone to idle wait over there, $a_{iw}$.
+    \end{enumerate}
+\end{itemize}
+However, we can merge the above to situations into a single set of actions by accounting for the extra cost of an empty ride to home zone that is imposed on a driver not in the home zone, while calculating the net rewards vector. Hence, in the flexible schedule strategy, the set of available actions for a driver at any stage is $\mathcal{A} = \{a_{iw}, a_{bw}\}$. The expected immediate rewards of taking a particular action while within zone $i$ are as follows:
+\begin{enumerate}
+    \item $R(i, a_{iw}) = r_{ij}$, where $r_{ii} = 0$.
+    \item $R(i, a_{bw}) = \vec{f}_i.\vec{r}_i$ where $\vec{f}_i$ and $\vec{r}_i$ are as defined for the naive strategy.
+\end{enumerate}
+
+Now, in the dynamic program modeling of the flexible schedule strategy, the value function is defined at time $t$ and budget $b$, for a zone $i$. It is given by,
+\begin{eqnarray*}
+v_{t,b}(i) &=& \max
+    \begin{cases}
+    R(i, a_{bw}) + \vec{f}_i.\vec{v}_{t',b'} \\ \\
+    R(i, a_{iw}) + v_{t,b'}(\mathcal{X}_0)
+    \end{cases}
+\end{eqnarray*}
+where in case of busy-waiting action, $\vec{v}_{t',b'} = \{v_{t + \tau_{i1}, b + \tau_{i1}}(1), ..., v_{t + \tau_{in}, b + \tau_{in}}(n)\}$ is the value function value at time $t + \tau_{ij}$ and budget $b + \tau_{ij}$, corresponding to each transition from zone $i$ to zone $j$. Note that, $v_{t + \tau_{ii}, b + \tau_{ii}}(i) = v_{t+1, b+1}(i)$ as it simply implies unsuccessful busy-wait. In case of idle waiting action, $v_{t, b + \tau_{i\mathcal{X}_0}}(\mathcal{X}_0) = v_{t, b+1}(\mathcal{X}_0)$ if $i = \mathcal{X}_0$. This takes into account that while idle-waiting, only the budget time units are consumed.
+
+\section{Relocation + Flexible Schedule Strategy}
+This is the most general strategy formed by combining the relocation as well as flexible schedule strategies described in the previous sections. In this strategy, a driver has complete freedom for decisions regarding work schedule as well one regarding taking empty rides to different zones of the city in order to maximise total expected reward. Just like the flexible schedule strategy, a driver is allocated overall budget of $B$ time units within which he works for a maximum of $N$ time units. An idle driver in zone $i$ has following set of actions available to him at any stage in the strategy.
+\begin{enumerate}
+    \item Busy wait for a passenger ride request in the current zone, $a_{bw}$.
+    \item Idle wait in the home zone, $a_{iw}$.
+    \item Empty ride to a different zone $j$ in the city, denoted by $a_j$, where $j \neq i$.
+\end{enumerate}
+Hence, in this strategy, the set of available actions for an idle driver at any stage $\mathcal{A}$ is a set of $n+1$ elements. The expected immediate rewards of taking particular action while within zone $i$ are as follows:
+\begin{enumerate}
+    \item $R(i, a_{bw}) = \vec{f}_i.\vec{r}_i$.
+    \item $R(i, a_{iw}) = r_{ij}$ where $r_{ii} = 0$.
+    \item $R(i, a_j)_{j \neq i} = r_{ij}$.
+\end{enumerate}
+
+In the dynamic program modeling of this strategy, the value function is again defined at time $t$ and budget $b$, for a zone $i$. It is given by,
+\begin{eqnarray*}
+v_{t,b}(i) &=& \max
+    \begin{cases}
+    R(i, a_{bw}) + \vec{f}_i.\vec{v}_{t',b'} \\ \\
+    R(i, a_{iw}) + v_{t,b + \tau_{i\mathcal{X}_0}}(\mathcal{X}_0) \\ \\
+    \max_{a_j} \bigg\{R(i,a_j) + v_{t + \tau_{ij}, b + \tau_{ij}}(j)\bigg\}, j \neq i, t + \tau_{ij} \leq N, b + \tau_{ij} \leq B
+    \end{cases}
+\end{eqnarray*}
+where all notations are as defined in the previous sections.
+% \section{Uber Driver with re-location strategy}
+
+% \note{Need to re-formulate to include the last home trip of Uber driver at the end of the day.}\\
+
+% Consider a set of \emph{n} nodes as vertices of a graph $G=(V,E)$ defined over a geographical area. We are interested in creating an optimal contingency plan of trips, for a particular driver who starts his day at node $v_0 \in V$. We assume that the driver decides the maximum units of service time $T$ that he would spend ferrying passengers at the beginning of the day. Let time $t$ denote the number of time units left for a driver before the end of his pre-decided service time.
+% \begin{itemize}
+% \item For $i,j \in V, d_{ij}$ is the Euclidean distance between the two nodes. The costs to the driver in terms of gas and vehicle depreciation value in traversing this edge is $c_{ij}$ and his earnings in ferrying a passenger from $i$ to $j$ is represented by $p_{ij}$. Time required to traverse the edge is denoted by $\tau_{ij}$. The costs, the earnings and the time required to make this ride are all proportional to the distance travelled.
+
+% \item Let $S^{(t)}_{n \times 1}$ be the surge multiplier vector over the nodes of the graph. Each entry $s_i^{(t)}$ denotes the surge multiplier in effect at node $i$ at time $t$. When $s_i^{(t)} > 1$, the driver earning from ferrying a passenger from node $i$ to $j$ of the graph is $s_i^{(t)} \times p_{ij}$.
+
+% \item The arrival process of passengers at node $i$ at time $t$ is a Poisson process with rate $\lambda_i^{(t)}$. Let vector $\Lambda^{(t)}_{n \times 1}$ denote the passenger arrival rates across all the vertices of $G$ at time $t$. While some passengers may arrive simultaneously (compound Poisson process), we assume that this effect is negligible. Furthermore, we assume that if the driver is present at node $i$ when a passenger arrives, he picks up the passenger with no further delay. As the inter-arrival times of passengers are exponentially distributed, the expected value of idle time for a driver waiting at node $i$ is $1/\lambda_i^{(t)}$. We implicitly assume that the passenger arrival process is stationary for a finite time slice around $t$.
+
+% \item The matrix $M^{(t)}_{n \times n}$ represents the transition probabilites between the nodes of the graph such that the fraction of passengers at node $i$ whose destination is node $j$ at time $t$ is represented by entry $m_{ij}^{(t)}$, where $\forall t, m_{ij}^{(t)} \in \mathbb{R}_{\geq 0}, m_{ii}^{(t)}=0$ and $\sum\limits_{j}m_{ij}^{(t)}=1$.
+
+% \item H(.) denotes the Heaviside step function. \\
+% \begin{eqnarray*}
+% H(x) = \max
+%     \begin{cases}
+%     0, & \text{if } x < 0, \\
+%     1, & \text{if } x \geq 0
+%     \end{cases}
+% \end{eqnarray*}
+% \end{itemize}
+
+% \begin {table}[h]
+% \caption {Description of Notation} 
+% \label{tab:notation2} 
+% \centering
+% \begin{tabular}{l c p{.5\textwidth}}
+% \toprule
+%        &                  & Definition \\
+% \midrule
+% $d_{ij}$&:& Distance between nodes $i$ and $j$  \\
+% $c_{ij}$&:& Driver cost for trip from node $i$ to node $j$ \\
+% $p_{ij}$&:& Driver earnings from passenger trip from node $i$ to node $j$ \\
+% $\tau_{ij}$&:& Travel time from node $i$ to node $j$  \\
+% $s_{i}^{(t)}$&:& Surge multiplier active at node $i$ at time $t$ \\
+% $\lambda_{i}^{(t)}$&:& Poisson passenger arrival rate at node $i$ at time $t$ \\
+% $m_{ij}^{(t)}$&:& Fraction of passengers at node $i$ destined to node $j$ at time $t$ \\
+% $H(.)$&:& Heaviside function \\
+% \bottomrule
+% \end{tabular}
+% \end {table}
+
+
+% We formulate a dynamic program to find the contingency plan to maximise the expected earnings of a driver in his service time $T$. Each entry $OPT(t,i)$ of the matrix $OPT$ represents the maximum expected earnings in the remaining $t$ units of service time when the driver is stationed at node $i$. The maximum expected revenue of the driver at the beginning of the day is thus $OPT(T, v_0)$.
+
+% \begin{itemize}
+% \item Initialization
+%     $\forall i, OPT(0,i) = 0$.
+    
+% \item While calculating each $OPT(t,i)$, our algorithm is faced with two possible choices.
+%     \begin{enumerate}
+%     \item Keep waiting at node $i$ for a passenger.
+%     \item Traverse to some other node $j$ in search of a passenger.
+%     \end{enumerate}
+% \item It chooses whichever choice maximises the expected earnings in the remaining time units $t$. 
+% \begin{eqnarray*}
+% OPT(t,i) = \max
+%     \begin{cases}
+%     \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j)\bigg], & \text{if } \mathbf{E}[\tau_i|M] \leq t',\\ \\
+%     \max\limits_{j}\Big[\Big(OPT(t-\tau_{ij},j) - c_{ij}\Big)\times H(t - \tau_{ij})\Big], & \text{otherwise}
+%     \end{cases}
+% \end{eqnarray*}
+% where $t' = t - \frac{1}{\lambda_i^{(t)}}$, denoting the expected time units left after waiting for a passenger at node $i$.
+
+% \item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting for a passenger at his current node $i$ or taking an empty ride to some other node $j$.
+% \end{itemize}
+
+% % \textbf{Some issues:}
+% % \begin{enumerate}
+% % \item What happens when the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is not satisfied, while at the same time $\forall j, H(t-\tau_{ij})=0$ i.e., there is no node $j$ such that $t-\tau_{ij}>0$? Should the driver stay at node $i$ (first condition is probabilistic in nature) or should he simply call it a day? \\
+% % \item If the condition $\frac{1}{\lambda_i^{(t)}} + \mathbf{E}[\tau_i|M] \leq t$ is satisfied, to calculate the quantity $OPT(t-\tau_{ij},j)$, we will need future values of transition matrix $M^{(t -\tau_{ij})}$ and surge multiplier vector $S^{(t - \tau_{ij})}$. Either, we will have to assume that a driver has complete knowledge of how the system will behave during the day, right at the beginning of the day or make some assumption e.g., transition matrix and surge multiplier vector remain fixed at the initial values throughout the day, $\forall t, M^{(t)} = M^{(T)}, S^{(t)} = S^{(T)}$. \\
+% % \end{enumerate}
+
+% \section{Uber Driver with flexible work schedule strategy}
+
+% In this section, we formulate a dynamic program to find optimal work schedule for an Uber driver with a fixed budget of $B$ units of service time. We asssume that the driver uses up his budget before the end of maximum $T$ units of time. For example, a driver who works for a maximum of 40 hours per week shall have $B=40$ and $T=168$ hours. Each entry $OPT(t, i, b)$ of the matrix $OPT$ represents the maximum expected earnings with $b$ time units of budget and $t$ time units of week left. The maximum expected revenue of the driver at the beginning of the week is thus $OPT(T, v_0, B)$.
+% \begin{itemize}
+% \item Initialization
+%         $\forall it, OPT(t, i, 0)=0$.
+        
+% \item While calculating each $OPT(t, i, b)$, our algorithm is faced with distinct possibilities depending on $i$. \\ \\
+% If $i=v_0$ (driver is at home node),
+%     \begin{enumerate}
+%     \item Stay out of system, waiting for a better time to enter the system.
+%     \item Enter the system, wait for a passenger at node $v_0$.
+%     \end{enumerate}
+% If $i \neq v_0$ (driver is not at home node),
+%     \begin{enumerate}
+%     \item Stay in the system, wait for a passenger at node $i$.
+%     \item Exit the system, drive back to home node $v_0$.
+%     \end{enumerate}
+    
+% \item The driver chooses whichever choice maximises the expected earnings in remaining $b$ units of his budget. \\
+%         \begin{eqnarray*}
+%         \text{if }i=v_0, \\ 
+%         OPT(t, i, b) &=& \max
+%         \begin{cases}
+%         OPT(t-1, i, b)\\ \\
+%         \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\
+%         \end{cases} \\ \\ \\
+%         \text{if }i\neq v_0, \\ 
+%         OPT(t, i, b) &=& \max
+%         \begin{cases}
+%         \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+%         \Big(OPT(t-\tau_{iv_0}, v_0, b - \tau_{iv_0}) - c_{iv_0}\Big) \times H(b - \tau_{iv_0}) \\ \\
+%         OPT(t-1, i, b)
+%         \end{cases} \\ \\ \\
+%         \end{eqnarray*}
+% where $b' = b - \frac{1}{\lambda_i^{(t)}}$, denoting the expected budget time units left after waiting for a passenger at node $i$.
+
+% \item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting at home node, waiting for a passenger at his current node or taking an empty ride back home.
+% \end{itemize}
+
+% \section{Uber Driver with both re-location and flexible work schedule strategy}
+
+% Here, we formulate a dynamic program to find optimal work schedule and re-location strategy for an Uber driver with fixed budget of $B$ units of service time. Like the previous section, we assume that the driver uses up his budget before the end of maximum $T$ units of time. We maintain a matrix $OPT$ where each entry, $OPT(t, i, b)$ represents the maximum expected earnings with $b$ time units of budget and $t$ time units of the week left. Similar to previous section, the maximum expected revenue of the driver at the beginning of the week is thus $OPT(T, v_0, B)$.
+% \begin{itemize}
+% \item Initialization
+%         $\forall it, OPT(t, i, 0)=0$.
+% \item While calculating each $OPT(t, i, b)$, our algorithm is faced with distinct possibilities depending on $i$. \\ \\
+% If $i=v_0$ (driver is at home node),
+%     \begin{enumerate}
+%     \item Stay out of system, waiting for a better time to enter the system.
+%     \item Enter the system, wait for a passenger at node $v_0$.
+%     \item Enter the system, traverse to some other node $j$ in search of a passenger.
+%     \end{enumerate}
+% If $i \neq v_0$ (driver is not at home node),
+%     \begin{enumerate}
+%     \item Stay in the system, wait for a passenger at node $i$.
+%     \item Stay in the system, traverse to some other node $j$ in search of a passenger.
+%     \item Exit the system, drive back to home node $v_0$.
+%     \end{enumerate}
+    
+% \item The driver chooses whichever choice maximises the expected earnings in remaining $b$ units of his budget. \\
+% \newpage
+%         \begin{eqnarray*}
+%         \text{if }i=v_0, \\ 
+%         OPT(t, i, b) &=& \max
+%         \begin{cases}
+%         OPT(t-1, i, b)\\ \\
+%         \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t'-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+%         \max\limits_{j\neq i}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big]
+%         \end{cases} \\ \\ \\
+%         \text{if }i\neq v_0, \\ 
+%         OPT(t, i, b) &=& \max
+%         \begin{cases}
+%         \sum\limits_{j\neq i}m_{ij}^{(t')}\bigg[\Big(s_{i}^{(t')} p_{ij} - c_{ij}\Big) + OPT(t-\tau_{ij},j, b'-\tau_{ij})\bigg] \\ \\
+%         \max\limits_{j}\Big[\Big(OPT(t-\tau_{ij},j, b - \tau_{ij}) - c_{ij}\Big)\times H(b - \tau_{ij})\Big] \\ \\
+%         OPT(t-1, i, b)
+%         \end{cases} \\ \\ \\
+%         \end{eqnarray*}
+        
+% \item While solving the above dynamic program, we maintain an output vector corresponding to a series of driver choices between waiting at home node, waiting for a passenger at his current node , taking an empty ride to some other node in search of a passenger or taking an empty ride back home.
+% \end{itemize}
+
+% \section {Driver waiting time}
+
+% Here, we formulate the driver waiting time period. Let $\lambda_{i}^{(t)}$ be the Poisson passenger arrival rate and $\mu_{i}^{(t)}$ be the Poisson driver arrival rate at node $i$ at time $t$. Further, let $N_{i,p}^{(t)}$ and $N_{i,d}^{(t)}$ denote the number of passenger arrivals and driver arrivals at node $i$ in a time slice centered around time $t$. Assuming that passenger arrival and driver arrival are independent Poisson processes {(?)}, the probability mass function for the random variable $K = N_{i,p}^{(t)} - N_{i,d}^{(t)}$ follows a Skellam distribution given by, 
+
+% \begin{eqnarray*}
+% p(k, \lambda_{i}^{(t)}, \mu_{i}^{(t)}) = \mathrm{Pr}[K=k] = e^{-(\lambda_{i}^{(t)}+\mu_{i}^{(t)})} \bigg(\frac{\lambda_{i}^{(t)}}{\mu_{i}^{(t)}}\bigg)I_{k}\Big(2\sqrt{\lambda_{i}^{(t)}\mu_{i}^{(t)}}\Big)
+% \end{eqnarray*}
+% where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the values taken by the random variable $K$ as states of a Markov Chain.
+
+% \begin{center}
+% \begin{tikzpicture}[->, >=stealth', auto, semithick, node distance=2.5cm]
+% \tikzstyle{every state}=[fill=white,draw=black,thick,text=black,scale=1]
+% \node[state]    (-inf)               {$...$};
+% \node[state]    (-2)[right of=-inf]   {$-2$};
+% \node[state]    (-1)[right of=-2]   {$-1$};
+% \node[state]    (0)[right of=-1]   {$0$};
+% \node[state]    (+1)[right of=0]   {$1$};
+% \node[state]    (+2)[right of=+1]   {$2$};
+% \node[state]    (+inf) [right of=+2] {$...$};
+% \path
+% (-inf)  edge[bend left]         node{$\lambda_{i}^{(t)}$}   (-2)
+% (-2)    edge[bend left]         node{$\lambda_{i}^{(t)}$}   (-1)
+%         edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (-inf)
+% (-1)    edge[bend left]         node{$\lambda_{i}^{(t)}$}   (0)
+%         edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (-2)
+% (0)     edge[bend left]         node{$\lambda_{i}^{(t)}$}   (+1)
+%         edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (-1)
+% (+1)    edge[bend left]         node{$\lambda_{i}^{(t)}$}   (+2)
+%         edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (0)
+% (+2)     edge[bend left]        node{$\lambda_{i}^{(t)}$}   (+inf)
+%         edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (+1)
+% (+inf)  edge[bend left,below]   node{$\mu_{i}^{(t)}$}       (+2);
+% \end{tikzpicture}
+% \end{center}
+
+% We can use this to further model the probability of a driver waiting for $m$ time units before getting a ride. The probability of $k$ passengers arriving in an time interval is given by $\frac{\big(\lambda_{i}^{(t)}\big)^k e^{-\lambda_{i}^{(t)}}}{k!}$. Let us assume that when the above Markov Chain is in a positive state, a driver immediately gets a passenger ride, without any delay since there are excess number of passengers waiting to hail a ride compared to the drivers. However, when the Markov Chain is in a non-positive state, the driver has to wait for the passengers to arrive. In the worst case, if the Markov Chain is in state $k$, the driver has to wait for $(|k|+1)$ number of passenger arrival events. Let $\text{Pr}[\text{waiting time}=m]$ denote the probability that the driver gets the passenger in time interval $m$ and $\text{Pr}[\text{pax ride}=m_{k}]$ denote the probability of getting a passenger in $m$-th time unit if the Markov Chain is in state $k$.
+
+% \begin{eqnarray*}
+% \text{Pr}[\text{waiting time}=m] &=& \sum\limits_{-\infty}^{0} \text{Pr}[K=k] \times \text{Pr}[\text{pax ride}=m_{k}] \\
+% \text{Pr}[\text{pax ride}=m_{k}] &=& \sum\limits_{n=0}^{|k|} \text{Pr}[\text{n passengers in m-1 time units}] \times \text{Pr}[(|k|+1-n)\text{ passengers in m}^{th}\text{ time unit}] \\
+% &=&\sum\limits_{n=0}^{|k|}\frac{\big((m-1)\lambda_{i}^{(t)}\big)^{n}e^{-(m-1)\lambda_{i}^{(t)}}}{n!} \times \frac{\big(\lambda_{i}^{(t)}\big)^{(|k|+1-n)}e^{-\lambda_{i}^{(t)}}}{(|k|+1-n)!}
+% \end{eqnarray*}
+
