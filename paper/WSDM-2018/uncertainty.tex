@@ -1,38 +1,40 @@
 %!TEX root = main.tex
 
-\section{Sensitivity of Strategies to Uncertainty in MDP parameters}
-\label{sec:sensitivity_of_strategies}
+\section{Sensitivity of Strategies to Uncertainty}
+\label{sec:sensitivity}
 
-In the previous section we define four strategies for taxi drivers, each providing a driver with a contingency plan suggesting an optimal action to take based on location and time. This contingency plan however relies on transition matrices $\matr{F}$ that are empirically observed using historical data. The empirically observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic program solution to the nominal problem described above is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\vec{f}_{i}^{t}.\vec{v}_{i}^{t,b}$ corresponding to the \textit{busy wait} action affects the optimal action choice in every strategy, due to the uncertainty in the transition matrix row vector $\vec{f}_{i}^{t}$.
+In the previous section we defined five strategies for drivers, each providing a driver with a contingency plan suggesting an optimal action to take based on their location and time. This contingency plan however relies on transition matrices {\empiricaltransitionmatrix} that are empirically observed using historical data. The empirically observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the nominal problem described above is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\empiricaltransitionmatrix_{i}^{t}$ corresponding to the {\getpassenger} action affects the optimal action choice in every strategy, due to the uncertainty in the empirically observed transition matrix.
 
-\subsection{Likelihood model}
+In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the nominal problem from Section \ref{sec:problem_setup} into a robust control problem.
+
+\subsection{\textsc{Likelihood model}}
 \label{sec:likelihood_model}
 
-In this section, for brevity of notation, we drop the superscript $t$ from transition matrices. Thus, empirically observed transition matrix is denoted by $\matr{F}$. If $\matr{P}$ is the underlying true transition matrix, the ``plug-in'' estimate $\matr{\hat{P}} = \matr{F}$ is the solution to the maximum likelihood problem
+If {\truetransitionmatrix} is the underlying true transition matrix, the empirically observed transition matrix {\empiricaltransitionmatrix} is the solution to the maximum likelihood problem
 
-\begin{eqnarray}
-\max_\matr{P} L(\matr{P}) &:=& \sum_{i,j}f_{ij} \log{p_{ij}} : \matr{P}\geq 0, \matr{P}\vec{1} = \vec{1} 
-\end{eqnarray}
+\begin{equation}
+\max_\truetransitionmatrix L(\truetransitionmatrix) := \sum_{i,j}f(i,j) \log{p(i,j)} : \truetransitionmatrix \geq 0, \truetransitionmatrix\vec{1} = \vec{1} 
+\end{equation}
 
-The optimal log-likelihood is $\beta_{\max} = \sum_{i,j}f_{ij}\log{f_{ij}}$.
-A classical description of uncertainty in a maximum-likelihood setting is via the likelihood region (\cite{lehmann2006theory}, \cite{poor2013introduction})
+The optimal log-likelihood is $\betamax= \sum_{i,j}f(i,j)\log{f(i,j)}$.
+A classical description of uncertainty in a maximum-likelihood setting is via the likelihood region (\citet{lehmann2006theory}, \citet{poor2013introduction})
 
-\begin{eqnarray}
-\mathcal{P(\beta)} &:=& \bigg\{\matr{P} \in \mathbb{R}^{n \times n}: \matr{P} \geq 0, \matr{P}\vec{1}=\vec{1}, \sum_{i,j}f_{ij}\log{p_{ij}} \geq \beta\bigg\} \label{eq:likelihood_region}
-\end{eqnarray}
-where $\beta < \beta_{\max}$ is a user provided number, which represents the uncertainty level. In practice, a user can choose uncertainty level and $\beta$ using the information provided in the Appendix. 
+\begin{equation}
+\mathcal{P(\beta)} := \bigg\{\truetransitionmatrix \in \mathbb{R}^{n \times n}: \truetransitionmatrix \geq 0, \truetransitionmatrix \vec{1}=\vec{1}, \sum_{i,j}f(i,j)\log{p(i,j)} \geq \beta\bigg\} \label{eq:likelihood_region}
+\end{equation}
+where $\beta < \betamax$ is a user provided number, which represents the uncertainty level. In practice, a user can choose uncertainty level and $\beta$ using the guidelines detailed by \citet{nilim2004robustness}.
 
-We only need to work with uncertainty on each row $\vec{p}_i$, that is projection of the set (\ref{eq:likelihood_region}). Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\vec{p}_i$ variables of the matrix $\matr{P}$ can be given as,
+We only need to work with uncertainty on each row {\truetransitionmatrix}, that is projection of the set $\mathcal{P(\beta)}$. Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\truetransitionmatrix_i$ variables of the matrix {\truetransitionmatrix} can be given as,
 
-\begin{eqnarray}
-\mathcal{P}_i(\beta_i) &:=& \bigg\{p \in \Delta^n : \sum_{j}f_{ij}\log{p_{ij}} \geq \beta_i \bigg\}
-\end{eqnarray}
+\begin{equation}
+\mathcal{P}_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\}
+\end{equation}
 where,
-\begin{eqnarray}
-\beta_i &=& \beta - \sum_{k \neq i}\sum_{j}f_{kj}\log{f_{kj}}
-\end{eqnarray}
+\begin{equation}
+\beta_i = \beta - \sum_{k \neq i}\sum_{j}f(k,j)\log{f(k,j)}
+\end{equation}
 
-\subsection{The robust control problem}
+\subsection{\textsc{The robust control problem}}
 
 In this section, we formally define the uncertainty model, wherein every empirically observed time-varying transition matrix $\matr{F}^t$ has an associated uncertainty level of $\beta$, and a corresponding likelihood region denoted by $\mathcal{P}^t$. Given this uncertainty in the transition matrices, we are interested in maximising the worst-case total expected rewards. We define \textit{policy of nature} as a specific collection of time-varying transition matrices $\matr{P} = [\matr{P}^t]$, the set of admissible policies of nature is $\mathcal{T} := (\mathcal{P}^t)^N$. Using these notations, we define the robust control problem as follows,
 

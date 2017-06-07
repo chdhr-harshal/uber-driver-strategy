@@ -39,8 +39,8 @@ A driver following relocation strategy chooses the action that maximises {\total
 \label{eq:relocation_strategy}
 \cumulativeearning{i}{t} &=& \max_{a \in \actionsset}
     \begin{cases}
-    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t}{a}), \textrm{  if } a = \getpassengeraction\\ \\
-    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t'}\bigg\}, \textrm{  if } a = \relocateaction
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t}{a}), &\textrm{  if } a = \getpassengeraction\\ \\
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t'}\bigg\}, &\textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
 While solving Eq.(\ref{eq:relocation_strategy}), we also get an optimal policy for relocation strategy by keeping track of optimal action choices. Similar to the {\naive}, the driver does not have flexibility to choose work timings, hence we drop the superscript $b$ from Eq.(\ref{eq:relocation_strategy}).
@@ -56,8 +56,8 @@ A driver following this strategy chooses action that maximises {\totalexpectedea
 \label{eq:flexible_strategy}
 \cumulativeearning{i}{t,b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), \textrm{  if } a = \getpassengeraction\\ \\
-    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, \textrm{  if } a = \gohomeaction
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), &\textrm{  if } a = \getpassengeraction\\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, &\textrm{  if } a = \gohomeaction
     \end{cases}
 \end{eqnarray}
 Similar to the {\relocation}, we can find an optimal in expectation work schedule by keeping track of optimal action choices while solving Eq.(\ref{eq:flexible_strategy}).
@@ -75,13 +75,13 @@ A driver following the relocation with flexible schedule strategy chooses the ac
 \label{eq:relocationflexible_strategy}
 \cumulativeearning{i}{t,b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), \textrm{  if } a = \getpassengeraction\\ \\
-    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, \textrm{  if } a = \gohomeaction \\ \\
-    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\}, \textrm{  if } a = \relocateaction
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{a}), &\textrm{  if } a = \getpassengeraction\\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, &\textrm{  if } a = \gohomeaction \\ \\
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\}, &\textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
 As earlier, we can find an optimal in expectation policy by keeping track of optimal action choices while solving Eq.(\ref{eq:relocationflexible_strategy})
 
 \subsection{\earningsgoal}
 In the fixed earnings goal strategy, a driver sets an earnings goal before logging in into the on-demand ride service and drives until fixed goal is reached.
-\todo[HC]{Write in this section how this strategy solution is already a part of the previous strategies already discussed.}
+\todo[Harshal]{Write in this section how this strategy solution is a part of the previous strategies already discussed.}
