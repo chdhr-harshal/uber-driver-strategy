@@ -19,17 +19,17 @@ Every arc $e(i\rightarrow j) \in E$ is associated with a real-valued weight $f(i
 	\sum_{j \in \cityzones} f(i,j) = 1, \forall i \in \cityzones
 \end{equation}
 Therefore, the weights give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
-where $\empiricaltransitionmatrix(i,j) = f(i,j)$ 
+where each entry $f(i,j)$ 
 denotes the empirically observed probability of a passenger in zone $i$
 travelling to zone $j$. We assume that no passenger rides a taxi within the same zone. Hence, as a special case, 
-$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. The empirical transition matrix \empiricaltransitionmatrix
+$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. The empirical transition matrix {\empiricaltransitionmatrix}
 changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
 
 \subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
 Every arc $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
 denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
-These weights give us a travel time matrix \traveltimematrix. 
+These weights give us a travel time matrix {\traveltimematrix}. 
 Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
 Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
 
@@ -93,7 +93,7 @@ Now, we describe the attributes of the driver actions described in the previous 
 
 \subsubsection{\sc{ActionEarning}}
 
-Action earning is a function of action, zone and time. Let \actionearning{i}{t}{a} denote the immediate expected earnings of a driver 
+Action earning is a function of action, zone and time. Let {\actionearning{i}{t}{a}} denote the immediate expected earnings of a driver 
 on taking action $a$ while inside zone $i$ at time $t$. Hence, for each of the actions described in the previous section, the
 action earning is calculated differently.
 
@@ -120,25 +120,25 @@ action earning is calculated differently.
 
 \subsubsection{\sc{CumulativeEarning}}
 
-Cumulative Earning is a function of zone and time. Let \cumulativeearning{i}{t,b} denote the total expected future earnings of a driver
+Cumulative Earning is a function of zone and time. Let {\cumulativeearning{i}{t,b}} denote the total expected future earnings of a driver
 while inside zone $i$ at time $t$ with $b$ budget units consumed. Using this definition, total expected earnings of a driver can be expressed
-as \cumulativeearning{\homezone}{N,B}.
+as {\cumulativeearning{\homezone}{N,B}}.
 
 \subsubsection{\sc{InducedEarningVector}}
 
 If a driver at zone $i$ at time $t$ with $b$ budget units consumed takes a passenger ride to zone $j$, the rides end at time 
 $t' = t + \tau^t(i,j)$ with budget $b' = b + \tau^t(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
-budget units consumed is \cumulativeearning{j}{t',b'}. Let us denote using \inducedearningvector{i}{t,b}{\getpassengeraction} the vector of such
+budget units consumed is {\cumulativeearning{j}{t',b'}}. Let us denote using {\inducedearningvector{i}{t,b}{\getpassengeraction}} the vector of such
 cumulative earnings across different zones $j$ induced when a driver takes an action {\getpassengeraction} and call it an 
-\textsc{InducedEarningVector}. Instead of a vector of cumulative earnings, {\gohome} action induces a single value i.e., \cumulativeearning{\homezone}{t',b}. 
-As the driver has logged out of system, the consumed budget units $b$ remained unchanged. {\relocate} action induces a single value of cumulative earnings per destination zone $j$, \cumulativeearning{j}{t',b'}. 
+\textsc{InducedEarningVector}. Instead of a vector of cumulative earnings, {\gohome} action induces a single value i.e., {\cumulativeearning{\homezone}{t',b}}. 
+As the driver has logged out of system, the consumed budget units $b$ remained unchanged. {\relocate} action induces a single value of cumulative earnings per destination zone $j$, {\cumulativeearning{j}{t',b'}}. 
 Using this formulation, for each of the driver actions, we can recursively express \textsc{CumulativeEarning} as follows,
 \begin{itemize}
 	\item {\getpassenger} : For {\getpassengeraction} taken inside zone $i$ at time $t$ with $b$ budget units consumed,
 	\begin{eqnarray}
 	\cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\getpassengeraction} + \empiricaltransitionmatrix_{i}^{t} \bigcdot \inducedearningvector{i}{t,b}{\getpassengeraction} \\
 	\nonumber\\
-	&=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction})
+	&=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction}) \label{eq:cumulative_earning_get_passenger}
 	\end{eqnarray}
 	where $\empiricaltransitionmatrix_{i}^{t}$ and $\rewardsmatrix_{i}^{t}$ denote the $i$-th rows of $\empiricaltransitionmatrix^{t}$ and $\rewardsmatrix^{t}$ respectively. \\
 
@@ -161,7 +161,7 @@ Using this formulation, for each of the driver actions, we can recursively expre
 \end{itemize}
 
 \subsection{\textsc{Nominal Problem}}
-For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, and driver policy \policy, we can calculate {\totalexpectedearnings} using as \cumulativeearning{\homezone}{N,B}.
+For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, and driver policy \policy, we can calculate {\totalexpectedearnings} using as {\cumulativeearning{\homezone}{N,B}}.
 
 \begin{eqnarray}
 \mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix) &=& \cumulativeearning{\homezone}{N,B} \\
@@ -169,6 +169,7 @@ For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematr
 \end{eqnarray}
 where $\mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix)$ denotes {\totalexpectedearnings}. We can define the finite horizon nominal problem to find an optimal policy in a {\mdp},
 \begin{equation}
+\label{eq:nominal_problem}
 \phi(\policyspace, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix) = \max_{\policy \in \policyspace} \mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix)
 \end{equation}
 

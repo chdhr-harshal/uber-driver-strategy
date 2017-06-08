@@ -5,7 +5,7 @@
 
 In the previous section we defined five strategies for drivers, each providing a driver with a contingency plan suggesting an optimal action to take based on their location and time. This contingency plan however relies on transition matrices {\empiricaltransitionmatrix} that are empirically observed using historical data. The empirically observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the nominal problem described above is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\empiricaltransitionmatrix_{i}^{t}$ corresponding to the {\getpassenger} action affects the optimal action choice in every strategy, due to the uncertainty in the empirically observed transition matrix.
 
-In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the nominal problem from Section \ref{sec:problem_setup} into a robust control problem.
+In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\nominalproblem} from Section \ref{sec:problem_setup} into a {\robustcontrolproblem}.
 
 \subsection{\textsc{Likelihood model}}
 \label{sec:likelihood_model}
@@ -20,14 +20,14 @@ The optimal log-likelihood is $\betamax= \sum_{i,j}f(i,j)\log{f(i,j)}$.
 A classical description of uncertainty in a maximum-likelihood setting is via the likelihood region (\citet{lehmann2006theory}, \citet{poor2013introduction})
 
 \begin{equation}
-\mathcal{P(\beta)} := \bigg\{\truetransitionmatrix \in \mathbb{R}^{n \times n}: \truetransitionmatrix \geq 0, \truetransitionmatrix \vec{1}=\vec{1}, \sum_{i,j}f(i,j)\log{p(i,j)} \geq \beta\bigg\} \label{eq:likelihood_region}
+\likelihoodregion(\beta) := \bigg\{\truetransitionmatrix \in \mathbb{R}^{n \times n}: \truetransitionmatrix \geq 0, \truetransitionmatrix \vec{1}=\vec{1}, \sum_{i,j}f(i,j)\log{p(i,j)} \geq \beta\bigg\} \label{eq:likelihood_region}
 \end{equation}
 where $\beta < \betamax$ is a user provided number, which represents the uncertainty level. In practice, a user can choose uncertainty level and $\beta$ using the guidelines detailed by \citet{nilim2004robustness}.
 
-We only need to work with uncertainty on each row {\truetransitionmatrix}, that is projection of the set $\mathcal{P(\beta)}$. Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\truetransitionmatrix_i$ variables of the matrix {\truetransitionmatrix} can be given as,
+We only need to work with uncertainty on each row {\truetransitionmatrix}, that is projection of the set $\likelihoodregion(\beta)$. Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\truetransitionmatrix_i$ variables of the matrix {\truetransitionmatrix} can be given as,
 
 \begin{equation}
-\mathcal{P}_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\}
+\likelihoodregion_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\}
 \end{equation}
 where,
 \begin{equation}
@@ -36,64 +36,118 @@ where,
 
 \subsection{\textsc{The robust control problem}}
 
-In this section, we formally define the uncertainty model, wherein every empirically observed time-varying transition matrix $\matr{F}^t$ has an associated uncertainty level of $\beta$, and a corresponding likelihood region denoted by $\mathcal{P}^t$. Given this uncertainty in the transition matrices, we are interested in maximising the worst-case total expected rewards. We define \textit{policy of nature} as a specific collection of time-varying transition matrices $\matr{P} = [\matr{P}^t]$, the set of admissible policies of nature is $\mathcal{T} := (\mathcal{P}^t)^N$. Using these notations, we define the robust control problem as follows,
+In this section, we modify the {\nominalproblem} from Section \ref{sec:driver_strategies} into a {\robustcontrolproblem} where every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\nominalproblem} maximises the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} while the `nature' selects the worst-case time varying transition matrices from the likelihood region {\likelihoodregion} in order to minimize the {\totalexpectedearnings}.
 
+We define \textit{policy of nature} as a specific ordered selection of time varying true transition matrices 
+\begin{equation}
+\mathbb{P} = \big( \truetransitionmatrix^t \big)_{t \leq N}
+\end{equation}
+Similarly, the corresponding ordered set of likelihood regions is,
+\begin{equation}
+\mathcal{T} = \big(\mathcal{P}^t \big)_{t \leq N}
+\end{equation}
+Using these notations, we define the {\robustcontrolproblem} as follows,
+\begin{equation}
+\label{eq:robust_control_problem}
+\phi(\policyspace, \mathcal{T}, \traveltimematrix, \rewardsmatrix) = \max_{\policy \in \policyspace} \min_{\mathbb{P} \in \mathcal{T}} \mathcal{E}^{N,B}(\policy, \mathbb{P}, \traveltimematrix, \rewardsmatrix) \\
+\end{equation}
+It should be noted that the ordered set $\mathbb{P}$ is not enumerable, thereby making it impossible to solve Eq.(\ref{eq:robust_control_problem}) by conventional dynamic programming.
+
+\subsection{\textsc{Robust Markov Decision Process}}
+
+As described in previous section, the uncertainty in empirically observed transition matrix affects the cumulative earning only in the case of {\getpassenger} action, we express Eq.(\ref{eq:cumulative_earning_get_passenger}) in form of an optimization problem, which we refer to as the `inner problem'.
+\begin{equation}
+\cumulativeearning{i}{t,b} = \sigma_{\likelihoodregion_{i}^{t}} \bigg(\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction}\bigg)
+\end{equation}
+where, the $\sigma_{\likelihoodregion}(\vec{v})$ is a minimization problem of the form,
+\begin{equation}
+\sigma_{\likelihoodregion}(\vec{v}) = \inf\big\{ \transpose{p}\vec{v}: \vec{p} \in \likelihoodregion \big\}
+\end{equation}
+We now update the recursive equations for calculating {\totalexpectedearnings} for each of the strategies using the above transformation. For brevity, we only show the updated equation for {\relocationflexible} below.
 \begin{eqnarray}
-\phi^N(\Pi, \mathcal{T}, \matr{T}, \matr{R}) &:=& \max_{\pi \in \Pi} \min_{\matr{P} \in \mathcal{T}} R^N(\pi, \matr{P}, \matr{T}, \matr{R})
-\end{eqnarray}
-
-As the uncertainty in transition matrix only affects the expected total reward of \textit{busy wait} action, in our most general \textit{relocation with flexible schedule} strategy, this robust control problem can be solved via the recursion,
-
-\begin{eqnarray}
-v_{i}^{t,b} &=& \max
+\label{eq:robust_relocationflexible_strategy}
+\cumulativeearning{i}{t,b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    \sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
-    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
-    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
-    \end{cases}
-\label{eq:robust_dynamic_program}
-\end{eqnarray}
-
-where, $\vec{v}_{i}^{t,b}$ is the \textit{induced total reward vector} and 
-
-\begin{eqnarray*}
-\sigma_{\mathcal{P}}(\vec{v}) &=& \inf\big\{ \transpose{p}\vec{v}: \vec{p} \in \mathcal{P} \big\}
-\end{eqnarray*}
-
-It should be noted that solving $\sigma_{\mathcal{P}}(\vec{v})$ is the inner problem in every step of the above recursion. A corresponding optimal in expectation driver policy is,
-
-\begin{eqnarray}
-{\textbf{a}_{i}^{t,b}}^* &=& \textrm{arg}\max_{a \in \mathcal{A}}
-    \begin{cases}
-    \sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
-    r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
-    \max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+    \sigma_{\likelihoodregion_{i}^{t}} \bigg(\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{a}\bigg), &\textrm{  if } a = \getpassengeraction\\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, &\textrm{  if } a = \gohomeaction \\ \\
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\}, &\textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
 
-Furthermore, the effect of uncertainty on some other policy, apart from the optimal in expecatation policy, can be evaluated as well using (\ref{eq:robust_dynamic_program}).
+\subsection{\textsc{The bisection algorithm}}
 
-\subsection{The bisection algorithm}
-
-Each step of the dynamic program involves the solution of an optimization problem, referred to as the ``inner problem'', of the form
-
-\begin{eqnarray}
-\sigma_{\mathcal{P}}(\vec{v}) &=& \min_{\vec{p} \in \mathcal{P}} \transpose{p}\vec{v}
+The inner problem defined in the previous section is solved in every step of the dynamic program to find an optimal policy for any of the strategies. In this section, we describe an approximation algorithm to solve the inner problem in Eq.(\ref{eq:inner_problem}) within a bounded error of $\delta > 0$.
+\begin{equation}
+\sigma_{\mathcal{P}}(\vec{v}) = \min_{\vec{p} \in \mathcal{P}} \transpose{p}\vec{v}
 \label{eq:inner_problem}
-\end{eqnarray}
-
-where $\vec{p}$ corresponds to a particular row of a specific transtition matrix, $\mathcal{P} = \mathcal{P}^t$ is the set that describes uncertainty on this row, and $\vec{v}$ contains the value function at some given stage. 
-
-% The complexity of the sets $\mathcal{P}^t$ is an important component in t{}he complexity of the robust dynamic programming algorithm. 
-
-% As explained by \cite{nilim2004robustness}, we can safely replace $\mathcal{P}^t$ by its convex hull, so that convexity of the sets $\mathcal{P}^t$ is not required; the algorithm only requires the knowledge of their convex hulls. \hc{I have low confidence in my understanding of this concept in the above sentence.}
-
-In the Appendix, we provide a bisection algorithm that can solve the inner problem with an accuracy $\delta > 0$. Thus, for a given induced total rewards vector $\vec{v} \in \mathbb{R}^n_+$, the bisection algorithm gives the output of the form,
-
+\end{equation}
+Assuming that $\vec{v} \in \mathbb{R}^n_+$, the bisection algorithm gives an output of the form,
 \begin{eqnarray}
 \hat{\sigma}_{\mathcal{P}} (\vec{v}) &=& \sigma_{\mathcal{P}} (\vec{v}) - \delta_{\mathcal{P}}(\vec{v})
 \end{eqnarray} 
 where $0 \leq \delta_{\mathcal{P}}(\vec{v}) \leq \delta$.
+
+The inner problem can be expressed as an optimization problem as follows.
+\begin{equation}
+\sigma^* = \min_{\vec{p}} \transpose{\vec{p}}\vec{v}: \vec{p} \in \Delta^n, \sum_{j} \vec{f}(j)\log{\vec{p}(j)} \geq \beta
+\end{equation}
+The Lagrangian $\mathbf{L}: \mathbb{R}^n \times \mathbb{R}^n \times \mathbb{R} \times \mathbb{R} \rightarrow \mathbb{R}$ associated with it is,
+\begin{equation}
+\mathbf{L}(\vec{v}, \zeta, \mu, \lambda) = \transpose{\vec{p}}\vec{v} - \transpose{\zeta}\vec{p} + \mu(1 - \transpose{\vec{p}}\mathbf{1}) + \lambda(\beta - \transpose{f}\log{\vec{p}})
+\end{equation}
+where $\zeta, \mu$ and $\lambda$ are Lagrange multipliers. We also define $\vmin = \min_j{\vec{v}(j)}$ and $\vmax = \max_j{\vec{v}(j)}$. We can define the dual problem as,
+\begin{equation}
+\sigma^* = \max_{\lambda, \mu} h(\lambda, \mu)
+\end{equation}
+where,
+\begin{eqnarray}
+h(\lambda, \mu) = 
+	\begin{cases}
+	\lambda(1 + \beta) + \mu - \lambda \sum_j \vec{f}(j) \log\bigg({\frac{\lambda \vec{f}(j)}{\vec{v}(j) - \mu}}\bigg), &\textrm{  if } \lambda > 0, \mu < \vmin, \\
+	-\infty, &\textrm{  otherwise } \\
+	\end{cases} 
+\end{eqnarray}
+which further reduces to a 1-dimensional optimization problem,
+\begin{equation}
+\sigma^* = \max_{\mu < \vmin} \sigma(\mu)
+\end{equation}
+where,
+\begin{eqnarray}
+\sigma(\mu) &=& h(\lambda(\mu), \mu), \\
+\lambda(\mu) &=& \bigg(\sum_{j} \frac{\vec{f}(j)}{\vec{v}(j) - \mu}\bigg)^{-1}
+\end{eqnarray}
+\begin{lemma}
+The global maximiser of $\sigma(\mu)$ is contained within the interval $[\mu_{-}, \mu_{+})$ where, $\mu_{-} = \frac{\vmin - e^{(\beta - \betamax)}\vmax}{1 - e^{(\beta - \betamax)}}$ and $\mu_{+} = \vmin$.
+\todo[Harshal]{Include the proof in supplementary material and provide a link here.}
+\end{lemma}
+\begin{lemma}
+After $N \approx \log_2(V/ \delta)$ steps, the bisection algorithm provides an optimal solution to the inner problem within a bounded error of $\delta > 0$, when
+$V = \max(\sigma^* - \sigma(\mu_+), \sigma^* - \sigma(\mu_-))$.
+\end{lemma}
+\todo[Harshal]{Include the proof in supplementary material and provide a link here.}
+\begin{algorithm}
+\LinesNumbered
+	\KwIn{$\mu_{+}, \mu_{-}, N$}
+	\KwOut{Solution to problem (\ref{eq:inner_problem})}
+$\mu_1 = (\mu_{+} + \mu_{-})/2$ ;\\
+\For{$k = 1 \cdots N$}{
+	\uIf{$\sigma^{'}(\mu_1) > 0$}{
+		$\mu_- = \mu_1$ \;
+	}
+	\uElseIf{$\sigma^{'}(\mu_1) < 0$}{
+		$\mu_+ = \mu_1$ \;
+	}
+	\Else{
+		\Return $\mu_1$
+	}
+k = k + 1 ;\\
+$\mu_k = (\mu_+ + \mu_-)/2$ ;\\
+}
+\Return $\argmax_i \{\sigma(\mu_i)\}$;
+\caption{Bisection algorithm}
+\label{alg:bisection_algorithm}
+\end{algorithm}
+
 
 \subsection{\texorpdfstring{$\epsilon$}{epsilon}-suboptimal algorithm}
 
