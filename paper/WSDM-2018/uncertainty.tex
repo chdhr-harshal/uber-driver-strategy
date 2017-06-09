@@ -30,9 +30,9 @@ We only need to work with uncertainty on each row {\truetransitionmatrix}, that 
 \likelihoodregion_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\}
 \end{equation}
 where,
-\begin{equation}
+\begin{equation*}
 \beta_i = \beta - \sum_{k \neq i}\sum_{j}f(k,j)\log{f(k,j)}
-\end{equation}
+\end{equation*}
 
 \subsection{\textsc{The robust control problem}}
 
@@ -105,32 +105,33 @@ h(\lambda, \mu) =
 	\begin{cases}
 	\lambda(1 + \beta) + \mu - \lambda \sum_j \vec{f}(j) \log\bigg({\frac{\lambda \vec{f}(j)}{\vec{v}(j) - \mu}}\bigg), &\textrm{  if } \lambda > 0, \mu < \vmin, \\
 	-\infty, &\textrm{  otherwise } \\
-	\end{cases} 
+	\end{cases} \nonumber
 \end{eqnarray}
 which further reduces to a 1-dimensional optimization problem,
 \begin{equation}
 \sigma^* = \max_{\mu < \vmin} \sigma(\mu)
 \end{equation}
 where,
-\begin{eqnarray}
+\begin{eqnarray*}
 \sigma(\mu) &=& h(\lambda(\mu), \mu), \\
 \lambda(\mu) &=& \bigg(\sum_{j} \frac{\vec{f}(j)}{\vec{v}(j) - \mu}\bigg)^{-1}
-\end{eqnarray}
+\end{eqnarray*}
 \begin{lemma}
 The global maximiser of $\sigma(\mu)$ is contained within the interval $[\mu_{-}, \mu_{+})$ where, $\mu_{-} = \frac{\vmin - e^{(\beta - \betamax)}\vmax}{1 - e^{(\beta - \betamax)}}$ and $\mu_{+} = \vmin$.
 \todo[Harshal]{Include the proof in supplementary material and provide a link here.}
 \end{lemma}
 \begin{lemma}
-After $N \approx \log_2(V/ \delta)$ steps, the bisection algorithm provides an optimal solution to the inner problem within a bounded error of $\delta > 0$, when
+After $\mathcal{N} \approx \log_2(V/ \delta)$ steps, the bisection algorithm provides an optimal solution to the inner problem within a bounded error of $\delta > 0$, when
 $V = \max(\sigma^* - \sigma(\mu_+), \sigma^* - \sigma(\mu_-))$.
 \end{lemma}
 \todo[Harshal]{Include the proof in supplementary material and provide a link here.}
 \begin{algorithm}
 \LinesNumbered
-	\KwIn{$\mu_{+}, \mu_{-}, N$}
-	\KwOut{Solution to problem (\ref{eq:inner_problem})}
+\KwIn{$\mu_{+}, \mu_{-}, \mathcal{N}$}
+\KwOut{Solution to problem (\ref{eq:inner_problem})}
+
 $\mu_1 = (\mu_{+} + \mu_{-})/2$ ;\\
-\For{$k = 1 \cdots N$}{
+\For{$k = 1 \cdots \mathcal{N}$}{
 	\uIf{$\sigma^{'}(\mu_1) > 0$}{
 		$\mu_- = \mu_1$ \;
 	}
@@ -140,7 +141,7 @@ $\mu_1 = (\mu_{+} + \mu_{-})/2$ ;\\
 	\Else{
 		\Return $\mu_1$
 	}
-k = k + 1 ;\\
+$k = k + 1$ ;\\
 $\mu_k = (\mu_+ + \mu_-)/2$ ;\\
 }
 \Return $\argmax_i \{\sigma(\mu_i)\}$;
@@ -148,55 +149,50 @@ $\mu_k = (\mu_+ + \mu_-)/2$ ;\\
 \label{alg:bisection_algorithm}
 \end{algorithm}
 
+\todo[Harshal]{Add note on the complexity of solving the inner problem.}
 
-\subsection{\texorpdfstring{$\epsilon$}{epsilon}-suboptimal algorithm}
+\subsection{\textsc{\texorpdfstring{$\epsilon$}{epsilon}-suboptimal algorithm}}
 
-An $\epsilon$-suboptimal policy, $\pi^\epsilon$ is a policy such that the worst-case expected total reward under it, i.e., 
-\begin{eqnarray*}
-\phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) = \min_{\matr{P} \in \mathcal{T}} R^N(\pi^\epsilon, \matr{P}, \matr{T}, \matr{R})
-\end{eqnarray*}
+An {\epsilonsuboptimal}, {\epsilonsuboptimalpolicy} is a policy such that the worst-case {\totalexpectedearnings} under it, i.e., 
+\begin{equation}
+\phi(\hat{\policy}, \mathcal{T}, \traveltimematrix, \rewardsmatrix) = \min_{\mathbb{P} \in \mathcal{T}} \mathcal{E}^{N,B}(\hat{\policy}, \mathbb{P}, \traveltimematrix, \rewardsmatrix)
+\end{equation}
+satisfy the condition,
+\begin{equation*}
+\phi(\hat{\policy}, \mathcal{T}, \traveltimematrix, \rewardsmatrix) \leq \phi(\policyspace, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix) \leq \phi(\hat{\policy}, \mathcal{T}, \traveltimematrix, \rewardsmatrix) + \epsilon
+\end{equation*}
+Here, $\epsilon > 0$ is user input. Using the uncertainty model from section (\ref{sec:likelihood_model}), we solve the bisection algorithm with an accuracy $\delta = \epsilon / N$. 
+\note[Harshal]{Only in the case where every optimal action in a policy is {\getpassenger}, the entire $\epsilon$ error buffer is used. In practice, the error buffer used will be $(n \times \delta)$ where $n$ is the number of times the optimal action choice happens to be {\getpassenger}}
+This gives us the robust finite horizon dynamic programming algorithm. The algorithm for the most {\relocationflexible} is shown below. However, it can be adapted for any of the other strategies described earlier.
+\begin{algorithm}
+\LinesNumbered
+\KwIn{$\empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix, \epsilon, \beta$}
+\KwOut{Solution to problem (\ref{eq:robust_relocationflexible_strategy})}
 
-satisfies the condition,
-
-\begin{eqnarray}
-\phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) \leq \phi^N(\Pi, \mathcal{T}, \matr{T}, \matr{R}) \leq \phi^N(\pi^\epsilon, \mathcal{T}, \matr{T}, \matr{R}) + \epsilon
-\end{eqnarray}
-
-Here, $\epsilon > 0$ is user input to the algorithm. Using the uncertainty model from section (\ref{sec:likelihood_model}), we solve the bisection algorithm with an accuracy $\delta = \epsilon / N$. This gives us the robust finite horizon dynamic programming algorithm. The algorithm for the most general \textit{relocation with flexible schedule} strategy is shown below. However, it can be adapted for any of the other strategies by using the appropriate value function.
-
-\begin{enumerate}
-	\item Set $\epsilon > 0$. Initialize the value function to its terminal value $v_i^N = r_i^N$, $t=N-1$ and $b=B-1$. \\
-	\item Repeat until $t=0$: \\
-		\begin{enumerate}
-			\item Repeat until $b=0$: \\	
-		\begin{enumerate}
-			\item For every state $i \in \mathcal{X}$, use the bisection algorith algorithm to compute a value $\hat{\sigma}_i^t$ such that,
-			\begin{eqnarray*}
-				\hat{\sigma}_i^{t,b} \leq \sigma_{\mathcal{P}_i^t}(\vec{v}_i^{t,b}) \leq \hat{\sigma}_i^{t,b} + \frac{\epsilon}{N}
-			\end{eqnarray*}
-			\item Update the value function by,
-			\begin{eqnarray*}
-			{v_{i}^{t,b}}^\epsilon &=& \max
-    			\begin{cases}
-    			\sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
-    			r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
-    			\max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
-    			\end{cases}
-			\end{eqnarray*}
-			\item b = b - 1 \\
-		\end{enumerate}
-		\item t = t - 1 \\
-		\end{enumerate}
-	\item For every $i \in \mathcal{X}, t \leq N, b \leq B$,
-	\begin{eqnarray*}
-	{\textbf{a}_{i}^{t,b}}^\epsilon &=& \textrm{arg}\max_{a \in \mathcal{A}}
-    	\begin{cases}
-    	\sigma_{\mathcal{P}_{i}^{t}}(\vec{r}_{i}^{t} + \vec{v}_{i}^{t,b})\\ \\
-    	r_{i}^{t}(a_1) + v_{i_0}^{t'_{i_0},b_{i_0}} \\ \\
-    	\max_{a_2(j)} \bigg\{r_{i}^{t}(a_2(j)) + v_{j}^{t'_{j},b'_{j}}\bigg\}, j \neq i, t'_{j} \leq N, b'_{j} \leq B
+Initialize $t = N$ and $b = B$; \\
+\While{$t > 0$}{
+	\While{$b > 0$}{
+		\For{$i \in \cityzones$}{
+		Use Algorithm (\ref{alg:bisection_algorithm}), to calculate a value $\hat{\sigma}_{i}$,
+		$\hat{\sigma}_{\likelihoodregion_i} \leq \sigma_{\likelihoodregion_i}(\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction}) \leq \hat{\sigma}_{\likelihoodregion_i} + \delta$ \;
+		Solve Eq.(\ref{eq:robust_relocationflexible_strategy})
+		\begin{eqnarray*}
+		\cumulativeearning{i}{t,b} = \max_{a \in \actionsset}
+    		\begin{cases}
+    		\hat{\sigma}_{i}, &\textrm{  if } a = \getpassengeraction\\
+    		r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, &\textrm{  if } a = \gohomeaction \\
+    		\max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\}, &\textrm{  if } a = \relocateaction
     	\end{cases}
-	\end{eqnarray*}
-\end{enumerate}
+    	\end{eqnarray*}
+		}
+	$b = b - 1$ \;
+	}
+$t = t - 1$ \;
+}
+\Return $\cumulativeearning{\homezone}{N,B}$ and $\epsilonsuboptimalpolicy$;
+\caption{Robust Finite Horizon Dynamic Program}
+\label{alg:robust_dynamic_program}
+\end{algorithm}
 
 
 
