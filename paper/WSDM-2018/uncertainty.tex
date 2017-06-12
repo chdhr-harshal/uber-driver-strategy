@@ -130,19 +130,18 @@ $V = \max(\sigma^* - \sigma(\mu_+), \sigma^* - \sigma(\mu_-))$.
 \KwIn{$\mu_{+}, \mu_{-}, \mathcal{N}$}
 \KwOut{Solution to problem (\ref{eq:inner_problem})}
 
-$\mu_1 = (\mu_{+} + \mu_{-})/2$ ;\\
 \For{$k = 1 \cdots \mathcal{N}$}{
-	\uIf{$\sigma^{'}(\mu_1) > 0$}{
-		$\mu_- = \mu_1$ \;
+	$\mu_k = (\mu_+ + \mu_-)/2$ ;\\
+	\uIf{$\sigma^{'}(\mu_k) > 0$}{
+		$\mu_- = \mu_k$ \;
 	}
-	\uElseIf{$\sigma^{'}(\mu_1) < 0$}{
-		$\mu_+ = \mu_1$ \;
+	\uElseIf{$\sigma^{'}(\mu_k) < 0$}{
+		$\mu_+ = \mu_k$ \;
 	}
 	\Else{
-		\Return $\mu_1$
+		\Return $\sigma(\mu_k)$
 	}
 $k = k + 1$ ;\\
-$\mu_k = (\mu_+ + \mu_-)/2$ ;\\
 }
 \Return $\argmax_i \{\sigma(\mu_i)\}$;
 \caption{Bisection algorithm}

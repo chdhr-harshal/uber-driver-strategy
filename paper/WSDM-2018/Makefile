@@ -20,4 +20,4 @@ view : ${PRJ}.pdf
 
 clean:
 	rm -Rf latex.out
-	rm -f *.toc *.aux *.bbl *.blg *.log *~* *.bak *.out *synctex.gz ${PRJ}.pdf
+	rm -f *.toc *.aux *.bbl *.blg *.log *~* *.bak *.out *synctex.gz *.fls *.fdb_latexmk ${PRJ}.pdf
