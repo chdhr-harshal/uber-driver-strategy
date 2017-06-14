@@ -59,7 +59,7 @@ Whenever the {\markovchain} is in a non-positive state, there are more drivers t
 \end{equation}
 Thus, we can express a diagonal entry $f(i,i)$ of empirical transition matrix as follows,
 \begin{equation}
-f(i,i) = 1 - \sum_{k \leq 0} \Pr[K = k] \times \Pr[N(\passengerarrivalrate) = |k| + 1]
+f(i,i) = 1 - \sum_{k \leq 0} \Pr[K = k] \times \Pr[N(\passengerarrivalrate) \geq |k| + 1]
 \end{equation}
 To maintain the right stochasticity of {\empiricaltransitionmatrix}, every other entry $f(i,j)$ is calculated as,
 \begin{equation}

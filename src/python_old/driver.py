@@ -1,26 +1,8 @@
 #!/home/grad3/harshal/py_env/my_env/bin/python2.7
 
-"""
-Driver class
-
-Includes methods related to:
-    1. Current Driver state - Passenger ride i to j
-                            - Empty ride i to j
-                            - Busy waiting i
-                            - Idle waiting i
-
-    2. Driver strategy      - Random walk
-                            - Relocation strategy
-                            - Work Schedule strategy
-                            - Work Schedule + Relocation strategy
-    
-    3. Home node
-    4. Budget
-    5. Earnings
-"""
-
 import numpy as np
 import math
+import dill
 
 class Driver(object):
     """
@@ -44,6 +26,14 @@ class Driver(object):
         self.service_time_left = self.service_time
         self.budget_left = self.budget
 
+    @classmethod
+    def fromDillFile(cls, filename):
+        with open(filename, 'rb') as f:
+            args = dill.load(f)
+
+        return cls(args['strategy'], args['OPT_ACTIONS'], args['city_states'],
+                  args['home_zone'], args['service_time'], args['budget'])
+                    
     def real_time_to_fake_time(self, real_mins):
         return int(math.ceil(real_mins*1.0/self.fake_time_unit))
 
@@ -119,7 +109,8 @@ class Driver(object):
             else: # opt_action_value[0] == 'empty_ride'
                 self.simulate_empty_ride(current_city_state, opt_action_value)
 
-        print "Finished Reloc + Flexi time strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        # print "Finished Reloc + Flexi time strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        return self.earnings
 
     def flexi_driver_simulator(self):
         while self.budget_left > 0 and self.service_time_left > 0:
@@ -135,7 +126,8 @@ class Driver(object):
                 if time_up:
                     break
 
-        print "Finished Flexi time strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        # print "Finished Flexi time strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        return self.earnings
 
     def reloc_driver_simulator(self):
         while self.service_time_left > 0:
@@ -177,4 +169,5 @@ class Driver(object):
                 self.current_zone = pax_ride_destination
                 self.service_time_left = self.service_time_left - trip_duration
 
-        print "Finished Reloc strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        # print "Finished Reloc strategy driver simulator with revenue earned ${0}".format(self.earnings)
+        return self.earnings

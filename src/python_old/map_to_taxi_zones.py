@@ -27,7 +27,7 @@ def read_trips_file(filename):
     filename = os.path.join(DATA_DIR, "raw_data", filename)
     raw_data_iterator = pd.read_csv(filename, sep=',', header=0, index_col=False, 
                           parse_dates=['tpep_pickup_datetime','tpep_dropoff_datetime'], infer_datetime_format=True,
-                          chunksize=600000)
+                          chunksize=1000)
 
     return raw_data_iterator
 
@@ -93,7 +93,7 @@ def push_to_database(df):
     conn = engine.connect() 
 
     # Create / append to the existing table of trips
-    df.to_sql('yellow-taxi-trips', conn, if_exists='append', index=False)
+    df.to_sql('yellow-taxi-trips-january-16', conn, if_exists='append', index=False)
 
     # Close connection
     conn.close()
@@ -111,7 +111,7 @@ def process_df(df):
 
 if __name__ == "__main__":
     # Create csv read iterator
-    raw_data_iterator = read_trips_file("yellow_tripdata_2015-09.csv")
+    raw_data_iterator = read_trips_file("yellow_tripdata_2016-01.csv")
 
     # Create pool of 20 processes
     pool = Pool(processes=20)

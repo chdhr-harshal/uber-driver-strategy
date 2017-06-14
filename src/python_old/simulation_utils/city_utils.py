@@ -2,7 +2,7 @@
 
 import pandas as pd
 import numpy as np
-from scipy.stats import expon
+from scipy.stats import expon, skellam, poisson
 import random
 
 class TransitionMatrix(object):
@@ -88,7 +88,7 @@ class TransitionMatrix(object):
 
         Returns
             transition_probability_vector (Series)
-                A pandas series with index as end_zones as values as transition_probabilities.
+                A pandas series with index as end_zones and values as transition_probabilities.
         """
         return self.transition_matrix.loc[start_zone]
 
@@ -141,6 +141,21 @@ class DurationMatrix(object):
         """
 
         return self.duration_matrix[end_zone][start_zone]
+
+    def get_trip_duration_vector(self, start_zone):
+        """
+        Get a vector of trip durations from start_zone
+
+        Parameters
+            start_zone (str)
+                Start zone of the transition
+            
+        Returns
+            trip_duration_vector (Series)
+                A pandas series with index as end_zones and values as trip_durations.
+        """
+        return self.duration_matrix.loc[start_zone]
+    
 
 class DistanceMatrix(object):
     """
@@ -308,96 +323,176 @@ class PaxWaitingVector(object):
 
 class DriverWaitingVector(object):
     """
-    Class for driver waiting time estimate of the graph
-    and the associated methods.
+    Class for probabilities associated with different
+    driver waiting times
     """
-    
-    def __init__(self, pickup_df, dropoff_df):
+
+    def __init__(self, pickup_df, dropoff_df, time_slice_duration, fake_time_unit):
         """
-        Init method for class.
-        
+        Init method for class
+
         Parameters
             pickup_df (DataFrame)
             dropoff_df (DataFrame)
-                Pandas dataframes for pickups and dropoffs in a time slice
+                Pandas dataframes for pickups and dropoffs in a time slice.
+            time_slice_duration (int)
+                Time slice duration.
+            fake_time_unit (int)
+                Number of real minutes in a fake time unit.
         """
+
+        # Number of time units in time_slice_duration
+        time_units = time_slice_duration / fake_time_unit
 
         # Convert timestamp to datetime object
         pickup_df['tpep_pickup_datetime'] = pd.to_datetime(pickup_df['tpep_pickup_datetime'])
-        dropoff_df['tpep_dropoff_datetime'] = pd.to_datetime(dropoff_df['tpep_dropoff_datetime'])    
-            
-        # Get inter-event times in seconds
-        pickup_df['timediff'] = pickup_df.groupby('pickup_zone')['tpep_pickup_datetime'].diff().astype('timedelta64[s]')
-        dropoff_df['timediff'] = dropoff_df.groupby('dropoff_zone')['tpep_dropoff_datetime'].diff().astype('timedelta64[s]')
+        dropoff_df['tpep_dropoff_datetime'] = pd.to_datetime(dropoff_df['tpep_dropoff_datetime'])
 
-        # Drop first Nan row for each group
-        pickup_df = pickup_df.dropna()
-        dropoff_df = dropoff_df.dropna()
+        pickup_df = pd.DataFrame({'lambda': pickup_df.groupby('pickup_zone').size()})
+        dropoff_df = pd.DataFrame({'mu':dropoff_df.groupby('dropoff_zone').size()})
 
-        # Fit exponential distribution to inter-event times
-        # Exponential distribution scale parameter = Corresponding poisson distribution rate parameter
-        self.pickup_poisson_rate_series = pd.Series(pickup_df.groupby('pickup_zone')['timediff'].apply(self.get_poisson_parameters),
-                                        name='lambda') 
-        self.dropoff_poisson_rate_series = pd.Series(dropoff_df.groupby('dropoff_zone')['timediff'].apply(self.get_poisson_parameters),
-                                        name='mu')
+        pickup_df['lambda'] = pickup_df['lambda']*1.0/time_units
+        dropoff_df['mu'] = dropoff_df['mu']*1.0/time_units
 
-        self.exogenous_poisson_rate_series = self.pickup_poisson_rate_series - self.dropoff_poisson_rate_series
+        self.lambda_vector = pickup_df['lambda']
+        self.mu_vector = dropoff_df['mu']
 
+    def prob_n_events_m_time_units(self, n, m, lambda_rate):
+        poisson_rv = poisson(m*lambda_rate)
+        return poisson_rv.pmf(n)
         
-    def get_pickup_poisson_rate_series(self):
+    def prob_pax_ride_in_mth_time_unit(self, k, m, lambda_rate):
         """
-        Returns
-            pickup_poisson_rate_series (Series)
-                A pandas series with poisson rate parameter for each node
+        Returns probability of driver finding a pax ride in
+        m-th time unit while skellam distribution is in state k
         """
-        return self.pickup_poisson_rate_series
+        if m==0:
+            return self.prob_n_events_m_time_units(np.abs(k)+1, 1, lambda_rate)
 
-    def get_dropoff_poisson_rate_series(self):
-        """
-        Returns
-            dropoff_poisson_rate_series (Series)
-                A pandas series with poisson rate parameter for each node
-        """
-        return self.dropoff_poisson_rate_series
-                
-    def get_exogenous_poisson_rate_series(self):
-        """
-        Returns
-            exogenous_poisson_rate_series (Series)
-                A pandas series with exogenous poisson rate parameter for each node
-        """
-        return self.exogenous_poisson_rate_series
+        total_prob = 0
+        for n in range(0, np.abs(k)+1):
+            # prob_n_pax_in_m_minus_1_time_units = self.prob_n_pax_m_time_units(n, m-1, lambda_rate)
+            # prob_remaining_pax_in_mth_time_unit = self.prob_n_pax_in_one_time_unit(np.abs(k)+1-n, lambda_rate)
+            prob_n_pax_in_m_minus_1_time_units = self.prob_n_events_m_time_units(n, m-1, lambda_rate)
+            prob_remaining_pax_in_mth_time_unit = self.prob_n_events_m_time_units(np.abs(k)+1-n, 1, lambda_rate)
 
-    def get_driver_waiting_time(self, zone):
-        """
-        Get driver waiting time in minutes for the city zone
+            product = prob_n_pax_in_m_minus_1_time_units * prob_remaining_pax_in_mth_time_unit
+            total_prob += product
 
-        Parameters
-            zone (str)
-                City zone
+        return total_prob
 
-        Returns
-            waiting_time (float)
-                Waiting time in minutes at the particular zone
+    def prob_waiting_time_equals_m(self, m, lambda_rate, mu_rate):
         """
-        try:
-            waiting_time = 1.0/self.pickup_poisson_rate_series[zone]
-            return waiting_time
-        except:
-            return 10000
+        Returns probability that waiting time for driver is 
+        m time units
+        """
+        total_prob = 0
+        
+        skellam_rv = skellam(lambda_rate, mu_rate)
+        k_lower_limit = int(skellam_rv.ppf(0.01))
+        for k in range(k_lower_limit, 1):
+            prob_state_k = skellam_rv.pmf(k)
+            if prob_state_k < 0.01:
+                continue
+            prob_pax_ride_in_mth_time_unit_value = self.prob_pax_ride_in_mth_time_unit(k, m, lambda_rate)
 
-    def get_poisson_parameters(self, data):
-        """
-        Parameters
-            data (numpy array)
-                Inter events time in seconds
-        Returns
-            scale (float)
-                scale parameters of exponential distribution of inter-event times.
-                OR
-                poisson rate parameter
-        """
-        return expon.fit(data, floc=0)[1]
+            product = prob_state_k * prob_pax_ride_in_mth_time_unit_value
+            total_prob += product
+
+        return total_prob
+
+# class DriverWaitingVector(object):
+#     """
+#     Class for driver waiting time estimate of the graph
+#     and the associated methods.
+#     """
+#     
+#     def __init__(self, pickup_df, dropoff_df):
+#         """
+#         Init method for class.
+#         
+#         Parameters
+#             pickup_df (DataFrame)
+#             dropoff_df (DataFrame)
+#                 Pandas dataframes for pickups and dropoffs in a time slice
+#         """
+# 
+#         # Convert timestamp to datetime object
+#         pickup_df['tpep_pickup_datetime'] = pd.to_datetime(pickup_df['tpep_pickup_datetime'])
+#         dropoff_df['tpep_dropoff_datetime'] = pd.to_datetime(dropoff_df['tpep_dropoff_datetime'])    
+#             
+#         # Get inter-event times in seconds
+#         pickup_df['timediff'] = pickup_df.groupby('pickup_zone')['tpep_pickup_datetime'].diff().astype('timedelta64[s]')
+#         dropoff_df['timediff'] = dropoff_df.groupby('dropoff_zone')['tpep_dropoff_datetime'].diff().astype('timedelta64[s]')
+# 
+#         # Drop first Nan row for each group
+#         pickup_df = pickup_df.dropna()
+#         dropoff_df = dropoff_df.dropna()
+# 
+#         # Fit exponential distribution to inter-event times
+#         # Exponential distribution scale parameter = Corresponding poisson distribution rate parameter
+#         self.pickup_poisson_rate_series = pd.Series(pickup_df.groupby('pickup_zone')['timediff'].apply(self.get_poisson_parameters),
+#                                         name='lambda') 
+#         self.dropoff_poisson_rate_series = pd.Series(dropoff_df.groupby('dropoff_zone')['timediff'].apply(self.get_poisson_parameters),
+#                                         name='mu')
+# 
+#         self.exogenous_poisson_rate_series = self.pickup_poisson_rate_series - self.dropoff_poisson_rate_series
+# 
+#         
+#     def get_pickup_poisson_rate_series(self):
+#         """
+#         Returns
+#             pickup_poisson_rate_series (Series)
+#                 A pandas series with poisson rate parameter for each node
+#         """
+#         return self.pickup_poisson_rate_series
+# 
+#     def get_dropoff_poisson_rate_series(self):
+#         """
+#         Returns
+#             dropoff_poisson_rate_series (Series)
+#                 A pandas series with poisson rate parameter for each node
+#         """
+#         return self.dropoff_poisson_rate_series
+#                 
+#     def get_exogenous_poisson_rate_series(self):
+#         """
+#         Returns
+#             exogenous_poisson_rate_series (Series)
+#                 A pandas series with exogenous poisson rate parameter for each node
+#         """
+#         return self.exogenous_poisson_rate_series
+# 
+#     def get_driver_waiting_time(self, zone):
+#         """
+#         Get driver waiting time in minutes for the city zone
+# 
+#         Parameters
+#             zone (str)
+#                 City zone
+# 
+#         Returns
+#             waiting_time (float)
+#                 Waiting time in minutes at the particular zone
+#         """
+#         try:
+#             waiting_time = 1.0/self.pickup_poisson_rate_series[zone]
+#             return waiting_time
+#         except:
+#             return 10000
+# 
+#     def get_poisson_parameters(self, data):
+#         """
+#         Parameters
+#             data (numpy array)
+#                 Inter events time in seconds
+#         Returns
+#             scale (float)
+#                 scale parameters of exponential distribution of inter-event times.
+#                 OR
+#                 poisson rate parameter
+#         """
+#         return expon.fit(data, floc=0)[1]
 
 class CalculatedCostMatrix(object):
     """

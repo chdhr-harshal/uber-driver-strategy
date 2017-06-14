@@ -78,7 +78,7 @@ def get_zone_representative_pickup_points(time_slice, conn):
     
     query = """\
             select pickup_zone as taxi_zone, pickup_latitude as pickup_latitude, pickup_longitude as pickup_longitude \
-            from (select * from `yellow-taxi-trips-october-15` where tpep_pickup_datetime between '{0}' and '{1}' \
+            from (select * from `yellow-taxi-trips-november-15` where tpep_pickup_datetime between '{0}' and '{1}' \
             order by RAND()) temp \
             where temp.pickup_zone is not NULL \
             group by temp.pickup_zone;\
@@ -107,7 +107,7 @@ def get_zone_representative_dropoff_points(time_slice, conn):
     
     query = """\
             select dropoff_zone as taxi_zone, dropoff_latitude as dropoff_latitude, dropoff_longitude as dropoff_longitude \
-            from (select * from `yellow-taxi-trips-october-15` where tpep_dropoff_datetime between '{0}' and '{1}' \
+            from (select * from `yellow-taxi-trips-november-15` where tpep_dropoff_datetime between '{0}' and '{1}' \
             order by RAND()) temp \
             where temp.dropoff_zone is not NULL \
             group by temp.dropoff_zone;\
