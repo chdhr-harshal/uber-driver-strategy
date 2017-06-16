@@ -19,7 +19,7 @@ class Bisection(object):
 
     def calculate_bisection_algorithm_endpoints(self):
         self.mu_plus = np.min(self.v)
-        self.mu_minus = (np.min(self.v) - (np.max(self.v)**np.e**(self.beta - self.beta_max)))/(1 - np.e**(self.beta - self.beta_max))
+        self.mu_minus = (np.min(self.v) - (np.max(self.v)*np.e**(self.beta - self.beta_max)))/(1 - np.e**(self.beta - self.beta_max))
 
     def calculate_lambda_mu(self, var_mu):
         return 1 / (np.sum(self.f/(self.v - var_mu)))
