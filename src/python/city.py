@@ -8,6 +8,7 @@ Includes methods for:
     2. Net Rewards Matrix
 """
 
+from __future__ import division
 import numpy as np
 from city_utils import *
 import os
@@ -44,7 +45,7 @@ class City(object):
         # Compute city attributes when no dill file provided
         city_attributes = {}
         real_time = self.start_time
-        for t in range(1,self.N+1):
+        for t in xrange(self.N):
             print "Creating city attributes for time slice {}".format(t)
             city_attributes[t] = {}
             city_attributes[t]['start_time'] = real_time - timedelta(minutes=self.time_slice_duration/2)
@@ -78,7 +79,7 @@ class City(object):
             city_attributes[t]['driver_costs_matrix'] = RM.driver_costs_matrix
 
             # Set time of next time slice
-            start_time = real_time + timedelta(minutes=self.time_unit_duration)
+            real_time = real_time + timedelta(minutes=self.time_unit_duration)
 
         return city_attributes
 
@@ -93,13 +94,13 @@ class City(object):
         with open(filename, 'rb') as f:
             city_attributes = dill.load(f)
 
-        time_slice_duration = city_attributes[1]['time_slice_duration']
-        time_unit_duration = city_attributes[1]['time_unit_duration']
+        time_slice_duration = city_attributes[0]['time_slice_duration']
+        time_unit_duration = city_attributes[0]['time_unit_duration']
         N = len(city_attributes)
         city_zones = City.get_city_zones()
 
         # Calculate system start time from the start time of first time slice in city attributes
-        start_time = city_attributes[1]['start_time'] + timedelta(minutes=time_slice_duration/2)
+        start_time = city_attributes[0]['start_time'] + timedelta(minutes=time_slice_duration/2)
         start_time = start_time.strftime("%Y-%m-%d %H:%M:%S")
 
         return cls(start_time, time_slice_duration, time_unit_duration, N, city_attributes)
