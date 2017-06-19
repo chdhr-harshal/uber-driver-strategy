@@ -1,5 +1,22 @@
 %!TEX root = main.tex
 
 \begin{abstract}
-On demand ride services like Uber, Lyft, etc. play an important role in urban transportation. Strategic behavior on such platforms can help solve important societal problem like raising the income of taxi drivers. Current research has largely focused on optimal route planning of the taxi vehicles, however such routing policies, while improving the overall service to passengers, are not optimal for driver revenues over extended periods of time. To address this issue, we model the passenger seeking behavior of the taxi drivers on Uber as a controlled Markov Decision Process (MDP) over a finite horizon of time. The parameters of this MDP are set using Uber Rider API and publicly available New York Taxi datasets. Using this model, we devise three optimal in expectation strategies for drivers and evaluate them. Furthermore, we provide a sensitivity analysis of these strategies to account for uncertainties in the MDP parameters.
+On-demand ridesharing platforms like Uber and Lyft play an important role in urban transportation, 
+  enabling car owners to become drivers for hire with minimal overhead.
+One natural optimization problem in this domain has focused on optimal route planning of a deployed
+  fleet of vehicles, with objective functions geared largely towards improving the overall service 
+  to passengers or minimizing total resource utilization (fuel consumption, miles driven, etc.).
+But much less emphasis has been placed on optimization for individual drivers.
+While some individuals drive opportunistically either as their schedule allows or on a fixed 
+  schedule, strategic behavior regarding when and where to drive can substantially increase
+  driver income.
+To address this issue, we model the passenger seeking behavior of the 
+%% drivers on Uber are NOT taxi drivers
+%%
+%%taxi
+drivers on Uber as a controlled Markov Decision Process (MDP) over a finite horizon of time.
+%
+\todo[JB]{These next sentences are too vague.  Describe more specifics and why they matter.}
+The parameters of this MDP are set using Uber Rider API and publicly available New York Taxi datasets. Using this model, we devise three optimal in expectation strategies for drivers and evaluate them. Furthermore, we provide a sensitivity analysis of these strategies to account for uncertainties in the MDP parameters.
+Our main finding is XXX.
 \end{abstract}

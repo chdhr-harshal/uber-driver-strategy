@@ -5,7 +5,10 @@
 
 In this section, we describe the basics of our problem setup and provide the necessary notations.
 
-\subsection{\textsc{City}}
+%% JB:  notation goes here, not earlier
+\input{notation}
+
+\subsection{\textsc{Modeling the City}}
 
 Throughout the paper, we will assume that a city is divided into non-overlaping set of zones denoted by \cityzones. 
 We represent a city in form of a weighted directed graph $G=(\cityzones, E)$ with 
@@ -40,7 +43,7 @@ the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewa
 share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc.
 Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
-\subsection{\textsc{Driver}}
+\subsection{\textsc{Modeling the Driver}}
 
 In our setting, we devise optimal in expectation strategies for an individual taxi driver working for an
 on-demand ride service. There is an alloted maximum budget of $B$ time units during which the driver can pick
@@ -88,7 +91,7 @@ Furthermore, for a policy of length $L$, the corresponding policy space can be d
 $\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \{\policyspace_1, \cdots, \policyspace_N\}$, as the maximum length of a policy can be $N$.
 
 
-\subsection{\textsc{Calculation of Earnings}}
+\subsection{\textsc{Calculation of Driver Earnings}}
 Now, we describe the attributes of the driver actions described in the previous section.
 
 \subsubsection{\sc{ActionEarning}}
