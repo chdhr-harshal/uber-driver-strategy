@@ -15,8 +15,9 @@ We represent a city in form of a weighted directed graph $G=(\cityzones, E)$ wit
 $|\cityzones| = n$ and $|E| = n(n-1) + n$ arcs, an arc between each pair of nodes and self loops on every node. 
 Some of the attributes of a city are as follows:
 
-\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
+%\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
+\spara{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}:
 Every arc $e(i\rightarrow j) \in E$ is associated with a real-valued weight $f(i,j) \in [0,1]$ such that,
 \begin{equation}
 	\sum_{j \in \cityzones} f(i,j) = 1, \forall i \in \cityzones
@@ -28,16 +29,18 @@ travelling to zone $j$. We assume that no passenger rides a taxi within the same
 $f(i,i)$ denotes the probability of not finding a passenger in zone $i$. The empirical transition matrix {\empiricaltransitionmatrix}
 changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
 
-\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
+%\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
+\spara{\sc{TravelTimeMatrix} (\traveltimematrix)}:
 Every arc $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
 denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
 These weights give us a travel time matrix {\traveltimematrix}. 
 Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
 Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
 
-\subsubsection{\sc{RewardsMatrix} (\rewardsmatrix)}
+%\subsubsection{\sc{RewardsMatrix} (\rewardsmatrix)}
 
+\spara{\sc{RewardsMatrix} (\rewardsmatrix)}:
 Every arc $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j) \geq 0$ denoting
 the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewards include the driver's
 share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc.
@@ -51,14 +54,16 @@ up passenger rides. However, in some strategies, the driver can flexibly split t
 over a finite horizon of $N$ time units. Obviously, $N \geq B$. As an example, a driver with a 40 hour work week
 shall have $B=40$ hours and $N=168$ hours.
 
-\subsubsection{\sc{HomeZone} (\homezone)}
+%\subsubsection{\sc{HomeZone} (\homezone)}
 
+\spara{\sc{HomeZone} (\homezone)}: 
 The driver has a unique home zone denoted by $i_0 \in \cityzones$. It is assumed that a driver begins the finite horizon of $N$
 time units from home zone and returns back at the end of driving budget. A driver may also choose to return to 
 home zone as a part of some optimal strategy.
 
-\subsubsection{\sc{DriverActions} (\actionsset)}
+%\subsubsection{\sc{DriverActions} (\actionsset)}
 
+\spara{\sc{DriverActions} (\actionsset)}: 
 Whenever faced with making a decision regarding next decision during a driving strategy, a driver can take three kinds
 of actions.
 
@@ -69,8 +74,9 @@ of actions.
 	\item {\relocate} \relocateaction: Relocate to city zone $j$.
 \end{itemize}
 
-\subsubsection{\sc{DriverPolicy} (\policy)}
+%\subsubsection{\sc{DriverPolicy} (\policy)}
 
+\spara{\sc{DriverPolicy} (\policy)}:
 A driver policy is an ordered set of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
@@ -94,8 +100,8 @@ $\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\polic
 \subsection{\textsc{Calculation of Driver Earnings}}
 Now, we describe the attributes of the driver actions described in the previous section.
 
-\subsubsection{\sc{ActionEarning}}
-
+%\subsubsection{\sc{ActionEarning}}
+\spara{\sc{ActionEarning}}:
 Action earning is a function of action, zone and time. Let {\actionearning{i}{t}{a}} denote the immediate expected earnings of a driver 
 on taking action $a$ while inside zone $i$ at time $t$. Hence, for each of the actions described in the previous section, the
 action earning is calculated differently.
@@ -121,14 +127,15 @@ action earning is calculated differently.
 	where $r^t(i,j)$ is the corresponding element of $\rewardsmatrix^{t}$ and $j \neq i$. \\
 \end{itemize}
 
-\subsubsection{\sc{CumulativeEarning}}
+%\subsubsection{\sc{CumulativeEarning}}
 
+\spara{\sc{CumulativeEarning}}:
 Cumulative Earning is a function of zone and time. Let {\cumulativeearning{i}{t,b}} denote the total expected future earnings of a driver
 while inside zone $i$ at time $t$ with $b$ budget units consumed. Using this definition, total expected earnings of a driver can be expressed
 as {\cumulativeearning{\homezone}{N,B}}.
 
-\subsubsection{\sc{InducedEarningVector}}
-
+%\subsubsection{\sc{InducedEarningVector}}
+\spara{\sc{InducedEarningVector}}:
 If a driver at zone $i$ at time $t$ with $b$ budget units consumed takes a passenger ride to zone $j$, the rides end at time 
 $t' = t + \tau^t(i,j)$ with budget $b' = b + \tau^t(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
 budget units consumed is {\cumulativeearning{j}{t',b'}}. Let us denote using {\inducedearningvector{i}{t,b}{\getpassengeraction}} the vector of such
