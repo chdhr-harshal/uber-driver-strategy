@@ -3,10 +3,58 @@
 \section{Driver Strategies}
 \label{sec:driver_strategies}
 
+We now consider strategic behavior, modeled through a set of strategies for how 
+a rational Uber driver might undertake to maximize profit over the course of a 
+40-hour workweek.  In the {\em naive} baseline strategy, a driver simply drives from 9-5, 
+waiting in place for each subsequent ride and returning home at the end of each day.  Next, 
+we introduce the ability of a driver to {\em relocate} to any preferred location in the
+city before waiting for a subsequent ride.  Then, we allow each driver to maintain a
+{\em flexible} schedule, by selectively choosing the specific hours worked (while
+keeping the total work week constant).  When considered jointly, a driver who acts
+strategically both by relocating and by using a flexible strategy is optimizing both
+over time and space (location).  Finally, we consider an entirely different strategy,
+modeling drivers who use a naive strategy to work towards an {\em earnings goal}, for
+example, driving a five-day workweek, but stopping when they have earned \$100 a day.  Such a
+strategy can be compared against the others on a ratable basis, i.e., \$/hour earned.
+
+Formally, we model these driver behaviors as a set of $n+2$ actions $A$ they can potentially
+take after completion of each ride: 
+\begin{equation}
+\mbox{
+$A$ = \{{\getpassenger}, {\gohome}, {\relocate} to zone $j$\}
+}
+\end{equation}
+
+For a driver who may take all the available actions,
+acting strategically about relocation and flexible scheduling, she maximizes total expected 
+earnings (at time $t$, location $i$, and remaining time budget $b$) over all actions as:
+
+\begin{eqnarray}
+\label{eq:relocationflexible_strategy}
+\cumulativeearning{i}{t,b} &=& \max %_{a \in \actionsset}
+    \begin{cases}
+    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{i}{t,b}{}), &\textrm{//  {\getpassenger }} \\ \\
+    r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b}, &\textrm{//  {\gohome}} \\ \\ 
+    \max_{j} \bigg\{r^t(i,j) + \cumulativeearning{j}{t',b'}\bigg\} &\textrm{//  {\relocate} to zone $j$}
+    \end{cases}
+\end{eqnarray}
+
+We can find an optimal in expectation policy by reasoning about Eq.(\ref{eq:relocationflexible_strategy}) as a dynamic programming (DP)
+recurrence, and thus building up and tracking optimal action choices.  Since each of O$(n T B)$ entries involves consideration of at most
+$n+2$ actions, computing the optimal policy takes O($n^2 T B$) time.  Solving for alternative strategic behavior entails similar, but 
+simpler, DP approaches.
+
+
+\begin{comment}
+In the relocation strategy, an idle driver in zone $i$ has two choices viz., {\getpassenger} and 
+Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone. 
+
+In the flexible schedule strategy, a driver has flexibility to decided working times. As a result, we impose an additional constraint of a working time budget $B$ that a driver can split over a finite horizon of $N$ time units. Thus, this strategy aims to figure out an optimal in expectation work schedule for the driver. At any stage, a driver can log out of the on-demand ride service and return to home zone. Hence, the set of allowable actions for a driver contains 2 different actions, {\getpassenger} and 
+
+
 In this section, we discuss five kinds of on-demand ride service
 driver strategies.
 \begin{enumerate}
-    \item {\naive} 
     \item {\relocation} 
     \item {\flexible} 
     \item {\relocationflexible}
@@ -18,7 +66,6 @@ In each of the above strategy, a driver has different sets of actions available 
 \subsection{\naive}
 In the naive strategy, a driver performs a random walk over the city. At the end of every passenger ride, the driver waits in the current zone for next passenger pickup. Hence, the only allowable action is {\getpassenger}.
 \begin{equation}
-\actionsset = \{\getpassengeraction\}
 \end{equation}
 We can calculate cumulative earnings of a driver following a naive strategy at any stage as follows,
 \begin{eqnarray}
@@ -28,8 +75,8 @@ We can calculate cumulative earnings of a driver following a naive strategy at a
 The naive strategy accounts for unsuccessful cases where a driver fails to get a passenger in the current time unit as well. It should be noted that, a driver in this strategy does not have flexibility to choose working times. Hence, $B=N$. This allows us to drop the superscript $b$ from Eq.(\ref{eq:naive_strategy}) without any loss of generality.
 
 \subsection{\relocation}
-In the relocation strategy, an idle driver in zone $i$ has two choices viz., {\getpassenger} and {\relocate}. Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone. 
 \begin{equation}
+In the relocation strategy, an idle driver in zone $i$ has two choices viz., {\getpassenger} and {\relocate}. Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone. 
 \actionsset =  \{\getpassengeraction\} \cup \{\relocateaction | \forall j \in \cityzones, j \neq i \}
 \end{equation}
 We can further restrict the number of {\relocate} actions by removing from consideration the zones where relocating causes a situation where $t \geq N$.
@@ -85,3 +132,4 @@ As earlier, we can find an optimal in expectation policy by keeping track of opt
 \subsection{\earningsgoal}
 In the fixed earnings goal strategy, a driver sets an earnings goal before logging in into the on-demand ride service and drives until fixed goal is reached.
 \todo[Harshal]{Write in this section how this strategy solution is a part of the previous strategies already discussed.}
+\end{comment}
