@@ -200,14 +200,17 @@ the \emph{total expected earnings} of a driver  with policy $\policy$ is simply:
 where $\actionearning{\actuallocation}{\actualtime}{\actualaction}$ is computed
 using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2} we defined above.
 
-Therefore our optimization problem is to find the
-driver policy \policy, such that the total \emph{total expected earnings}
-of the driver is maximized. Thus the goal is to find $\policy^\ast$
+As we seek to maximize the \emph{total expected earnings} of the driver,
+we aim to solve the following optimization problem.
+
+\begin{problem}[{\sc OptimizeEarnings}]\label{problem:theproblem}
+Given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the drivers budget $B$
+find $\policy^\ast$
 such that:
 \[
 \policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B)
 \]
 is maximized.
+\end{problem}
 
-
-When the transition matrices, the travel time matrices and the reward matrices are exactly known, the above problem can be solved optimally using dynamic programming. We discuss this in the next section.
+%When the transition matrices, the travel time matrices and the reward matrices are exactly known, the above problem can be solved optimally using dynamic programming. We discuss this in the next section.

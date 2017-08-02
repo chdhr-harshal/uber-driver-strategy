@@ -1,9 +1,15 @@
 %!TEX root = main.tex
 
-\section{Sensitivity of Strategies to Uncertainty}
-\label{sec:sensitivity}
 
-In the previous section we defined five strategies for drivers, each providing a driver with a contingency plan suggesting an optimal action to take based on their location and time. This contingency plan however relies on transition matrices {\empiricaltransitionmatrix} that are empirically observed using historical data. The empirically observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the nominal problem described above is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\empiricaltransitionmatrix_{i}^{t}$ corresponding to the {\getpassenger} action affects the optimal action choice in every strategy, due to the uncertainty in the empirically observed transition matrix.
+\section{Maximizing earnings under uncertainty}
+\label{sec:sensitivity}
+Observe that the only random variable in the input of Problem~\ref{problem:theproblem}
+is the set of empirical transition matrices {\empiricaltransitionmatrix}, which are empirically
+observed using historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to Problem~\ref{problem:theproblem} 
+may also be sensitive to the transition probabilities. In this section, we
+address the question of how 
+
+is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\empiricaltransitionmatrix_{i}^{t}$ corresponding to the {\getpassenger} action affects the optimal action choice in every strategy, due to the uncertainty in the empirically observed transition matrix.
 
 In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\nominalproblem} from Section \ref{sec:problem_setup} into a {\robustcontrolproblem}.
 
