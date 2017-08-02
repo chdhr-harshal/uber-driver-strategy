@@ -3,56 +3,60 @@
 
 \section{Maximizing earnings under uncertainty}
 \label{sec:sensitivity}
-Observe that the only random variable in the input of Problem~\ref{problem:theproblem}
+Observe that the only random variable in the input of the {\theproblem} problem
 is the set of empirical transition matrices {\empiricaltransitionmatrix}, which are empirically
-observed using historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to Problem~\ref{problem:theproblem} 
+observed using historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the {\theproblem} problem
 may also be sensitive to the transition probabilities. In this section, we
-address the question of how 
+address the question of how the results of the solutions we described in the previous section change under the assumption that there is some uncertainty (and thus noise) in
+the underlying empirical transition matrices we use as part of our input.
 
-is often quite sensitive to change in the transition probabilities. In particular, the presence of the term $\empiricaltransitionmatrix_{i}^{t}$ corresponding to the {\getpassenger} action affects the optimal action choice in every strategy, due to the uncertainty in the empirically observed transition matrix.
+In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\theproblem} into the {\robustproblem} problem.
 
-In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\nominalproblem} from Section \ref{sec:problem_setup} into a {\robustcontrolproblem}.
 
-\subsection{\textsc{Likelihood model}}
-\label{sec:likelihood_model}
-
-If {\truetransitionmatrix} is the underlying true transition matrix, the empirically observed transition matrix {\empiricaltransitionmatrix} is the solution to the maximum likelihood problem
+%\subsection{Likelihood model}
+%\label{sec:likelihood_model}
+\spara{The likelihood model:}
+Here, we will assume there is an underlying \emph{true} transition matrix
+{\truetransitionmatrix}, and the count matrix {\countmatrix}, which is used to 
+obtain the empirical transition matrix {\empiricaltransitionmatrix} is the solution
+to the maximum likelihood problem
 
 \begin{equation}
-\max_\truetransitionmatrix L(\truetransitionmatrix) := \sum_{i,j}f(i,j) \log{p(i,j)} : \truetransitionmatrix \geq 0, \truetransitionmatrix\vec{1} = \vec{1} 
+\max_\truetransitionmatrix L(\truetransitionmatrix) := \sum_{i,j}c(i,j) \log{p(i,j)} : \truetransitionmatrix \geq 0, \truetransitionmatrix\vec{1} = \vec{1} 
 \end{equation}
-
-The optimal log-likelihood is $\betamax= \sum_{i,j}f(i,j)\log{f(i,j)}$.
+The optimal log-likelihood is $\betamax= \sum_{i,j}c(i,j)\log{f(i,j)}$.
 A classical description of uncertainty in a maximum-likelihood setting is via the likelihood region (\citet{lehmann2006theory}, \citet{poor2013introduction})
 
-\begin{equation}
+\begin{equation*}
 \likelihoodregion(\beta) := \bigg\{\truetransitionmatrix \in \mathbb{R}^{n \times n}: \truetransitionmatrix \geq 0, \truetransitionmatrix \vec{1}=\vec{1}, \sum_{i,j}f(i,j)\log{p(i,j)} \geq \beta\bigg\} \label{eq:likelihood_region}
-\end{equation}
-where $\beta < \betamax$ is a user provided number, which represents the uncertainty level. In practice, a user can choose uncertainty level and $\beta$ using the guidelines detailed by \citet{nilim2004robustness}.
+\end{equation*}
+where $\beta < \betamax$ is a user provided number, which represents the uncertainty level. In practice, one can choose uncertainty level and $\beta$ using the guidelines detailed by \citet{nilim2004robustness}.
 
 We only need to work with uncertainty on each row {\truetransitionmatrix}, that is projection of the set $\likelihoodregion(\beta)$. Due to the separable nature of the log-likelihood function, the projection of the above set onto the $\truetransitionmatrix_i$ variables of the matrix {\truetransitionmatrix} can be given as,
 
-\begin{equation}
-\likelihoodregion_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\}
-\end{equation}
+\begin{equation*}
+\likelihoodregion_i(\beta_i) := \bigg\{p \in \Delta^n : \sum_{j}f(i,j)\log{p(i,j)} \geq \beta_i \bigg\},
+\end{equation*}
 where,
 \begin{equation*}
-\beta_i = \beta - \sum_{k \neq i}\sum_{j}f(k,j)\log{f(k,j)}
+\beta_i = \beta - \sum_{k \neq i}\sum_{j}c(k,j)\log{f(k,j)},
 \end{equation*}
+and  $\Delta^n = \{\vec{p} \in \mathbb{R}^n_+ : \transpose{p} \vec{1} = 1 \}$
 
-\subsection{\textsc{The robust control problem}}
-
-In this section, we modify the {\nominalproblem} from Section \ref{sec:driver_strategies} into a {\robustcontrolproblem} where every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\nominalproblem} maximises the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} while the `nature' selects the worst-case time varying transition matrices from the likelihood region {\likelihoodregion} in order to minimize the {\totalexpectedearnings}.
+%\subsection{\textsc{The robust control problem}}
+\spara{The {\robustproblem} problem:} We are now ready to define the {\robustproblem}
+problem, which assumes that every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\theproblem} problem maximizes the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} 
+while the ``nature" selects the worst-case time varying transition matrices from the likelihood region {\likelihoodregion} in order to minimize the {\totalexpectedearnings}.
 
 We define \textit{policy of nature} as a specific ordered selection of time varying true transition matrices 
-\begin{equation}
-\mathbb{P} = \big( \truetransitionmatrix^t \big)_{t \leq N}
-\end{equation}
+%\begin{equation}
+$\mathbb{P} = \big( \truetransitionmatrix^t \big)_{t \leq N}$.
+%\end{equation}
 Similarly, the corresponding ordered set of likelihood regions is,
-\begin{equation}
-\mathcal{T} = \big(\mathcal{P}^t \big)_{t \leq N}
-\end{equation}
-Using these notations, we define the {\robustcontrolproblem} as follows,
+%\begin{equation}
+$\mathcal{T} = \big(\mathcal{P}^t \big)_{t \leq N}$. 
+%\end{equation}
+Using these notations, we define the {\robustproblem} problem as follows,
 \begin{equation}
 \label{eq:robust_control_problem}
 \phi(\policyspace, \mathcal{T}, \traveltimematrix, \rewardsmatrix) = \max_{\policy \in \policyspace} \min_{\mathbb{P} \in \mathcal{T}} \mathcal{E}^{N,B}(\policy, \mathbb{P}, \traveltimematrix, \rewardsmatrix) \\
