@@ -1,55 +1,71 @@
 %!TEX root = main.tex
 
-\section{Problem Setup}
+\section{Problem setup}
 \label{sec:problem_setup}
 
 In this section, we describe the basics of our problem setup and provide the necessary notations.
 
+\iffalse
 \subsection{Notation}
 \label{sec:notation}
 
 Vectors are denoted with lowercase bold letters (e.g., $\vec{a} = [a(i)]$) and matrices are denoted with uppercase bold letters (e.g., $\matr{A} = [a(i,j)]$). The notation $\vec{1}$ refers to the vector of ones, with size dependent on the context. The short form notation $\vec{A_i}$ refers to the $i$-th row vector of the matrix $\matr{A}$. Let $\Theta_n$ be a set of $n \times n$ right-stochastic transition matrices (non-negative matrices with rows that sum to one). A probability simplex in $\mathbb{R}^n$ is denoted by $\Delta_n = \{\vec{p} \in \mathbb{R}^n_+ : \transpose{p} \vec{1} = 1 \}$.
+\fi
 
-
-\subsection{\textsc{Modeling the City}}
+\subsection{Modeling the city}
 
 Throughout the paper, we will assume that a city is divided into non-overlaping set of zones denoted by \cityzones. 
 We represent a city in form of a weighted directed graph $G=(\cityzones, E)$ with 
-$|\cityzones| = n$ and $|E| = n(n-1) + n$ arcs, an arc between each pair of nodes and self loops on every node. 
+$|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, an edge between each pair of nodes. 
 Some of the attributes of a city are as follows:
 
 %\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
+\spara{\sc{CountMatrix}(\countmatrix)}: 
+Every edge $e(i\rightarrow j) \in E$ is associated with an
+integer-valued weight $c(i,j)$ that denotes the number of requests
+at zone $i$ that had node $j$ as their destination.
+
 \spara{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}:
-Every arc $e(i\rightarrow j) \in E$ is associated with a real-valued weight $f(i,j) \in [0,1]$ such that,
+The {\sc CountMatrix} gives rise to the transition matrix {\empiricaltransitiomatrix}.
+The entries of {\empiricaltransitionmatrix} correspond to probabilites and thus
+$f(i,j) \in [0,1]$ such that,
 \begin{equation}
 	\sum_{j \in \cityzones} f(i,j) = 1, \forall i \in \cityzones
 \end{equation}
 Therefore, the weights give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
 where each entry $f(i,j)$ 
 denotes the empirically observed probability of a passenger in zone $i$
-travelling to zone $j$. We assume that no passenger rides a taxi within the same zone. Hence, as a special case, 
-$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. The empirical transition matrix {\empiricaltransitionmatrix}
-changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
+traveling to zone $j$. 
+As a special case, 
+$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. 
+%The empirical transition matrix {\empiricaltransitionmatrix}
+%changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
 \spara{\sc{TravelTimeMatrix} (\traveltimematrix)}:
-Every arc $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
+Every edge $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
 denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
-These weights give us a travel time matrix {\traveltimematrix}. 
-Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
-Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
+These weights give us a travel time matrix {\traveltimematrix} with entries $\tau(i,j)$. 
+%Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
+%Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
 
 %\subsubsection{\sc{RewardsMatrix} (\rewardsmatrix)}
 
 \spara{\sc{RewardsMatrix} (\rewardsmatrix)}:
-Every arc $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j) \geq 0$ denoting
+Every edge $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j) \geq 0$ denoting
 the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewards include the driver's
-share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc.
-Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
+share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. This rewards are stored in the {\sc RewardsMatrix} $\rewardsmatrix$
+with entries $r(i,j)$.
+%Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
-\subsection{\textsc{Modeling the Driver}}
+Note that all the above matrices, {\countmatrix}, {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, are time dependent, i.e., their entries change throughout the day. Therefore, at any point in time $t$, the instantiations of these matrices
+are different. We denote those instantiations by $\countmatrix^t$, $\empiricaltransitionmatrix^t$, $\traveltimematrix^t$ and $\rewardsmatrix^t$ respectively.
+For clarity of exposition we will ignore the time-dependent aspect of the model in what follows.
+
+
+\subsection{Modeling the driver}
 
 In our setting, we devise optimal in expectation strategies for an individual taxi driver working for an
 on-demand ride service. There is an alloted maximum budget of $B$ time units during which the driver can pick
@@ -70,12 +86,14 @@ home zone as a part of some optimal strategy.
 Whenever faced with making a decision regarding next decision during a driving strategy, a driver can take three kinds
 of actions.
 
-\begin{itemize}
+%\begin{itemize}
+\squishlist
 	\item {\getpassenger} \getpassengeraction: Wait for a passenger in the current zone. 
 	\item {\gohome} \gohomeaction: Log out of the on-demand ride service, go to home zone and wait in it. A driver can
 	choose this action only while away from home zone.
 	\item {\relocate} \relocateaction: Relocate to city zone $j$.
-\end{itemize}
+%\end{itemize}
+\squishend
 
 %\subsubsection{\sc{DriverPolicy} (\policy)}
 
@@ -109,7 +127,8 @@ Action earning is a function of action, zone and time. Let {\actionearning{i}{t}
 on taking action $a$ while inside zone $i$ at time $t$. Hence, for each of the actions described in the previous section, the
 action earning is calculated differently.
 
-\begin{itemize}
+%\begin{itemize}
+\squishlist
 	\item {\getpassenger} : For action {\getpassengeraction}, taken inside zone $i$ at time $t$, the action earnings function
 	is calculated as,
 	\begin{equation}
@@ -128,7 +147,8 @@ action earning is calculated differently.
 	\actionearning{i}{t}{a_2(j)} = r^t(i,j)
 	\end{equation}
 	where $r^t(i,j)$ is the corresponding element of $\rewardsmatrix^{t}$ and $j \neq i$. \\
-\end{itemize}
+%\end{itemize}
+\squishend
 
 %\subsubsection{\sc{CumulativeEarning}}
 \iffalse
