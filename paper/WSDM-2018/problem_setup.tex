@@ -127,20 +127,20 @@ $\actionearning{i}{t}{a}$ and depending on the action $a$ it is computed as foll
 	\item For action {\getpassengeraction} ({\getpassenger}), taken inside zone $i$ at time $t$, the action earnings function
 	is calculated as,
 	\begin{equation}\label{eq:a0}
-	\actionearning{i}{a_0} = \empiricaltransitionmatrix^t_{i}\bigcdot \rewardsmatrix^t_{i}
+	\actionearning{i}{t}{a_0} = \empiricaltransitionmatrix^t_{i}\bigcdot \rewardsmatrix^t_{i}
 	\end{equation}
 	where $\empiricaltransitionmatrix^t_{i}$ and $\rewardsmatrix^t_{i}$ denote the $i$-th rows of $\empiricaltransitionmatrix^t$ and $\rewardsmatrix^t$ respectively. 
 	
 	\item For action {\gohomeaction} ({\gohome}), taken inside zone $i$ at time $t$, the action earnings function is simply
 	\begin{equation}\label{eq:a1}
-	\actionearning{i}{a_1} = r^t(i,\homezone)
+	\actionearning{i}{t}{a_1} = r^t(i,\homezone)
 	\end{equation}
 	where $r^t(i,\homezone)$ is the $(i,\homezone)$ entry of $\rewardsmatrix^t$. 
 
 	\item Action {\relocateaction} ({\relocate}), taken inside zone $i$ at time $t$, 
 	takes the driver to zone $j$. Therefore, the action earnings function is
 	\begin{equation}\label{eq:a2}
-	\actionearning{i}{a_2(j)} = r^t(i,j)
+	\actionearning{i}{t}{a_2(j)} = r^t(i,j)
 	\end{equation}
 	where $r^t(i,j)$ is the $(i,j)$ entry of $\rewardsmatrix$ and $j \neq i$. \\
 %\end{itemize}
