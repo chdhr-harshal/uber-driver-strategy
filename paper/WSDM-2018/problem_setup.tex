@@ -27,12 +27,11 @@ integer-valued weight $c(i,j)$ that denotes the number of requests
 at zone $i$ that had node $j$ as their destination.
 
 \spara{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}:
-The {\sc CountMatrix} gives rise to the transition matrix {\empiricaltransitiomatrix}.
+The {\sc CountMatrix} gives rise to the transition matrix {\empiricaltransitionmatrix}.
 The entries of {\empiricaltransitionmatrix} correspond to probabilites and thus
-$f(i,j) \in [0,1]$ such that,
-\begin{equation}
-	\sum_{j \in \cityzones} f(i,j) = 1, \forall i \in \cityzones
-\end{equation}
+$f(i,j) \in [0,1]$ such that
+$\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.
+
 Therefore, the weights give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
 where each entry $f(i,j)$ 
 denotes the empirically observed probability of a passenger in zone $i$
@@ -66,26 +65,27 @@ For clarity of exposition we will ignore the time-dependent aspect of the model 
 
 
 \subsection{Modeling the driver}
-
-In our setting, we devise optimal in expectation strategies for an individual taxi driver working for an
-on-demand ride service. There is an alloted maximum budget of $B$ time units during which the driver can pick
-up passenger rides. However, in some strategies, the driver can flexibly split the working time budget 
-over a finite horizon of $N$ time units. Obviously, $N \geq B$. As an example, a driver with a 40 hour work week
+Throughout the paper, we will assume that 
+each driver comes with a 
+maximum budget of $B$ time units
+he is willing to work. During these time units the driver 
+ can pick
+up passenger rides. Depending on the specific setting, the driver can
+work $B$ time units consecutively or split them 
+over a finite horizon of $N$ time units. Obviously, $N \geq B$. 
+As an example, a driver with a 40 hour work week
 shall have $B=40$ hours and $N=168$ hours.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
 
 \spara{\sc{HomeZone} (\homezone)}: 
-The driver has a unique home zone denoted by $i_0 \in \cityzones$. It is assumed that a driver begins the finite horizon of $N$
-time units from home zone and returns back at the end of driving budget. A driver may also choose to return to 
-home zone as a part of some optimal strategy.
-
+Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
+We always assume that the driver starts from his home zone and returns to it
+at the end of his shift.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
 \spara{\sc{DriverActions} (\actionsset)}: 
-Whenever faced with making a decision regarding next decision during a driving strategy, a driver can take three kinds
-of actions.
-
+Whenever faced with making a decision regarding next decision during a driving strategy, a driver has $n+2$ possible actions he can take: 
 %\begin{itemize}
 \squishlist
 	\item {\getpassenger} \getpassengeraction: Wait for a passenger in the current zone. 
@@ -118,35 +118,31 @@ Furthermore, for a policy of length $L$, the corresponding policy space can be d
 $\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \{\policyspace_1, \cdots, \policyspace_N\}$, as the maximum length of a policy can be $N$.
 
 
-\subsection{\textsc{Calculation of Driver Earnings}}
-Now, we describe the attributes of the driver actions described in the previous section.
+\subsection{Computing driver earnings}
+In this section, we describe the computation of the expected earnings of a driver
+who at a specific time $t$ is in zone $i$ and takes action $a$. We denote this by 
+$\actionearning{i}{t}{a}$ and depending on the action $a$ it is computed as follows.
 
-%\subsubsection{\sc{ActionEarning}}
-\spara{\sc{ActionEarning}}:
-Action earning is a function of action, zone and time. Let {\actionearning{i}{t}{a}} denote the immediate expected earnings of a driver 
-on taking action $a$ while inside zone $i$ at time $t$. Hence, for each of the actions described in the previous section, the
-action earning is calculated differently.
-
-%\begin{itemize}
 \squishlist
-	\item {\getpassenger} : For action {\getpassengeraction}, taken inside zone $i$ at time $t$, the action earnings function
+	\item For action {\getpassengeraction} ({\getpassenger}), taken inside zone $i$ at time $t$, the action earnings function
 	is calculated as,
-	\begin{equation}
-	\actionearning{i}{t}{a_0} = \empiricaltransitionmatrix_{i}^{t} \bigcdot \rewardsmatrix_{i}^{t}
+	\begin{equation}\label{eq:a0}
+	\actionearning{i}{a_0} = \empiricaltransitionmatrix^t_{i}\bigcdot \rewardsmatrix^t_{i}
 	\end{equation}
-	where $\empiricaltransitionmatrix_{i}^{t}$ and $\rewardsmatrix_{i}^{t}$ denote the $i$-th rows of $\empiricaltransitionmatrix^{t}$ and $\rewardsmatrix^{t}$ respectively. \\
+	where $\empiricaltransitionmatrix^t_{i}$ and $\rewardsmatrix^t_{i}$ denote the $i$-th rows of $\empiricaltransitionmatrix^t$ and $\rewardsmatrix^t$ respectively. 
+	
+	\item For action {\gohomeaction} ({\gohome}), taken inside zone $i$ at time $t$, the action earnings function is simply
+	\begin{equation}\label{eq:a1}
+	\actionearning{i}{a_1} = r^t(i,\homezone)
+	\end{equation}
+	where $r^t(i,\homezone)$ is the $(i,\homezone)$ entry of $\rewardsmatrix^t$. 
 
-	\item {\gohome} : For action {\gohomeaction}, taken inside zone $i$ at time $t$, the action earnings function is simply
-	\begin{equation}
-	\actionearning{i}{t}{a_1} = r^t(i,\homezone)
+	\item Action {\relocateaction} ({\relocate}), taken inside zone $i$ at time $t$, 
+	takes the driver to zone $j$. Therefore, the action earnings function is
+	\begin{equation}\label{eq:a2}
+	\actionearning{i}{a_2(j)} = r^t(i,j)
 	\end{equation}
-	where $r^t(i,\homezone)$ is the corresponding element of $\rewardsmatrix^{t}$. \\
-
-	\item {\relocate} : Action {\relocateaction} taken inside zone $i$ at time $t$ takes the driver to zone $j$. Therefore, the action earnings function is
-	\begin{equation}
-	\actionearning{i}{t}{a_2(j)} = r^t(i,j)
-	\end{equation}
-	where $r^t(i,j)$ is the corresponding element of $\rewardsmatrix^{t}$ and $j \neq i$. \\
+	where $r^t(i,j)$ is the $(i,j)$ entry of $\rewardsmatrix$ and $j \neq i$. \\
 %\end{itemize}
 \squishend
 
@@ -193,17 +189,25 @@ Using this formulation, for each of the driver actions, we can recursively expre
 	where $t' = t + \tau^t(i,j)$ and $b' = b + \tau^t(i,j)$. 
 \end{itemize}
 \fi
-\subsection{\textsc{Nominal Problem}}
-For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, and driver policy \policy, we can calculate {\totalexpectedearnings} using as {\cumulativeearning{\homezone}{N,B}}.
 
-\begin{eqnarray}
-\mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix) &=& \cumulativeearning{\homezone}{N,B} \\
-&=& \sum_{\mathbf{a} \in \policy}\actionearning{\actuallocation}{\actualtime}{\actualaction}
-\end{eqnarray}
-where $\mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix)$ denotes {\totalexpectedearnings}. We can define the finite horizon nominal problem to find an optimal policy in a {\mdp},
-\begin{equation}
-\label{eq:nominal_problem}
-\phi(\policyspace, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix) = \max_{\policy \in \policyspace} \mathcal{E}^{N,B}(\policy, \empiricaltransitionmatrix, \traveltimematrix, \rewardsmatrix)
+\subsection{Problem definition}
+For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the drivers budget $B$
+the \emph{total expected earnings} of a driver  with policy $\policy$ is simply:
+
+\begin{equation}\label{eq:totalexpectedearnings}
+\mathcal{E} (\policy,\empiricaltransitionmatrix^{t},\traveltimematrix^{t},\rewardsmatrix^{t},B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
 \end{equation}
+where $\actionearning{\actuallocation}{\actualtime}{\actualaction}$ is computed
+using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2} we defined above.
 
-When the transition matrices, the travel time matrices and the reward matrices are exactly known, the corresponding nominal problem can be solved using Bellman recursion.
+Therefore our optimization problem is to find the
+driver policy \policy, such that the total \emph{total expected earnings}
+of the driver is maximized. Thus the goal is to find $\policy^\ast$
+such that:
+\[
+\policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B)
+\]
+is maximized.
+
+
+When the transition matrices, the travel time matrices and the reward matrices are exactly known, the above problem can be solved optimally using dynamic programming. We discuss this in the next section.
