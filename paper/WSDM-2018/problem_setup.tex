@@ -5,8 +5,11 @@
 
 In this section, we describe the basics of our problem setup and provide the necessary notations.
 
-%% JB:  notation goes here, not earlier
-\input{notation}
+\subsection{Notation}
+\label{sec:notation}
+
+Vectors are denoted with lowercase bold letters (e.g., $\vec{a} = [a(i)]$) and matrices are denoted with uppercase bold letters (e.g., $\matr{A} = [a(i,j)]$). The notation $\vec{1}$ refers to the vector of ones, with size dependent on the context. The short form notation $\vec{A_i}$ refers to the $i$-th row vector of the matrix $\matr{A}$. Let $\Theta_n$ be a set of $n \times n$ right-stochastic transition matrices (non-negative matrices with rows that sum to one). A probability simplex in $\mathbb{R}^n$ is denoted by $\Delta_n = \{\vec{p} \in \mathbb{R}^n_+ : \transpose{p} \vec{1} = 1 \}$.
+
 
 \subsection{\textsc{Modeling the City}}
 
@@ -128,7 +131,7 @@ action earning is calculated differently.
 \end{itemize}
 
 %\subsubsection{\sc{CumulativeEarning}}
-
+\iffalse
 \spara{\sc{CumulativeEarning}}:
 Cumulative Earning is a function of zone and time. Let {\cumulativeearning{i}{t,b}} denote the total expected future earnings of a driver
 while inside zone $i$ at time $t$ with $b$ budget units consumed. Using this definition, total expected earnings of a driver can be expressed
@@ -169,7 +172,7 @@ Using this formulation, for each of the driver actions, we can recursively expre
 	\end{eqnarray}
 	where $t' = t + \tau^t(i,j)$ and $b' = b + \tau^t(i,j)$. 
 \end{itemize}
-
+\fi
 \subsection{\textsc{Nominal Problem}}
 For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, and driver policy \policy, we can calculate {\totalexpectedearnings} using as {\cumulativeearning{\homezone}{N,B}}.
 
