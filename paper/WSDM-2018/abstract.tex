@@ -9,14 +9,16 @@ One natural optimization problem in this domain has focused on optimal route pla
 But much less emphasis has been placed on optimization for individual drivers.
 While some individuals drive opportunistically either as their schedule allows or on a fixed 
   schedule, strategic behavior regarding when and where to drive can substantially increase
-  driver income.
-To address this issue, we model the passenger seeking behavior of the 
-%% drivers on Uber are NOT taxi drivers
-%%
-%%taxi
-drivers on Uber as a controlled Markov Decision Process (MDP) over a finite horizon of time.
-%
-\todo[JB]{These next sentences are too vague.  Describe more specifics and why they matter.}
-The parameters of this MDP are set using Uber Rider API and publicly available New York Taxi datasets. Using this model, we devise three optimal in expectation strategies for drivers and evaluate them. Furthermore, we provide a sensitivity analysis of these strategies to account for uncertainties in the MDP parameters.
-Our main finding is XXX.
+  driver income. In this paper, we formalize the problem 
+  of devising a driver strategy so that he maximizes his expected earnings.
+We devise a series of dynamic-programming algorithms that show how to solve this
+problem under different set of actions available to the drivers.
+We also develop a framework for analyzing the sensitivity of our results to the
+input data. 
+Our experiments use a newly collected dataset, which combines the NYC taxi rides
+with data we collected using the Uber API. The latter has
+information about profits that would be made by Uber drivers for the same ride at the same 
+time and day.
+In an extensive experimental evaluation, we demonstrate
+that our methods provide useful insights regarding passenger and driver behaviors.
 \end{abstract}
