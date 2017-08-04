@@ -67,36 +67,36 @@ f(i,j) = (1 - f(i,i)) \times m(i,j)
 \end{equation}
 The matrix {\empiricaltransitionmatrix}, built in this manner satisfies all our assumptions and can be used in the evaluation of strategies described in previous sections.
 
-\subsection{\textsc{RewardsMatrix}}
+% \subsection{\textsc{RewardsMatrix}}
 
-The data gathered in the previous section gives us a matrix of driver earnings, \matr{E}, from passengers while traveling between any two zones in the city. We also get a costs matrix, \matr{C}, whose each entry, $c(i,j) \leq 0$, denotes the sundry expenses of traveling from zone $i$ to zone $j$, dependent on distance and traffic at the given time. The travel costs can result in negative net rewards in the {\gohome} and {\relocate} actions, violating the assumption from Section \ref{sec:problem_setup} that $r(i,j) \geq 0$. In this section, we describe the construction of \textsc{RewardsMatrix}, {\rewardsmatrix}, corresponding to each driver action compliant with our assumptions.
+% The data gathered in the previous section gives us a matrix of driver earnings, \matr{E}, from passengers while traveling between any two zones in the city. We also get a costs matrix, \matr{C}, whose each entry, $c(i,j) \leq 0$, denotes the sundry expenses of traveling from zone $i$ to zone $j$, dependent on distance and traffic at the given time. The travel costs can result in negative net rewards in the {\gohome} and {\relocate} actions, violating the assumption from Section \ref{sec:problem_setup} that $r(i,j) \geq 0$. In this section, we describe the construction of \textsc{RewardsMatrix}, {\rewardsmatrix}, corresponding to each driver action compliant with our assumptions.
 
-\subsubsection{\textsc{Modifying the CostsMatrix}}
-If $min\_cost$ is the minimum entry in the matrix \matr{C}, each entry of the modified costs matrix, \matr{C'} is calculated as,
-\begin{equation}
-c'(i,j) = c(i,j) - min\_cost
-\end{equation}
-As a result of the above modification, $\forall i,j : c'(i,j) \geq 0$.
+% \subsubsection{\textsc{Modifying the CostsMatrix}}
+% If $min\_cost$ is the minimum entry in the matrix \matr{C}, each entry of the modified costs matrix, \matr{C'} is calculated as,
+% \begin{equation}
+% c'(i,j) = c(i,j) - min\_cost
+% \end{equation}
+% As a result of the above modification, $\forall i,j : c'(i,j) \geq 0$.
 
-\subsubsection{\textsc{RewardsMatrix}}
-In order to be compliant with the assumption in Section \ref{sec:problem_setup}, we define two kinds of \textsc{RewardsMatrix}, one for the action {\getpassenger} and another for the actions {\gohome} and {\relocate}.
+% \subsubsection{\textsc{RewardsMatrix}}
+% In order to be compliant with the assumption in Section \ref{sec:problem_setup}, we define two kinds of \textsc{RewardsMatrix}, one for the action {\getpassenger} and another for the actions {\gohome} and {\relocate}.
 
-\begin{itemize}
-	\item For the {\getpassenger} action, we define the rewards matrix as,
-	\begin{equation}
-		r(i,j) = e(i,j) + c'(i,j) 
-	\end{equation}
-	\item For the {\gohome} and {\relocate} actions, the rewards matrix is same as the modified costs matrix.
-	\begin{equation}
-		r(i,j) = c'(i,j)
-	\end{equation}
-\end{itemize}
-In both cases, we set the diagonal entries of the matrix to zero i.e., $\forall i: r(i,i) = 0$.
+% \begin{itemize}
+% 	\item For the {\getpassenger} action, we define the rewards matrix as,
+% 	\begin{equation}
+% 		r(i,j) = e(i,j) + c'(i,j) 
+% 	\end{equation}
+% 	\item For the {\gohome} and {\relocate} actions, the rewards matrix is same as the modified costs matrix.
+% 	\begin{equation}
+% 		r(i,j) = c'(i,j)
+% 	\end{equation}
+% \end{itemize}
+% In both cases, we set the diagonal entries of the matrix to zero i.e., $\forall i: r(i,i) = 0$.
 
-It should be noted that this modification does not affect the optimal action choice in any strategy. It merely ensures that the input vectors to the Bisection Algorithm from Section \ref{sec:sensitivity} are always non-negative vectors. Furthermore, while calculating the actual {\totalexpectedearnings} of a driver, we can backtrack these modifications.
+% It should be noted that this modification does not affect the optimal action choice in any strategy. It merely ensures that the input vectors to the Bisection Algorithm from Section \ref{sec:sensitivity} are always non-negative vectors. Furthermore, while calculating the actual {\totalexpectedearnings} of a driver, we can backtrack these modifications.
 
-\subsection{\textsc{Comparing robust and nominal strategies}}
-In this section, we compare various strategies. When we choose, $\beta = \betamax$, there is no uncertainty, and we get solution computed via the classical Bellman recursion; referred to as nominal strategy. The robust strategy corresponds to solving the MDP with varying values of $\beta$.
+% \subsection{\textsc{Comparing robust and nominal strategies}}
+% In this section, we compare various strategies. When we choose, $\beta = \betamax$, there is no uncertainty, and we get solution computed via the classical Bellman recursion; referred to as nominal strategy. The robust strategy corresponds to solving the MDP with varying values of $\beta$.
 
-\subsection{\textsc{Effect of Inaccuracy is uncertainty level}}
-The previous section assumes that, in the robust case, we are able to estimate exactly the precise value of the uncertainty level. In practice, the parameter $\beta$ also has to be estimated. In this section, we study the sensitivity of the robust approach with respect to inaccuracies in the uncertainty parameter $\beta$.
+% \subsection{\textsc{Effect of Inaccuracy is uncertainty level}}
+% The previous section assumes that, in the robust case, we are able to estimate exactly the precise value of the uncertainty level. In practice, the parameter $\beta$ also has to be estimated. In this section, we study the sensitivity of the robust approach with respect to inaccuracies in the uncertainty parameter $\beta$.
