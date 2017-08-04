@@ -3,14 +3,14 @@
 
 \section{Maximizing earnings under uncertainty}
 \label{sec:sensitivity}
-Observe that the only random variable in the input of the {\theproblem} problem
+Observe that the only random variable in the input of the {\originalproblem} problem
 is the set of empirical transition matrices {\empiricaltransitionmatrix}, which are empirically
-observed using historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the {\theproblem} problem
+observed using historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the {\originalproblem} problem
 may also be sensitive to the transition probabilities. In this section, we
 address the question of how the results of the solutions we described in the previous section change under the assumption that there is some uncertainty (and thus noise) in
 the underlying empirical transition matrices we use as part of our input.
 
-In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\theproblem} into the {\robustproblem} problem.
+In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\originalproblem} into the {\robustproblem} problem.
 
 
 %\subsection{Likelihood model}
@@ -45,7 +45,7 @@ and  $\Delta^n = \{\vec{p} \in \mathbb{R}^n_+ : \transpose{p} \vec{1} = 1 \}$
 
 %\subsection{\textsc{The robust control problem}}
 \spara{The {\robustproblem} problem:} We are now ready to define the {\robustproblem}
-problem, which assumes that every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\theproblem} problem maximizes the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} 
+problem, which assumes that every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\originalproblem} problem maximizes the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} 
 while the ``nature" selects the worst-case time varying transition matrices from the likelihood region {\likelihoodregion} in order to minimize the {\totalexpectedearnings}.
 
 We define \textit{policy of nature} as a specific ordered selection of time varying true transition matrices 
