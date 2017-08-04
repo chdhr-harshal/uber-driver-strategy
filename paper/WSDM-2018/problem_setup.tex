@@ -21,13 +21,13 @@ Some of the attributes of a city are as follows:
 
 %\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
-\spara{\sc{CountMatrix}(\countmatrix)}: 
+\spara{Count matrix (\countmatrix)}: 
 Every edge $e(i\rightarrow j) \in E$ is associated with an
 integer-valued weight $c(i,j)$ that denotes the number of requests
 at zone $i$ that had node $j$ as their destination.
 
-\spara{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}:
-The {\sc CountMatrix} gives rise to the transition matrix {\empiricaltransitionmatrix}.
+\spara{Empirical transition matrix} (\empiricaltransitionmatrix)}:
+The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
 The entries of {\empiricaltransitionmatrix} correspond to probabilites and thus
 $f(i,j) \in [0,1]$ such that
 $\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.
@@ -43,7 +43,7 @@ $f(i,i)$ denotes the probability of not finding a passenger in zone $i$.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
-\spara{\sc{TravelTimeMatrix} (\traveltimematrix)}:
+\spara{Travel time matrix (\traveltimematrix)}:
 Every edge $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
 denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
 These weights give us a travel time matrix {\traveltimematrix} with entries $\tau(i,j)$. 
@@ -52,10 +52,10 @@ These weights give us a travel time matrix {\traveltimematrix} with entries $\ta
 
 %\subsubsection{\sc{RewardsMatrix} (\rewardsmatrix)}
 
-\spara{\sc{RewardsMatrix} (\rewardsmatrix)}:
+\spara{Rewards matrix (\rewardsmatrix)}:
 Every edge $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j) \geq 0$ denoting
 the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewards include the driver's
-share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. This rewards are stored in the {\sc RewardsMatrix} $\rewardsmatrix$
+share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. This rewards are stored in the rewards matrix $\rewardsmatrix$
 with entries $r(i,j)$.
 %Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
@@ -78,13 +78,13 @@ shall have $B=40$ hours and $N=168$ hours.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
 
-\spara{\sc{HomeZone} (\homezone)}: 
+\spara{Home zone (\homezone)}: 
 Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
 We always assume that the driver starts from his home zone and returns to it
 at the end of his shift.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
-\spara{\sc{DriverActions} (\actionsset)}: 
+\spara{Driver actions (\actionsset)}: 
 Whenever faced with making a decision regarding next decision during a driving strategy, a driver has $n+2$ possible actions he can take: 
 %\begin{itemize}
 \squishlist
@@ -97,7 +97,7 @@ Whenever faced with making a decision regarding next decision during a driving s
 
 %\subsubsection{\sc{DriverPolicy} (\policy)}
 
-\spara{\sc{DriverPolicy} (\policy)}:
+\spara{Driver policy (\policy)}:
 A driver policy is an ordered set of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
