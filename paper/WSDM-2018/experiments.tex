@@ -5,53 +5,82 @@
 
 We consider the problem of evaluating optimal in expectation strategies for drivers using the on-demand ride service -- Uber. The driver strategies on this platform must be estimated from past data. This makes it a particularly attractive application for evaluating our framework.
 
-\subsection{\textsc{Data}}
+\subsection{Data}
 \label{sec:data}
-\todo[Harshal]{Fill in data gathering and how we used NYC taxi dataset to create representative Uber data}
+% \todo[Harshal]{Fill in data gathering and how we used NYC taxi dataset to create representative Uber data}
+To evaluate our methods, we need a representative sample of taxi rides data. To obtain this data, we strategically sample rides from the publicly available NYC taxi rides dataset and recreate them on the Uber platform using Uber API queries.
 
-\subsection{\textsc{EmpiricalTransitionMatrix}}
+\spara{The Uber API}: 
+The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query. For the purpose of this study, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers. To overcome this obstacle, we leverage the NYC taxi rides dataset.
 
-The data gathered in the previous section gives us an empirical transition matrix {\matr{M}}, each of its entries $m(i,j)$ denotes the fraction of passenger in zone $i$ travelling to zone $j$. As a result, all the diagonal entries of {\matr{M}} are zeros. However, the \textsc{EmpiricalTransitionMatrix}, {\empiricaltransitionmatrix}, described in Section \ref{sec:problem_setup} assumed that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in one time unit. Hence, we modify the {\matr{M}} to make it compliant with those assumptions.
+\spara{NYC Taxi Rides Dataset}:
+NYC taxi rides dataset\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} for the year 2015 contains yellow street-hail taxi records with fields capturing pick-up and drop-off dates/times, location co-ordinates, trip distances and fares. Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. We use these location IDs to divide the city into a set of 29 non-overlapping zones.
 
-\subsubsection{\sc{Modeling successful passenger pickup}}
+\spara{Collecting Representative Data}:
+To create a representative sample of data, our strategy relies on `recreating' NYC taxi rides virtually on the Uber platform. We use the price estimates endpoint to query rides from exact same pick-up to drop-off locations at exact same time of the day on same calendar date, but exactly one year later i.e, a real recorded ride from 2015 is virtually recreated in 2016. However, Uber imposes a rate limit of 1,000 API requests per hour per account. To respect these API limits, we randomly sample rides from every zone to every other zone in the city every 15 minutes. We assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform have durations as multiples of 5 minutes. Hence, every 5 minutes, we also query the surge multiplier active within each zone.
 
-We use {\passengerarrivalrate} and {\driverarrivalrate} to denote the Poisson arrival rates of passengers and drivers at time $t$, within a zone $i$. Correspondingly, $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit. Assuming that passenger and driver arrivals are independent Poisson processes, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows \textit{Skellam Distribution} as follows,
+Although the \texttt{estimates/time} endpoint of the Uber API returns the estimated waiting time for a passenger at a particular location, it provides no information on the supply of UberX cars in the neighborhood of a location. Consequently, we do not possess an exact estimate of the time spent by an Uber driver waiting for a passenger in a particular zone. However, in the next section, we provide a methodology to compute a conservative estimate of the driver waiting time in a particular zone at any time of the day using the successful passenger pick-up information from the NYC taxi rides dataset.
+
+Using our methodology, we collected data for a period of 6 months, recreating rides from October, 2015 till March, 2016. However, due to the periodicity of the data, we provide experimental results for one week starting October 18, 2015\footnote{Our results do not vary qualitatively across different weeks.}.
+
+\subsection{Experimental Setup}
+In this section, we describe how we used the data collected in the previous section for modeling the dynamics of the city and an individual driver as described in Section \ref{sec:problem_setup}.
+
+
+\spara{Modeling city}:
+We divide each 24-hour day of the week in 144 time-slices of duration 10 minutes each, indexed by their start time. While modeling the city, the $c(i,j)$ entry of the count matrix $\countmatrix^t$ is the total number of rides from zone $i$ to zone $j$ in a 30 minute long time window centered around the time-slice $t$.  For example, Fig. \ref{fig:demand_heatmap} plots the count matrix {\countmatrix} at different times of the day showing the variation in the total number of rides starting from each zone.
+
+\begin{figure}
+	\centering
+	\caption{Demand across NYC zones.}
+	\label{fig:demand_heatmap}
+	\includegraphics[scale=0.4]{figures/demand_heatmap.pdf}
+	%\fnote{Rides starting from each zone in NYC at different times of the day. Notably, inside Manhattan, the popular travel direction reverses from morning to evening, as expected.}
+\end{figure}
+
+Similarly, travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share of earnings.
+
+Now, we describe the formation of the empirical transition matrix {\empiricaltransitionmatrix}. Every diagonal entry of the count matrix {\countmatrix} is zero, as there are no passenger rides within same zone. However, the empirical transition matrix {$\empiricaltransitionmatrix^t$} described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. Hence, to form the empirical transition matrix, we first normalize the observed count matrix such that each of its rows sum up to 1 to create matrix {\empiricaltransitionmatrix}. In the following section, we describe the modifications to this matrix to make it compliant with our definition.
+
+\spara{Modeling successful passenger pickup}:
+We use {\passengerarrivalrate} and {\driverarrivalrate} to denote the Poisson arrival rates of passengers and drivers in the time-slice $t$, within a zone $i$. Correspondingly, $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit. Assuming that passenger and driver arrivals are independent Poisson processes, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows \textit{Skellam Distribution} as follows,
 \begin{equation}
 \Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
 \end{equation}
-where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the random variable $K$ as states of a {\markovchain} in Figure \ref{fig:skellam_markov_chain}.
+where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the random variable $K$ as states of a {\markovchain}\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accomodate correlated processes with slight modification.}.
 
-\note[Harshal]{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accomodate correlated processes with slight modification.}
+% in Figure \ref{fig:skellam_markov_chain}.
 
-\begin{figure}
-\begin{center}
-\begin{tikzpicture}[->, >=stealth', auto, semithick, node distance=2cm]
-\tikzstyle{every state}=[fill=white,draw=black,thick,text=black,scale=0.65]
-\node[state]    (-inf)               {$\bf ...$};
-\node[state]    (-2)[right of=-inf]   {$\bf -2$};
-\node[state]    (-1)[right of=-2]   {$\bf -1$};
-\node[state]    (0)[right of=-1]   {$\bf 0$};
-\node[state]    (+1)[right of=0]   {$\bf 1$};
-\node[state]    (+2)[right of=+1]   {$\bf 2$};
-\node[state]    (+inf) [right of=+2] {$\bf ...$};
-\path
-(-inf)  edge[bend left]         node{$\passengerarrivalrate$}   (-2)
-(-2)    edge[bend left]         node{$\passengerarrivalrate$}   (-1)
-        edge[bend left,below]   node{$\driverarrivalrate$}       (-inf)
-(-1)    edge[bend left]         node{$\passengerarrivalrate$}   (0)
-        edge[bend left,below]   node{$\driverarrivalrate$}       (-2)
-(0)     edge[bend left]         node{$\passengerarrivalrate$}   (+1)
-        edge[bend left,below]   node{$\driverarrivalrate$}       (-1)
-(+1)    edge[bend left]         node{$\passengerarrivalrate$}   (+2)
-        edge[bend left,below]   node{$\driverarrivalrate$}       (0)
-(+2)     edge[bend left]        node{$\passengerarrivalrate$}   (+inf)
-        edge[bend left,below]   node{$\driverarrivalrate$}       (+1)
-(+inf)  edge[bend left,below]   node{$\driverarrivalrate$}       (+2);
-\end{tikzpicture}
-\caption{Markov Chain depiction of Skellam Distribution}
-\label{fig:skellam_markov_chain}
-\end{center}
-\end{figure}
+
+% \begin{figure}
+% \begin{center}
+% \begin{tikzpicture}[->, >=stealth', auto, semithick, node distance=2cm]
+% \tikzstyle{every state}=[fill=white,draw=black,thick,text=black,scale=0.65]
+% \node[state]    (-inf)               {$\bf ...$};
+% \node[state]    (-2)[right of=-inf]   {$\bf -2$};
+% \node[state]    (-1)[right of=-2]   {$\bf -1$};
+% \node[state]    (0)[right of=-1]   {$\bf 0$};
+% \node[state]    (+1)[right of=0]   {$\bf 1$};
+% \node[state]    (+2)[right of=+1]   {$\bf 2$};
+% \node[state]    (+inf) [right of=+2] {$\bf ...$};
+% \path
+% (-inf)  edge[bend left]         node{$\passengerarrivalrate$}   (-2)
+% (-2)    edge[bend left]         node{$\passengerarrivalrate$}   (-1)
+%         edge[bend left,below]   node{$\driverarrivalrate$}       (-inf)
+% (-1)    edge[bend left]         node{$\passengerarrivalrate$}   (0)
+%         edge[bend left,below]   node{$\driverarrivalrate$}       (-2)
+% (0)     edge[bend left]         node{$\passengerarrivalrate$}   (+1)
+%         edge[bend left,below]   node{$\driverarrivalrate$}       (-1)
+% (+1)    edge[bend left]         node{$\passengerarrivalrate$}   (+2)
+%         edge[bend left,below]   node{$\driverarrivalrate$}       (0)
+% (+2)     edge[bend left]        node{$\passengerarrivalrate$}   (+inf)
+%         edge[bend left,below]   node{$\driverarrivalrate$}       (+1)
+% (+inf)  edge[bend left,below]   node{$\driverarrivalrate$}       (+2);
+% \end{tikzpicture}
+% \caption{Markov Chain depiction of Skellam Distribution}
+% \label{fig:skellam_markov_chain}
+% \end{center}
+% \end{figure}
 
 Whenever the {\markovchain} is in a non-positive state, there are more drivers than passengers in a given zone. We assume the worst case scenario in which our driver of interest is at the last spot of a FIFO queue. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
 \begin{equation}
@@ -66,6 +95,9 @@ To maintain the right stochasticity of {\empiricaltransitionmatrix}, every other
 f(i,j) = (1 - f(i,i)) \times m(i,j)
 \end{equation}
 The matrix {\empiricaltransitionmatrix}, built in this manner satisfies all our assumptions and can be used in the evaluation of strategies described in previous sections.
+
+\subsection{Experiments}
+
 
 % \subsection{\textsc{RewardsMatrix}}
 
