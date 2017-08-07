@@ -165,6 +165,11 @@ Fig. \ref{fig:uncertainty_evolution} shows the results of increasing uncertainty
 	\label{fig:uncertainty_evolution}
 \end{figure}
 
+\begin{figure*}[hb]
+	\includegraphics{figures/unsuccessful_heatmap.pdf}
+	\caption{Probability of not finding a passenger in 1 time unit across NYC zones at different times of the day.}
+	\label{fig:unsuccessful_heatmap}
+\end{figure*}
 % \subsection{\textsc{RewardsMatrix}}
 
 % The data gathered in the previous section gives us a matrix of driver earnings, \matr{E}, from passengers while traveling between any two zones in the city. We also get a costs matrix, \matr{C}, whose each entry, $c(i,j) \leq 0$, denotes the sundry expenses of traveling from zone $i$ to zone $j$, dependent on distance and traffic at the given time. The travel costs can result in negative net rewards in the {\gohome} and {\relocate} actions, violating the assumption from Section \ref{sec:problem_setup} that $r(i,j) \geq 0$. In this section, we describe the construction of \textsc{RewardsMatrix}, {\rewardsmatrix}, corresponding to each driver action compliant with our assumptions.
