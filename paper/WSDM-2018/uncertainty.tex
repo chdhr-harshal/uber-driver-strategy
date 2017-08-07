@@ -29,15 +29,15 @@ For this we will consider each row of the true transition matrix and the count m
 separately. If we use {\rowp} and {\rowc} to denote
 any particular row of {\truetransitionmatrix} and {\countmatrix} respectively, then 
 following the ideas of Kullback {\etal}~\cite{kullback62tests}, we have that 
-there is a random variable $2\hat{I}$, which follows a $\chi^2$ distribution.
+there is a random variable $2\hat{I}$, which follows a $\chi^2$ distribution with $(n-1)$ degrees of freedom.
 More specifically, we have that
 for $\rowc$ to be in the  \emph{$(1-\alpha)$ (or $100(1-\alpha)\%$) 
 confidence interval of $\rowp$} we need:
 \begin{equation}\label{eq:ul}
-\text{cdf}\left[2\hat{I}\right] =  2\sum_{i=1}^n\rowc(i)\log\rowc(i)+2n\log n -2\sum_{i=1}^n\rowc(i)\log\rowp(i) \geq \alpha,
+\text{F}_{\chi^2_{n-1}}\left[2\hat{I}\right] =  2\sum_{i=1}^n\rowc(i)\log\rowc(i)+2n\log n -2\sum_{i=1}^n\rowc(i)\log\rowp(i) \geq \alpha,
 \end{equation}
 where 
- $\rowp(i)$ (resp.\ $rowc(i)$) is the $i$-th element of vector $\rowp$ (resp.\ $\rowc$).
+ $\rowp(i)$ (resp. $\rowc(i)$) is the $i$-th element of vector $\rowp$ (resp.\ $\rowc$).
  Note that in the above equation the value of $\alpha$ quantifies the uncertainty that
  one believes there is in the set of observations $\rowp$, and which is the uncertainty one
  can tolerate. Thus, we call $\alpha$ the \emph{input uncertainty level}.
@@ -45,10 +45,10 @@ where
 By setting $\beta_\text{max} = \sum_{i=1}^n\rowc(i)\log \rowc(i)$,
 we get
 \begin{equation}\label{eq:constraint}
-\sum_{i=1}^n\rowc(i)\log\rowp(i) \leq \frac{2(\beta_\text{max}-n\log n)-\chi^2\text{ppf}(\alpha)}{2},
+\sum_{i=1}^n\rowc(i)\log\rowp(i) \leq \frac{2(\beta_\text{max}-n\log n)-\text{F}^{-1}_{\chi^2_{n-1}}(\alpha)}{2},
 \end{equation}
-where $\chi^2\text{ppf}$ is the inverse of $\chi^2$ cdf function. 
-In other words, for all vectors $\rowp$ for which Inequality~\eqref{eq:constraint}
+where $\text{F}^{-1}_{\chi^2_{n-1}}$ is the inverse of $\chi^2$ cdf function. 
+In other words, for all vectors $\rowp$ for which inequality~\eqref{eq:constraint}
 is satisfied, $\rowc$ is within the $(1-\alpha)$-confidence interval of $\rowp$.
 
 Thus given $\countmatrix$ and $\alpha$, we can define the 
