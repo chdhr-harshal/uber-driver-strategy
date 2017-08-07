@@ -47,7 +47,7 @@ We use {\passengerarrivalrate} and {\driverarrivalrate} to denote the Poisson ar
 \begin{equation}
 \Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
 \end{equation}
-where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the random variable $K$ as states of a {\markovchain}\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accomodate correlated processes with slight modification.}.
+where $I_k(z)$ is the modified Bessel function of the first kind. We can depict the random variable $K$ as states of a {\markovchain}\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.}.
 
 % in Figure \ref{fig:skellam_markov_chain}.
 
@@ -97,7 +97,17 @@ f(i,j) = (1 - f(i,i)) \times m(i,j)
 The matrix {\empiricaltransitionmatrix}, built in this manner satisfies all our assumptions and can be used in the evaluation of strategies described in previous sections.
 
 \subsection{Experiments}
+In this section, we describe various experiments aimed at evaluating various aspects of the driver strategies formulated in Section \ref{sec:driver_strategies} using the experimental framework described in the previous section.
 
+\spara{Comparison of strategies}: Here, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} are assumed to drive from 9AM to 5PM, an 8 hour work day, while those following the {\flexible} or the {\relocationflexible} drive for 8 hours each day with a flexible schedule.
+
+Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for each of the strategies on different days of the week. For each of the day, We observe that driver earnings from {\relocationflexible} are more than twice of those from {\naive}. 
+
+\begin{figure*}
+	\caption{Daily earnings with different strategies}
+	\label{fig:daily_earnings}
+	\includegraphics{figures/daily_earnings.pdf}
+\end{figure*}
 
 % \subsection{\textsc{RewardsMatrix}}
 
