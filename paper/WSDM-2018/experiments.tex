@@ -96,18 +96,75 @@ f(i,j) = (1 - f(i,i)) \times m(i,j)
 \end{equation}
 The matrix {\empiricaltransitionmatrix}, built in this manner satisfies all our assumptions and can be used in the evaluation of strategies described in previous sections.
 
-\subsection{Experiments}
-In this section, we describe various experiments aimed at evaluating various aspects of the driver strategies formulated in Section \ref{sec:driver_strategies} using the experimental framework described in the previous section.
-
-\spara{Comparison of strategies}: Here, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} are assumed to drive from 9AM to 5PM, an 8 hour work day, while those following the {\flexible} or the {\relocationflexible} drive for 8 hours each day with a flexible schedule.
-
-Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for each of the strategies on different days of the week. For each of the day, We observe that driver earnings from {\relocationflexible} are more than twice of those from {\naive}. 
-
 \begin{figure*}
+	\centering
 	\caption{Daily earnings with different strategies}
 	\label{fig:daily_earnings}
 	\includegraphics{figures/daily_earnings.pdf}
 \end{figure*}
+
+\subsection{Experiments}
+In this section, we describe various experiments aimed at evaluating various aspects of the driver strategies formulated in Section \ref{sec:driver_strategies} using the experimental framework described in the previous section.
+
+\spara{Comparison of strategies}: Here, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} strategy is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, an 8 hour work day, while those following the {\flexible} or the {\relocationflexible} strategies drive for 8 hours each day with a flexible schedule.
+
+Fig. \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for each of the strategies on different days of the week. For each of the day, We observe that driver earnings from {\relocationflexible} strategy are more than twice of those from {\naive}. The {\flexible} strategy always provides better earnings than even a {\relocation} strategy in 9 to 5 work schedule. Furthermore, we also observe that midweek earnings from all strategies exceed those on weekends.
+
+\spara{Spatial dynamics of strategies}: Here, we explore the question - \textit{what are the benefits of the relocation action?} Fig. \ref{fig:demand_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. The {\relocation} strategy tries to reduce this disparity by allowing a driver to relocate while in a zone of low demand. To test our hypothesis, we calculate earnings from the {\naive} and the {\relocation} strategy from 8 hours of driving starting from every zone in the city, at different times of the day. We depict these earnings in form of a heatmap in Fig. \ref{fig:earnings_heatmap}.
+
+\begin{figure*}[hb]
+	\caption{Earnings across NYC zones with \textit{naive} and \textit{relocation} strategy.}
+	\label{fig:earnings_heatmap}
+	\includegraphics[scale=0.4]{figures/earnings_heatmap.pdf}
+\end{figure*}
+
+We observe that, as expected, the variation in the {\naive} strategy earnings is substantial at all times of the day. Most notably, in the morning hours, drivers from zones surrounding Manhattan and those from near JFK airport earn considerably more than others. The {\relocation} strategy balances out this variation in earnings to some extent, while consistently outperforming the {\naive} strategy across all zones.
+
+\spara{Temporal dynamics of strategies}: It is obvious from Fig. \ref{fig:daily_earnings} that both of the flexible schedule strategies outperform their fixed schedule counterparts. So, we explore the question \textit{what is the best time of the day to drive in order to maximize earnings?} As the choice of the {\gohome} action depends on multiple factors such as the location of the driver, the demand across the city, the budget left, etc., we visualize preferred driving hours using 1000 simulated drivers. Each driver has a randomly assigned home zone. At every step throughout the day, simulated drivers follow actions recommended by the contingency plans developed while solving the {\originalproblem} for {\flexible} and {\relocationflexible} strategies.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[scale=0.75]{figures/simulated_schedules.pdf}
+	\caption{Active drivers with {\flexible} and {\relocationflexible}
+	strategies at different times of the day.}
+	\label{fig:simulated_schedules}
+\end{figure}
+
+We observe that drivers of both {\flexible} and {\relocationflexible} strategies are active in large percentages after 7PM in the evening. However, over 50\% of the drivers following the {\flexible} strategy are active throughout the day after 8AM in the morning. In stark contrast with them, drivers following the {\relocationflexible} strategy are active in overwhelming percentages during peak hours of the day, from 6AM to 10AM in the morning, and post 7PM in the evening. This makes us conclude that {\relocate} action is more effective during the peak hours, thereby prompting higher percentages of {\relocationflexible} drivers to be active in those hours.
+
+\spara{Preferred relocation zones}:
+Simulated drivers also allow us to compare the {\relocate} actions between drivers following {\relocation} strategy and those following {\relocationflexible} strategy. The endzones for relocate actions of drivers are shown in Fig. \ref{fig:relocation_endzones}. We observe a contrast between the preferred relocation zones for drivers of either strategies. Drivers following the {\relocation} strategy predominantly relocate themselves to zones `3A', `3C', `4A' zones near the West Village neighborhood and zones `7B' and `8' near the LaGuardia Airport, while those following the {\relocationflexible} strategy relocate themselves to zone `1' comprising of the Financial District and zones `5A', `5B' and `6B' near the Upper East side of New York City.
+
+\begin{figure*}
+	\centering
+	\includegraphics{figures/relocation_endzones.pdf}
+	\caption{Contrast between preferred relocation endzones for drivers with 
+	{\relocation} and {\relocationflexible} strategies}
+	\label{fig:relocation_endzones}
+\end{figure*}
+
+\spara{Surge Chasing}:
+Now that we have an understanding about the various driver strategies, we turn our attention to surge pricing. Surge pricing is a controversial feature of the Uber platform. According to Uber, it encourages drivers to start driving during the peak hours in order to efficiently meet demand with supply, albeit at a higher cost to passenger, in turn leading to higher driver earnings. In fact, Uber prominently displays to drivers on their Partner App, the information regarding surge multiplier in different geographical neighborhoods in form of a heatmap. However, as the Uber's surge pricing algorithm is proprietary, it is unclear whether drivers should relocate themselves to surging areas consistently in order to maximize their earnings. Using our information about surge multipliers, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
+\begin{figure}[H]
+	\centering
+	\caption{Simulated earnings for drivers across different strategies.}
+	\label{fig:simulated_earnings}
+	\includegraphics{figures/simulated_earnings.pdf}
+\end{figure}
+In order to do so, we evaluate earnings of simulated drivers in three scenarios viz., `no surge' - where we disable the surge multiplier, `surge' - where surge multiplier is accounted for while calculating earnings, and `surge chasing' wherein surge multiplier is enabled and a driver `chases surge' i.e, a driver located in a non-surging zone always relocates to the zone with highest surge multiplier. The earnings of the simulated drivers in these scenarios are shown in Fig. {\ref{fig:simulated_earnings}}. We observe that `chasing surge' in {\naive} strategy on an average yields slightly less earnings than even the situation when surge multiplier is disabled. Interestingly, chasing surge is even more ill-advised if the driver follows a flexible schedule strategy, and it can lead to huge losses.
+
+\subsection{Effect of uncertainty} 
+
+All the experiments described in previous section indicate that our strategies always outperform a {\naive} strategy most prevalent among the drivers. However, it is worth noting that our strategies are evaluated based on historical data. Consequently, such strategies can be highly sensitive to changes in the underlying data, in form of perturbed transition matrices. We can recommend our strategies to drivers only if they outperform the {\naive} strategy in presence of such perturbations. Hence, using the framework developed in Section \ref{sec:sensitivity}, we solve the {\robustproblem} problem for each of the four strategies for increasing levels of uncertainty in the transition matrices.
+
+Fig. \ref{fig:uncertainty_evolution} shows the results of increasing uncertainty on the earnings of drivers following each of the four strategies. Not only are the {\relocation}, {\flexible} and {\relocationflexible} strategies more tolerant to uncertainty in transition matrices, but they outperform the {\naive} strategy at 0\% uncertainty, while themselves at with 99\% uncertainty. This provides evidence regarding the robustness of such strategies.
+
+\begin{figure}[H]
+	\centering
+	\caption{Sensitivity to uncertainty in parameters.}
+	\label{fig:uncertainty_evolution}
+	\includegraphics{figures/uncertainty_evolution.pdf}
+\end{figure}
 
 % \subsection{\textsc{RewardsMatrix}}
 
