@@ -1,6 +1,6 @@
 %!TEX root = main.tex
 
-\section{Experiments: Optimal Uber driver strategy}
+\section{Data and Experiments}
 \label{sec:experiments}
 
 We consider the problem of evaluating optimal in expectation strategies for drivers using the on-demand ride service -- Uber. The driver strategies on this platform must be estimated from past data. This makes it a particularly attractive application for evaluating our framework.
@@ -32,11 +32,18 @@ We divide each 24-hour day of the week in 144 time-slices of duration 10 minutes
 
 \begin{figure}
 	\centering
-	\includegraphics{figures/demand_heatmap.pdf}
-	\caption{Demand across NYC zones.}
-	\label{fig:demand_heatmap}
-	%\fnote{Rides starting from each zone in NYC at different times of the day. Notably, inside Manhattan, the popular travel direction reverses from morning to evening, as expected.}
+	\includegraphics{figures/successful_heatmap.pdf}
+	\caption{Probability of finding a passenger in 10 minutes across NYC zones at different times of the day.}
+	\label{fig:successful_heatmap}
 \end{figure}
+
+% \begin{figure}
+% 	\centering
+% 	\includegraphics{figures/demand_heatmap.pdf}
+% 	\caption{Demand across NYC zones.}
+% 	\label{fig:demand_heatmap}
+% 	%\fnote{Rides starting from each zone in NYC at different times of the day. Notably, inside Manhattan, the popular travel direction reverses from morning to evening, as expected.}
+% \end{figure}
 
 Similarly, travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share of earnings.
 
@@ -112,11 +119,11 @@ Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for
 
 \spara{Spatial dynamics of strategies}: Here, we explore the question - \textit{what are the benefits of the relocation action?} Figure \ref{fig:demand_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. The {\relocation} strategy tries to reduce this disparity by allowing a driver to relocate while in a zone of low demand. To test our hypothesis, we calculate earnings from the {\naive} and the {\relocation} strategy from 8 hours of driving starting from every zone in the city, at different times of the day. We depict these earnings in form of a heatmap in Figure \ref{fig:earnings_heatmap}.
 
-\begin{figure*}[hb]
-	\includegraphics{figures/earnings_heatmap.pdf}
-	\caption{Earnings across NYC zones with \textit{naive} and \textit{relocation} strategy.}
+\begin{figure}[hb]
+	\includegraphics[scale=0.4]{figures/earnings_heatmap.pdf}
+	\caption{This plot will be replaced by a box plot}
 	\label{fig:earnings_heatmap}
-\end{figure*}
+\end{figure}
 
 We observe that, as expected, the variation in the {\naive} strategy earnings is substantial at all times of the day. Most notably, in the morning hours, drivers from zones surrounding Manhattan and those from near JFK airport earn considerably more than others. The {\relocation} strategy balances out this variation in earnings to some extent, while consistently outperforming the {\naive} strategy across all zones.
 
@@ -143,7 +150,13 @@ Simulated drivers also allow us to compare the {\relocate} actions between drive
 	\label{fig:relocation_endzones}
 \end{figure*}
 
-\spara{Surge Chasing}:
+\subsection{Surge Chasing}
+\begin{figure}[H]
+	\centering
+	\includegraphics{figures/surge_heatmap.pdf}
+	\caption{Active surge multiplier across NYC zones at different times of the day.}
+	\label{fig:surge_heatmap}
+\end{figure}
 Now that we have an understanding about the various driver strategies, we turn our attention to surge pricing. Surge pricing is a controversial feature of the Uber platform. According to Uber, it encourages drivers to start driving during the peak hours in order to efficiently meet demand with supply, albeit at a higher cost to passenger, in turn leading to higher driver earnings. In fact, Uber prominently displays to drivers on their Partner App, the information regarding surge multiplier in different geographical neighborhoods in form of a heatmap. However, as the Uber's surge pricing algorithm is proprietary, it is unclear whether drivers should relocate themselves to surging areas consistently in order to maximize their earnings. Using our information about surge multipliers, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
 \begin{figure}[H]
 	\includegraphics{figures/simulated_earnings.pdf}
@@ -164,18 +177,6 @@ Figure \ref{fig:uncertainty_evolution} shows the results of increasing uncertain
 	\caption{Sensitivity to uncertainty in parameters.}
 	\label{fig:uncertainty_evolution}
 \end{figure}
-
-\begin{figure*}[hb]
-	\includegraphics{figures/successful_heatmap.pdf}
-	\caption{Probability of finding a passenger in 1 time unit across NYC zones at different times of the day.}
-	\label{fig:successful_heatmap}
-\end{figure*}
-
-\begin{figure*}[hb]
-	\includegraphics{figures/surge_heatmap.pdf}
-	\caption{Active surge multiplier across NYC zones at different times of the day.}
-	\label{fig:surge_heatmap}
-\end{figure*}
 
 % \subsection{\textsc{RewardsMatrix}}
 
