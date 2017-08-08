@@ -2,9 +2,45 @@
 
 \section{Related Work}
 \label{sec:related_work}
-\textbf{Works on general taxi cabs:}
 
-1. \citeauthor{camerer1997labor} - seminal paper. (i) `inexperienced' cabdrivers make labor supply decisions ``one day at a time'' instead of substituting labor and leisure across multiple days. (ii) set a loose daily income target and quit working once they reach that target.
+A considerable body of related work has focused on the optimization of taxi fleets, for
+example building economic network models to describe demand and supply equilibrium of taxi 
+services under various tariff structures, fleet size regulations and other policy
+alternatives~\cite{bailey1987simulation,yang2002demand}.  More recent work seeks to 
+maximize social welfare by optimizing allocation of taxi market resources~\cite{shi2016optimization}.
+Another direction relates to route optimization by a centralized administrator, e.g., in
+the context of online and offline taxi dispatching services~\cite{maciejewski2013simulation,nunes2011taxi} 
+and in the case of maximizing occupancy and minimizing travel times (by minimizing passenger detours) 
+in a shared-ride setting~\cite{jung2013design}.
+
+Other work has studied the supply side of the driving market from the viewpoint of behavioral economics.
+A seminal paper by ~\citeauthor{camerer1997labor} studied cabdrivers and found that  (1) `inexperienced' 
+cabdrivers make labor supply decisions ``one day at a time'' instead of substituting labor and leisure 
+across multiple days, and  (2) set a loose daily income target and quit working once they reach that 
+target.  More recent work has investigated the supply-side effects of specific incentives that Uber and Lyft 
+provide to drivers, notably the impact of surge pricing.  For example, \citeauthor{chen2016dynamic} show 
+a causal relationship that drivers on Uber respond to surges by driving more during high surge times, 
+differentiating from previous work that suggests taxi drivers primarily focus on achieving earnings goals~\cite{camerer1997labor}.
+Articles in the popular press have considered how Uber uses methods from gamification: {\bf{Cite this:}} ``How Uber Uses Psychological Tricks to Push Its Drivers' Buttons''. \url{https://www.nytimes.com/interactive/2017/04/02/technology/uber-drivers-psychological-tricks.html}
+while bloggers have offered contradictory advise to ride-sharing drivers as to the merits of chasing surge while 
+driving\footnote{See, e.g., ``Advice For New Uber Drivers- Don't Chase The Surge!'' -Rideshare guy. \url{http://maximumridesharingprofits.com/advice-new-uber-drivers-dont-chase-surge/}, 
+``Chasing the Surge: 3 Tips for Maximizing Uber Earnings''. \url{https://pjmedia.com/lifestyle/2016/07/19/chasing-the-surge-3-tips-for-maximizing-uber-earnings/1/}, and 
+``Ride-Hailing Drivers Are Slaves to the Surge'' {\url{https://www.nytimes.com/2017/01/12/nyregion/uber-lyft-juno-ride-hailing.html}}}.
+
+
+
+Finally, other previous work has considered ride-sharing platforms more holistically, at a macro level.
+The Uber under the hood paper measured many facets of Ubers including the prevalence and extent of surge pricing
+Work by~\citeauthor{hall2016analysis} showed that drivers were attracted to Uber platform due to flexibility it offers, 
+and the level of compensation, but that earnings per hour do not vary much with number of hours worked. 
+
+I don't know how to fit these last two in, but I want to include them.
+\citeauthor{banerjee2015pricing} studied complex dynamic pricing strategies for ride-sharing platforms (Lyft) using a queuing-theoretic economic model. They show the dynamic pricing is robust to changes in system parameters, even if it does not achieve higher performance than static pricing.  \citeauthor{ozkan2016dynamic} looked at strategic matching between Uber and Lyft's supply and demand. Matching based on parameters like customer/driver arrival rates, willingness of customers to wait and time-variance can achieve better performance than naively matching passenger with closest driver.
+
+
+\begin{comment}
+
+\textbf{Works on general taxi cabs:}
 
 2. \citeauthor{yang1998network} - first in the series of works modeling taxi utilization and movement to find that higher utilization leads to longer waiting times for customers.
 
@@ -52,10 +88,8 @@
 
 \textbf{Media and Press articles:}
 
-1. How Uber Uses Psychological Tricks to Push Its Drivers' Buttons\footnote{\url{https://www.nytimes.com/interactive/2017/04/02/technology/uber-drivers-psychological-tricks.html}}
 
-2. Advice For New Uber Drivers- Don't Chase The Surge! -Rideshare guy\footnote{\url{http://maximumridesharingprofits.com/advice-new-uber-drivers-dont-chase-surge/}}
+ 
 
-3. Chasing the Surge: 3 Tips for Maximizing Uber Earnings\footnote{\url{https://pjmedia.com/lifestyle/2016/07/19/chasing-the-surge-3-tips-for-maximizing-uber-earnings/1/}}: Some other articles suggest chasing the surge.
-
-4. Ride-Hailing Drivers Are Slaves to the Surge\footnote{\url{https://www.nytimes.com/2017/01/12/nyregion/uber-lyft-juno-ride-hailing.html}}: Provides some information on average earnings of drivers per hours, problems like deciding schedules, etc.
+%%3. 
+\end{comment}
