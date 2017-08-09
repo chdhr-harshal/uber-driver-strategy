@@ -6,12 +6,35 @@
 The proliferation of on-demand ridesharing platforms like Lyft and Uber
 have changed the way people move within urban environments. 
 
-
+\note[ET]{Maybe we need some statistics of how many people use uber/lyft and how much these companies have grown?}
 
 Clearly, ridesharing platforms create a supply-and-demand environment that offers 
 plenty opportunities for academic research that focuses on pricing mechanisms
-as well as algorithms for matching drivers to customers~\cite{}.
-At the same time, data-analytic studies have focused
-on studying drivers' behavior and their motivation as it comes from the flexible working 
-hours~\cite{hall2016analysis} as well as the surge pricing mechanisms of the platforms themselves~\cite{chen2015peeking,chen2016dynamic}.
- 
+as well as algorithms for matching drivers to 
+customers~\cite{banerjee2015pricing,ozkan2016dynamic}.
+
+Although those studies view ridesharing platforms holistically, little formal work
+has been done on optimizing strategies for drivers. To date, we can only find some data-analytic studies, that focus on identifying the reasons that motivate drivers to join such platforms -- flexible working hours and chasing surge being the main reasons~\cite{chen2015peeking,chen2016dynamic,hall2016analysis}.
+
+However, there is little emphasis on how to optimize the earnings of such drivers.
+To date, there are no tools for drivers to use that could optimize their earnings.
+They can only rely on some 
+popular-press articles that offer(often contradictory) advice to ridesharing drivers how to maximize their earnings, mostly via chasing surge~\cite{dont,tips}. 
+
+ In this paper, we formalize the problem of devising a driver strategy to maximize expected 
+ earnings, describe a series of dynamic programming algorithms to solve these problems
+ under different sets of modeled actions available to the drivers. 
+ Moreover, the framework we use has the advantage of being able to rigorously reason about  and analyze the sensitivity of our results to perturbations in the input data. 
+ Thus, we can justify the proposed strategies even under some uncertainty level in the
+ collected data.
+  
+We exemplify our  results with a large-scale simulation of driving for Uber in NYC. For this simulation we assemble a new dataset that uses both the publicly available NYC taxi rides 
+dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} as well as calls to the Uber API. From the former we obtain information about trips that happen between different NYC zones. From the latter we obtain pricing as well as traffic-time information for those trips. This newly-collected dataset is of independent interest and can itself be used for a multitude of other studies.
+
+Our experiments with our methods on this dataset demonstrate the following findings:
+being strategic about the rides they pick, the areas they focus on picking up riders
+and the times they work can increase a driver's impact more than 100\%  when compared
+to a naive optimization strategy.
+Moreover, we show that this pronounced difference between the earnings obtained by the 
+two strategies is even true when there is large uncertainty in the input data. This essentially means that our results are not an artifact of the dataset we collected, but rather they generalize well.
+Finally, our experiments with naive surge-chasing strategies show that blindly chasing price surge not only does it not lead to significant earnings, but it can even harm the drivers, who end up greedily searching for the high-search area without strategizing appropriately.
