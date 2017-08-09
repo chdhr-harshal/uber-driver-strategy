@@ -116,8 +116,8 @@ is maximized.
 Note that the above problem requires searching among all possible true transition 
 matrices in $\mathcal{P}_\alpha$, which is a non-enumerable set. 
 In fact, we can show (details omitted due to space constraints) that 
-Problem~\ref{problem:robust} can be solved by enhancing the dynamic-programming routines we described in Section~\ref{sec:driver_strategies}
-with a convex-optimization solver.
+Problem~\ref{problem:robust} can be solved by enhancing the \emph{total expected future earnings} associated with {\getpassenger} action in the  dynamic-programming routines we described in Section~\ref{sec:driver_strategies}
+with an optimization problem. We use an off-the-shelf minimizer to solve this optimization problem. However, a bisection algorithm can approximate this problem within an accuracy $\delta$ in $O(\log(V_{\max}/\delta))$ time, where $V_{\max}$ is the maximum value of the value function~\cite{nilim2004robustness}.
 
 \iffalse
 which assumes that every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\originalproblem} problem maximizes the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} 
