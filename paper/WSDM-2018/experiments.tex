@@ -103,9 +103,9 @@ The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all ou
 \end{figure*}
 
 \subsection{Experiments}
-In this section, we describe various experiments aimed at evaluating various aspects of the driver strategies formulated in Section \ref{sec:driver_strategies} using the experimental framework described in the previous section.
+Now, we use the experimental framework from the previous section to evaluate various driver strategies formulated in Section \ref{sec:driver_strategies}.
 
-\spara{Comparison of strategies}: Here, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} strategy is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, an 8 hour work day, while those following the {\flexible} or the {\relocationflexible} strategies drive for 8 hours each day with a flexible schedule.
+\spara{Comparison of strategies}: First, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} strategy is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, an 8 hour work day, while those following the {\flexible} or the {\relocationflexible} strategies drive for 8 hours each day with a flexible schedule.
 
 Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for each of the strategies on different days of the week. For each of the day, We observe that driver earnings from {\relocationflexible} strategy are more than twice of those from {\naive}. The {\flexible} strategy always provides better earnings than even a {\relocation} strategy in 9 to 5 work schedule. Furthermore, we also observe that midweek earnings from all strategies exceed those on weekends.
 
