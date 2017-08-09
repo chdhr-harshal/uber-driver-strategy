@@ -105,9 +105,9 @@ The matrix {\empiricaltransitionmatrix}, built in this manner satisfies all our 
 
 \begin{figure*}
 	\centering
+	\includegraphics{figures/daily_earnings.pdf}
 	\caption{Daily earnings with different strategies}
 	\label{fig:daily_earnings}
-	\includegraphics{figures/daily_earnings.pdf}
 \end{figure*}
 
 \subsection{Experiments}
@@ -119,8 +119,8 @@ Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for
 
 \spara{Spatial dynamics of strategies}: Here, we explore the question - \textit{what are the benefits of the relocation action?} Figure \ref{fig:demand_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. The {\relocation} strategy tries to reduce this disparity by allowing a driver to relocate while in a zone of low demand. To test our hypothesis, we calculate earnings from the {\naive} and the {\relocation} strategy from 8 hours of driving starting from every zone in the city, at different times of the day. We depict these earnings in form of a heatmap in Figure \ref{fig:earnings_heatmap}.
 
-\begin{figure}[hb]
-	\includegraphics[scale=0.4]{figures/earnings_heatmap.pdf}
+\begin{figure}
+	\includegraphics{figures/earnings_heatmap.pdf}
 	\caption{This plot will be replaced by a box plot}
 	\label{fig:earnings_heatmap}
 \end{figure}
@@ -131,7 +131,7 @@ We observe that, as expected, the variation in the {\naive} strategy earnings is
 
 \begin{figure}[H]
 	\centering
-	\includegraphics[scale=0.75]{figures/simulated_schedules.pdf}
+	\includegraphics{figures/simulated_schedules.pdf}
 	\caption{Active drivers with {\flexible} and {\relocationflexible}
 	strategies at different times of the day.}
 	\label{fig:simulated_schedules}
