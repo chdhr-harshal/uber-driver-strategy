@@ -3,7 +3,7 @@
 \section{Problem setup}
 \label{sec:problem_setup}
 
-In this section, we describe the basics of our problem setup and provide the necessary notations.
+In this section, we describe the basics of our problem setup and provide the necessary notation.
 
 \iffalse
 \subsection{Notation}
@@ -14,10 +14,10 @@ Vectors are denoted with lowercase bold letters (e.g., $\vec{a} = [a(i)]$) and m
 
 \subsection{Modeling the city}
 
-Throughout the paper, we will assume that a city is divided into non-overlaping set of zones denoted by \cityzones. 
-We represent a city in form of a weighted directed graph $G=(\cityzones, E)$ with 
+Throughout the paper, we will assume that a city is divided into non-overlapping set of zones denoted by \cityzones. 
+We represent a city in the form of a weighted directed graph $G=(\cityzones, E)$ with 
 $|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, an edge between each pair of nodes. 
-Some of the attributes of a city are as follows:
+Some of the attributes of a city (over a fixed time interval) are as follows:
 
 %\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
@@ -45,7 +45,7 @@ $f(i,i)$ denotes the probability of not finding a passenger in zone $i$.
 
 \spara{Travel time matrix (\traveltimematrix)}:
 Every edge $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
-denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
+denoting the travel time duration for a ride from zone $i$ to zone $j$. 
 These weights give us a travel time matrix {\traveltimematrix} with entries $\tau(i,j)$. 
 %Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
 %Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
@@ -54,9 +54,9 @@ These weights give us a travel time matrix {\traveltimematrix} with entries $\ta
 
 \spara{Rewards matrix (\rewardsmatrix)}:
 Every edge $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j)$ denoting
-the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewards include the driver's
-share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. This rewards are stored in the rewards matrix $\rewardsmatrix$
-with entries $r(i,j)$.
+the net reward for a driver transiting from zone $i$ to zone $j$. The net rewards include the driver's
+share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. These 
+rewards are stored in the rewards matrix $\rewardsmatrix$ with entries $r(i,j)$.
 %Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
 Note that all the above matrices, {\countmatrix}, {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, are time dependent, i.e., their entries change throughout the day. Therefore, at any point in time $t$, the instantiations of these matrices
@@ -73,25 +73,25 @@ he is willing to work. During these time units the driver
 up passenger rides. Depending on the specific setting, the driver can
 work $B$ time units consecutively or split them 
 over a finite horizon of $N$ time units. Obviously, $N \geq B$. 
-As an example, a driver with a 40 hour work week
-shall have $B=40$ hours and $N=168$ hours.
+As an example, a driver seeking to optimize a 40 hour work week over
+a 7 day week shall have $B=40$ hours and $N=168$ hours.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
 
 \spara{Home zone (\homezone)}: 
 Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
 We always assume that the driver starts from his home zone and returns to it
-at the end of his shift.
+at the end of each of his shifts.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
 \spara{Driver actions (\actionsset)}: 
 Whenever faced with making a decision regarding next decision during a driving strategy, a driver has $n+2$ possible actions he can take: 
 %\begin{itemize}
 \squishlist
-	\item {\getpassenger} \getpassengeraction: Wait for a passenger in the current zone. 
-	\item {\gohome} \gohomeaction: Log out of the on-demand ride service, go to home zone and wait in it. A driver can
-	choose this action only while away from home zone.
-	\item {\relocate} \relocateaction: Relocate to city zone $j$.
+	\item {\getpassenger} (\getpassengeraction): Wait for a passenger in the current zone. 
+	\item {\gohome} (\gohomeaction): Log out of the on-demand ride service, relocate to the home zone (if needed) 
+  and stop working.   This action does not consume the driver's budget.
+	\item {\relocate} (\relocateaction): Relocate to city zone $j$.  This action consumes the driver's budget.
 %\end{itemize}
 \squishend
 
