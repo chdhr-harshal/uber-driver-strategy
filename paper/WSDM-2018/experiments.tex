@@ -26,9 +26,9 @@ dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.s
 
 
 \spara{Forming time-evolving matrices {\countmatrix} and {\empiricaltransitionmatrix}:}
-Our starting point is the the NYC taxi rides dataset, which
+Our starting point is the the NYC Taxi  dataset, which
 %%\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}}. 
-contains yellow street-hail taxi records with fields capturing pick-up and drop-off dates/times, 
+contains yellow street-hail  records of taxi rides with fields capturing pick-up and drop-off dates/times, 
 location co-ordinates, trip distances and fares. 
 {\bf{What time period?  How many rides?}}
 Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
@@ -81,7 +81,7 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 \spara{Forming time-evolving matrices {\traveltimematrix}, {\rewardsmatrix}:} Since information about travel times 
 and rewards was not available on the NYC Taxi dataset we invoked the Uber API in order
 to obtain this information.
-The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant feature of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query. For the purpose of this study, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we use this information from the
+The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant feature of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query.  Here, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we use this information from the
 NYC taxi rides dataset.
 
 To create a representative sample of data, our strategy relies on ``recreating" NYC taxi rides virtually on the Uber platform. 
