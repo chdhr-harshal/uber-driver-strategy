@@ -173,21 +173,26 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 
 \fi
 
-\subsection{Experimental results}
 \begin{figure*}
 	\centering
 	\includegraphics{figures/daily_earnings.pdf}
-	\caption{Daily earnings with different strategies}
+	\caption{Daily driver earnings with different strategies}
 	\label{fig:daily_earnings}
 \end{figure*}
+\subsection{Experimental results}
+Using the above matrices as input, we now evaluate our methodology.
 
-Now, we use the experimental framework from the previous section to evaluate various driver strategies formulated in Section \ref{sec:driver_strategies}.
+\spara{Comparison of strategies}: First, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
-\spara{Comparison of strategies}: First, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} strategy is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
+Figure \ref{fig:daily_earnings} shows the earnings achieved by 
+the solution to {\originalproblem} by each of the strategies on different days of the week. We observe that all ``smart" strategies consistently outperform {\naive};
+as expected, {\relocationflexible} is consistently the strategy with the highest earnings.
+Note that, {\relocationflexible} can lead to up to 100\% increase in the drivers'
+earnings when compared to {\naive}.  
+This shows that, indeed, our strategies are able to exploit the spatial and the temporal variation in demand across NYC. The results also show
+that for a part-time Uber driver, it is beneficial to drive midweek from Wednesday to Friday, than during weekends.
 
-Figure \ref{fig:daily_earnings} plots the solution to the {\originalproblem} for each of the strategies on different days of the week. We observe that all of the `smart' strategies consistently outperform the {\naive} strategies. The {\relocation} as well as the {\flexible} strategy earnings are more than that of {\naive}. This shows that, indeed, our strategies are able to exploit the spatial and the temporal variation in demand across NYC. As a result, the most general {\relocationflexible} strategy is always the best strategy, with earnings over twice than those from the {\naive} strategy. We also find that, for a part-time Uber driver, it is beneficial to drive midweek from Wednesday to Friday, than during weekends.
-
-Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
+%Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
 
 \spara{Spatial dynamics of strategies}: 
 \begin{figure}
