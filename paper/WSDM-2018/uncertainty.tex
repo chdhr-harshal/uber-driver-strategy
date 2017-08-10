@@ -4,13 +4,31 @@
 \section{Maximizing earnings under uncertainty}
 \label{sec:sensitivity}
 Observe that the primary source of variability in the input of the {\originalproblem} problem
-is the set of empirical transition matrices {\empiricaltransitionmatrix}.  , which are 
-observed from historical data. These empirically-observed transition matrices may suffer from estimation errors due to presence of external confounding factors like weather, special events inside the city, etc. while gathering the data. As a result, the dynamic programming solution to the {\originalproblem} problem
-may also be sensitive to the transition probabilities. In this section, we
-address the question of how the results of the solutions we described in the previous section change under the assumption that there is some uncertainty (and thus noise) in
-the underlying empirical transition matrices we use as part of our input.
+is the set of empirical transition matrices {\empiricaltransitionmatrix}.  In a typical application,
+we expect that predictive models would be employed to generate these matrices based upon observations
+from historical data (as we do in our own experiments).  Empirically observed transition matrices may 
+suffer from estimation errors due to presence of external confounding factors like weather, special 
+events inside the city, etc. while gathering the data. As a result, the dynamic programming solution 
+to the {\originalproblem} problem may also be sensitive to the transition probabilities. In this section, 
+we address the question of how the results of the solutions we described in the previous section change 
+under the assumption that there is some uncertainty (and thus noise) in the underlying empirical transition 
+matrices we use as part of our input.
 
-In this section, we describe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} as developed by \citet{nilim2004robustness}, and use it to modify the {\originalproblem} into the {\robustproblem} problem.
+Concretely, we now assume that the empirical transition matrix~(\empiricaltransitionmatrix),  is generated from an 
+underlying traffic matrix, or count matrix, recording trips between locations $i$ and $j$.
+
+\spara{Count matrix (\countmatrix)}:
+Every edge $e(i\rightarrow j) \in E$ is associated with an
+integer-valued weight $c(i,j)$ that denotes the number of requests
+at zone $i$ that had node $j$ as their destination.
+
+and $f(i,j) = c(i,j) / \sum_k c(i,k)$, for locations $i$ with observed outbound trips. 
+
+
+
+With this, we nowescribe the likelihood model to quantify uncertainty in rows of {\empiricaltransitionmatrix} 
+(and the underlying {\countmatrix}), by construction) as developed by \citet{nilim2004robustness}, and 
+use it to modify the {\originalproblem} into the {\robustproblem} problem.
 
 
 %\subsection{Likelihood model}
@@ -105,7 +123,7 @@ Formally, this is shaped in the following definition of the {\robustproblem}
 problem:
 
 \begin{problem}[{\robustproblem}]\label{problem:robust}
-Given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, the driver's budget $B$ and input uncertainty level $\alpha$
+Given sets of time evolving {\countmatrix}, {\traveltimematrix} and {\rewardsmatrix}, the driver's budget $B$ and input uncertainty level $\alpha$
 find $\widehat{\policy}$
 such that:
 \[
