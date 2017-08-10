@@ -180,9 +180,9 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 	\label{fig:daily_earnings}
 \end{figure*}
 \subsection{Experimental results}
-Using the above matrices as input, we now evaluate our methodology.
+Using the above input, we now evaluate our methodology.
 
-\spara{Comparison of strategies}: First, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
+\spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
 Figure \ref{fig:daily_earnings} shows the earnings achieved by 
 the solution to {\originalproblem} by each of the strategies on different days of the week. We observe that all ``smart" strategies consistently outperform {\naive};
@@ -194,13 +194,14 @@ that for a part-time Uber driver, it is beneficial to drive midweek from Wednesd
 
 %Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
 
-\spara{Spatial dynamics of strategies}: 
 \begin{figure}
 	\includegraphics{figures/earnings_heatmap.pdf}
 	\caption{Disparity of earnings between {\naive} and {\relocation} strategies}
 	\label{fig:earnings_heatmap}
 \end{figure}
-Here, we attempt to answer the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, the drivers based in Manhattan should be expected to earn more than those based in Brooklyn due to higher demand in Manhattan. Similarly, at different times of the day, drivers located within different parts of Manhattan itself will earn differently on account of temporal trends.
+
+\spara{Spatial dynamics of strategies}: 
+Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, the drivers based in Manhattan should be expected to earn more than those based in Brooklyn due to higher demand in Manhattan. Similarly, at different times of the day, drivers located within different parts of Manhattan itself will earn differently on account of temporal trends.
 
 \begin{figure*}
 	\centering
@@ -210,11 +211,16 @@ Here, we attempt to answer the question - \textit{what are the benefits of the {
 	\label{fig:relocation_endzones}
 \end{figure*}
 
-The {\relocation} strategy attempts to mitigate the location based inequality in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} is a box-plot of earnings from an 8-hour workday for drivers following {\naive} and {\relocation} strategies with different home zones. Not only do we observe that {\relocation} strategy has a higher median than that of the {\naive} strategy, but also, the inter-quartile range (IQR) is significantly narrow\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.}. Thus, we conclude that smart relocations throughout the day prevent a driver from being localized to low-earnings neighborhoods of the city, thereby vastly increasing the earnings. The net increase in earnings due to the {\relocate} action easily compensates for the lost time and the costs associated with the action.
+The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} is a box-plot of earnings from an 8-hour workday for drivers following {\naive} and {\relocation} strategies with different home zones. Not only do we observe that the {\relocation} strategy has a higher median than t {\naive}, but also, the inter-quartile range (IQR) is significantly narrow\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.}. Thus, we conclude that smart relocations throughout the day prevent a driver from being ``trapped" in low-earnings neighborhoods and 
+thus enable vast increases in the earnings. 
+This may be counterintuitive as a {\relocate} action (which is essentially an empty ride) incurs cost to the driver. Yet, the results demonstrate that 
+these actions lead to earnings way higher than the costs they incur.
 
-\spara{Temporal dynamics of strategies}: Intuitively, it should be obvious that, on account of periodicity in demand, driver earnings strongly depend on the time of the day when they are driving. We have also established via Figure \ref{fig:daily_earnings} that both of the flexible schedule strategies outperform their fixed schedule counterparts. Now, we explore the question \textit{what is the best time of the day to drive in order to maximize earnings?} To answer this question, we simulate 1000 drivers each for the {\flexible} and {\relocationflexible} strategies. Each of the drivers is randomly assigned a home zone. Furthermore, we solve the {\originalproblem} problem for both the strategies and create a recommended plan of action for the simulated drivers. Thus, at every step of simulation, a driver undertakes the action recommended by the strategy, depending upon the location, time of the day and the budget left.
+\spara{Temporal dynamics of strategies}: Intuitively, due to the periodicity of demand, we expect driver earnings to strongly depend on the time of the day they are driving. 
+%We have also established via Figure \ref{fig:daily_earnings} that both of the flexible schedule strategies outperform their fixed schedule counterparts. 
+Thus, we address the question: \textit{what is the best time of the day to drive in order to maximize earnings?} To answer this question, we simulate 1000 drivers each for the {\flexible} and {\relocationflexible} strategies. Each of the drivers is randomly assigned a home zone. Furthermore, we solve the {\originalproblem} problem for both strategies and create a recommended plan of action for the simulated drivers. Thus, at every step of the simulation, a driver undertakes the action recommended by the strategy, given the location, the time of the day and the budget left.
 
-\begin{figure}[H]
+\begin{figure}
 	\centering
 	\includegraphics{figures/simulated_schedules.pdf}
 	\caption{Active drivers with {\flexible} and {\relocationflexible}
@@ -222,11 +228,17 @@ The {\relocation} strategy attempts to mitigate the location based inequality in
 	\label{fig:simulated_schedules}
 \end{figure}
 
-In Figure \ref{fig:simulated_schedules} we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the `preferred' driving schedules as output by the strategies and consequently followed by the simulated drivers. In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. In contrast, the {\relocationflexible} driver schedules exhibit two distinct peaks corresponding to the morning and the evening peak hour demand. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
+In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the ``preferred" driving schedules 
+output by {\flexible} and {\relocationflexible}.
+In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. In contrast, the number of active
+drivers that follow {\relocationflexible} exhibits two distinct peaks; corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
+Since {\flexible} and {\relocationflexible} only differ in 
+the {\relocate} action, all observed differences are due to this action.
+Hence, we can  conclude that the {\relocate} action is more effective in the evening hours, thereby prompting higher active percentages of {\relocationflexible} drivers then.
 
-We also know that the observed differences in the schedules of two strategies are on account of the {\relocate} action. Hence, we can also conclude that the {\relocate} action is more effective in the evening hours, thereby prompting higher active percentages of {\relocationflexible} drivers then.
-
-\spara{Preferred relocation zones}: Simulated drivers also allow us to compare the {\relocate} actions between drivers following {\relocation} strategy and those following {\relocationflexible} strategy. The popular destinations of {\relocate} actions for drivers following the two strategies are plotted in Figure \ref{fig:relocation_endzones}. We observe a contrast between the preferred relocation zones for drivers of either strategies. Drivers following the {\relocation} strategy predominantly relocate themselves to the center of Manhattan. In contrast, the drivers following {\relocationflexible} strategy do not exhibit a clear most preferred relocation destination. Furthermore, the number of relocations by the {\relocation} strategy drivers vastly outnumber those by the {\relocationflexible} strategy drivers. This presumably results from the freedom of flexible work schedule, allowing them to drive during the hours of higher demand, reducing the number of {\relocate} actions. 
+\spara{Preferred relocation zones}: Using simulated drivers we can also compare the {\relocate} actions between drivers following {\relocation} strategy and those following {\relocationflexible} strategy. The popular destinations of {\relocate} actions for drivers following the two strategies are plotted in Figure \ref{fig:relocation_endzones}. We observe a contrast between the preferred relocation zones for drivers of these two strategies. Drivers following the {\relocation} strategy predominantly relocate themselves to the center of Manhattan. In contrast, the drivers following the {\relocationflexible} strategy do not exhibit a clear most-preferred relocation destination. Furthermore, the number of relocations performed by the {\relocation} strategy drivers 
+is significantly higher than those by performed by the {\relocationflexible} strategy drivers. 
+This is due to the freedom of the work schedule of the latter, which allows them to drive during the hours of higher demand, reducing the number of {\relocate} actions. 
 
 \subsection{Surge Chasing}
 \begin{figure}
