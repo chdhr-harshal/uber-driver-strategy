@@ -20,17 +20,16 @@ dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.s
 \begin{figure}
 	\centering
 	\includegraphics{figures/successful_heatmap.pdf}
-	\caption{Probability of finding a passenger in 10 minutes across NYC zones at different times of the day.}
+	\caption{Probability of finding a passenger in 10 minutes across NYC zones at different times of a representative day.}
 	\label{fig:successful_heatmap}
 \end{figure}
 
 
 \spara{Forming time-evolving matrices {\countmatrix} and {\empiricaltransitionmatrix}:}
-Our starting point is the the NYC Taxi  dataset, which
+Our starting point is the the NYC Taxi  dataset (2015-2016), which
 %%\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}}. 
-contains yellow street-hail  records of taxi rides with fields capturing pick-up and drop-off dates/times, 
-location co-ordinates, trip distances and fares. 
-{\bf{What time period?  How many rides?}}
+contains yellow street-hail records of over 65,000 daily taxi rides with fields capturing pickup and dropoff dates/times, 
+location co-ordinates, trip distances, and fares.
 Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
 Each location ID is associated with one of 29 non-overlapping city zones -- defined in the
 dataset.  While the set of taxi rides is undoubtedly produced from a different ridership than Uber
@@ -41,14 +40,12 @@ NYC over space and time.  Thus we this to build count and frequency input matric
 
 We divide each 24-hour day of the week into 144 time-slices of duration 10 minutes each, indexed by their start 
 time.  To model traffic demand in the city at time $t$, the $c(i,j)$ entry of the count matrix $\countmatrix^t$ is the total 
-number of rides from zone $i$ to zone $j$ in a 30-minute long time window centered at time $t$, {\bf is this right?
-summed over all rides in that time period in the dataset}.  In other words, $c(i, j)$ for the time slot corresponding
+number of rides from zone $i$ to zone $j$ in a 30-minute long time window centered at time $t$. In other words, $c(i,j)$ for the time slot corresponding
 to [10:40, 10:50] on a Wednesday is a count of all rides from $i$ to $j$ that were initiated between 10:30 and 11:00 
-on any Wednesday in the dataset.
+on any Wednesday in the dataset. Our model does not allow rides within the same zone. Hence, we ignore such rides while populating the entries of the matrix $\countmatrix^t$, resulting into diagonal entries being zeros.
 
 The empirical transition matrix $\empiricaltransitionmatrix^t$ is now formed as follows.
- Every diagonal entry of the count matrix $\countmatrix^t$ is zero, as there are no passenger rides within same zone. 
-{\bf Why?  Are they not in the dataset, or is this disallowed in our model?}.
+ Every diagonal entry of the count matrix $\countmatrix^t$ is zero.
 However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. We compute these probabilities below.
 
 %\spara{Modeling successful passenger pickup}:
@@ -93,7 +90,7 @@ day on the same calendar date, but one year later i.e, a real recorded ride from
 %
 %However, in the next section, we provide a methodology to compute a conservative estimate of the driver waiting time in a particular zone at any time of the day using the successful passenger pick-up information from the NYC taxi rides dataset.
 
-Using this aforementioned approach, we collected data for a period of 6 months, recreating rides from October, 2015 until March, 2016. However, due to seasonality of the data, we provide experimental results for one week starting October 18, 2015\footnote{Our results do not vary qualitatively across different weeks.}.
+Using this aforementioned approach, we collected data for a period of 6 months, recreating rides from October, 2015 until March, 2016. However, due to seasonality of the data, we provide experimental results for one week starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. Our results do not vary qualitatively across different weeks or different days of the same week.}. 
 
 
 Using the same time-slicing as we described in the previous paragraph and the same
@@ -134,7 +131,7 @@ We divide each 24-hour day of the week in 144 time-slices of duration 10 minutes
 \begin{figure}
 	\centering
 	\includegraphics{figures/successful_heatmap.pdf}
-	\caption{Estimated probability of finding a passenger within 10 minutes across NYC zones at different times of day.}
+	\caption{Estimated probability of finding a passenger within 10 minutes across NYC zones at different times of a representative day.}
 	\label{fig:successful_heatmap}
 \end{figure}
 
@@ -176,7 +173,7 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 \begin{figure*}
 	\centering
 	\includegraphics{figures/daily_earnings.pdf}
-	\caption{Daily driver earnings with different strategies}
+	\caption{Daily driver earnings with different strategies in a representative week.}
 	\label{fig:daily_earnings}
 \end{figure*}
 \subsection{Experimental results}
@@ -196,7 +193,7 @@ that for a part-time Uber driver, it is beneficial to drive midweek from Wednesd
 
 \begin{figure}
 	\includegraphics{figures/earnings_heatmap.pdf}
-	\caption{Disparity of earnings between {\naive} and {\relocation} strategies}
+	\caption{Disparity of earnings between {\naive} and {\relocation} strategies on a representative day.}
 	\label{fig:earnings_heatmap}
 \end{figure}
 
@@ -206,8 +203,8 @@ Next, we address the question - \textit{what are the benefits of the {\relocate}
 \begin{figure*}
 	\centering
 	\includegraphics{figures/relocation_endzones.pdf}
-	\caption{Contrast between preferred relocation endzones for drivers with 
-	{\relocation} and {\relocationflexible} strategies}
+	\caption{Contrast between preferred relocation destinations for drivers with 
+	{\relocation} and {\relocationflexible} strategies on a representative day.}
 	\label{fig:relocation_endzones}
 \end{figure*}
 
@@ -224,7 +221,7 @@ Thus, we address the question: \textit{what is the best time of the day to drive
 	\centering
 	\includegraphics{figures/simulated_schedules.pdf}
 	\caption{Active drivers with {\flexible} and {\relocationflexible}
-	strategies at different times of the day.}
+	strategies at different times of a representative day.}
 	\label{fig:simulated_schedules}
 \end{figure}
 
@@ -244,13 +241,13 @@ This is due to the freedom of the work schedule of the latter, which allows them
 \begin{figure}
 	\centering
 	\includegraphics{figures/surge_heatmap.pdf}
-	\caption{Active surge multiplier across NYC zones at different times of the day.}
+	\caption{Active surge multiplier across NYC zones at different times of a representative day.}
 	\label{fig:surge_heatmap}
 \end{figure}
 Now that we have an understanding about the dominant aspects of various driver strategies, we turn our attention to surge pricing. Surge pricing was a controversial feature of the Uber platform\footnote{Uber has stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.} aimed at matching supply with passenger demand by increasing prices at times of high-demand. According to Uber, it encourages drivers to start driving during the peak hours in order to efficiently meet demand with supply, albeit at a higher cost to passenger, in turn leading to higher driver earnings. It also decreases demand as the price sensitive customers drop out. In fact, Uber prominently displays to drivers on their Partner App, the information regarding surge multiplier in different geographical neighborhoods in form of a heatmap. Figure \ref{fig:surge_heatmap} shows the active surge multiplier across different neighborhoods of NYC at different times of the day. This information is readily available to the drivers, however, due to uncertainty in the duration of surges as well as the proprietary nature of Uber's surge pricing algorithm, it is unclear whether drivers should relocate themselves to surging areas consistently in order to maximize their earnings. Using our information about surge multipliers, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
 \begin{figure}[H]
 	\includegraphics{figures/simulated_earnings.pdf}
-	\caption{Simulated earnings for drivers across different strategies.}
+	\caption{Simulated earnings for drivers across different strategies on a representative day.}
 	\label{fig:simulated_earnings}
 \end{figure}
 In order to do so, we evaluate earnings of simulated drivers in three scenarios viz., `no surge' - when we disable the surge multiplier, `surge' - when surge multiplier is used while calculating earnings, and `surge chasing' wherein a driver `chases surge' i.e, a driver located in a non-surging zone always relocates to the zone with highest surge multiplier. Simulated driver earnings in these three scenarios for each of the strategies are shown in Figure {\ref{fig:simulated_earnings}}. We observe that `surge chasing' leads to lower earnings irrespective of the strategy being followed. Figure \ref{fig:simulated_earnings} reinforces our previous observation regarding high variance of the {\naive} strategy. At times, drivers following the {\naive} strategy with surge multiplier enabled may earn less than when it is disabled. For other strategies, `surge chasing' consistently fails to provide any tangible benefits as compared to following the pre-determined strategy. We conclude that actively chasing the surge is an ill-advised strategy and may lead to losses. Furthermore, surges last for short durations and an unsuccessful surge chase may land a driver in sub-optimal location with respect to longer term earnings maximization. 

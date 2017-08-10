@@ -19,7 +19,7 @@ $t' = t + \tau^t(i,j)$ with remaining budget $b' = b - \tau^t(i,j)$. The
 total expected future earnings at that point for the driver 
 is: {\cumulativeearning{j}{b'}{t'}. 
 For notational convenience we also use
-{\inducedearningvector{i,b}{\getpassengeraction}} to denote the vector of such
+{\inducedearningvector{i}{t,b}} to denote the vector of such
 cumulative earnings across different zones $j$ induced when a driver takes an  {\getpassengeraction} 
 action.
 
@@ -59,7 +59,7 @@ passengers he picks up. At the end of every passenger ride, the driver waits in 
 Hence, the only allowable action is {\getpassenger}.
 
 
-In the {\flexible} strategy, a driver has flexibility to decide working times, modeling a driver who uses heuristics to decide the most pprofitable times to work.   As a result, we impose an additional constraint of a working time budget $B$ that a driver can split over a finite horizon of $N$ time units. Thus, this strategy aims to figure out an optimal 
+In the {\flexible} strategy, a driver has flexibility to decide working times, modeling a driver who uses heuristics to decide the most profitable times to work.   As a result, we impose an additional constraint of a working time budget $B$ that a driver can split over a finite horizon of $N$ time units. Thus, this strategy aims to figure out an optimal 
 in-expectation work schedule for the driver.  
 At any stage, a driver can log out of the on-demand ride service and return to home zone. Hence, the set of allowable actions for a driver contains 2 different actions, {\getpassenger} and {\gohome}.  Thus: $
 \actionsset = \{\getpassengeraction, \gohomeaction\}$.
