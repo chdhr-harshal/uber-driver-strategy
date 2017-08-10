@@ -170,7 +170,7 @@ as {\cumulativeearning{\homezone}{N,B}}.
 %\subsubsection{\sc{InducedEarningVector}}
 \spara{\sc{InducedEarningVector}}:
 If a driver at zone $i$ at time $t$ with $b$ budget units consumed takes a passenger ride to zone $j$, the rides end at time 
-$t' = t + \tau^t(i,j)$ with budget $b' = b + \tau^t(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
+$t' = t + \tau(i,j)$ with budget $b' = b + \tau(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
 budget units consumed is {\cumulativeearning{j}{t',b'}}. Let us denote using {\inducedearningvector{i}{t,b}{\getpassengeraction}} the vector of such
 cumulative earnings across different zones $j$ induced when a driver takes an action {\getpassengeraction} and call it an 
 \textsc{InducedEarningVector}. Instead of a vector of cumulative earnings, {\gohome} action induces a single value i.e., {\cumulativeearning{\homezone}{t',b}}. 
@@ -191,7 +191,7 @@ Using this formulation, for each of the driver actions, we can recursively expre
 	\nonumber\\
 	&=& r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b} 
 	\end{eqnarray}
-	where $t' = t + \tau^t(i,\homezone)$. \\
+	where $t' = t + \tau(i,\homezone)$. \\
 
 	\item {\relocate} : Action {\relocateaction} taken inside zone $i$ at time $t$ with $b$ budget units consumed takes the driver to zone $j$.
 	Hence,
@@ -200,7 +200,7 @@ Using this formulation, for each of the driver actions, we can recursively expre
 	\nonumber \\
 	&=& r^t(i,j) + \cumulativeearning{j}{t',b'}
 	\end{eqnarray}
-	where $t' = t + \tau^t(i,j)$ and $b' = b + \tau^t(i,j)$. 
+	where $t' = t + \tau(i,j)$ and $b' = b + \tau(i,j)$. 
 \end{itemize}
 \fi
 
