@@ -2,9 +2,91 @@
 
 \section{Data and Experiments}
 \label{sec:experiments}
+In this section we  evaluate our strategies for drivers 
+in practice. First, we discuss how we collect and combine the appropriate data 
+from multiple data sources. Then, we perform a comprehensive experimental study
+that reveals the benefits of being strategic for the drivers and gives a lot of insights
+how drivers can maximize their earnings.
 
-We consider the problem of evaluating our strategies for drivers using the on-demand ride service -- Uber. The driver strategies on this platform must be estimated from past data. This makes it a particularly attractive application for evaluating our framework.
+\subsection{Data collection and preparation}
+In order to evaluate our strategies, we need to construct 
+time-evolving matrices {\countmatrix}, {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}.
+For this we use two data sources: (1) NYC taxi rides 
+dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} and
+(2) information we obtain from the Uber platform via queries to the Uber API.
 
+\begin{figure}
+	\centering
+	\includegraphics{figures/successful_heatmap.pdf}
+	\caption{Probability of finding a passenger in 10 minutes across NYC zones at different times of the day.}
+	\label{fig:successful_heatmap}
+\end{figure}
+
+
+\spara{Forming time-evolving matrices {\countmatrix} and {\empiricaltransitionmatrix}:}
+For this, we use the NYC taxi rides dataset\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}}. 
+the dataset contains yellow street-hail taxi records with fields capturing pick-up and drop-off dates/times, location co-ordinates, trip distances and fares. Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
+Each location ID is associated with one of 29 non-overlapping city zones -- defined in the
+dataset.
+
+
+We divide each 24-hour day of the week in 144 time-slices of duration 10 minutes each, indexed by their start time. While modeling the city, the $c(i,j)$ entry of the count matrix $\countmatrix^t$ is the total number of rides from zone $i$ to zone $j$ in a 30-minute long time window centered around time $t$. 
+
+The empirical transition matrix $\empiricaltransitionmatrix^t$ is now formed as follows.
+ Every diagonal entry of the count matrix $\countmatrix^t$ is zero, as there are no passenger rides within same zone. However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. We compute these probabilities below.
+
+%\spara{Modeling successful passenger pickup}:
+Let $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit, with Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Assuming that passenger and driver arrivals are independent Poisson processes, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution 
+%and can be depicted by states of a Markov Chain 
+such that:
+\begin{equation}
+\Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
+\end{equation}
+where $I_k(z)$ is the modified Bessel function of the first kind\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.}.
+
+Whenever %the Markov Chain is in a non-positive state, 
+$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the corresponding FIFO queue at the last spot. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
+\begin{equation}
+\Pr[N(\passengerarrivalrate) = |k| + 1] = \frac{\passengerarrivalrate^{\big(|k|+1\big)} e^{-\passengerarrivalrate}}{\big(|k| + 1\big)!}
+\end{equation}
+Thus, we can express a diagonal entry $f^t(i,i)$ of empirical transition matrix as follows,
+\begin{equation}
+f^t(i,i) = 1 - \sum_{k \leq 0} \Pr[K = k] \times \Pr[N(\passengerarrivalrate) \geq |k| + 1]
+\end{equation}
+To maintain the right stochasticity of {\empiricaltransitionmatrix}, every other entry 
+$f^t(i,j)$ is calculated as,
+\begin{equation}
+f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}. 
+\end{equation}
+The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions and can be used as input to our algorithms. 
+
+Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of successful pickups in different zones at various times of the day. As expected, we see that the probability of a successful pickup is higher outside Manhattan in the morning, and this trend reverses in the evening.
+
+\spara{Forming time-evolving matrices {\traveltimematrix}, {\rewardsmatrix}:} Since information about travel times 
+and rewards was not available on the NYC Taxi dataset we deployed Uber API in order
+to obtain this information.
+
+
+The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query. For the purpose of this study, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we use this information from the
+NYC taxi rides dataset.
+
+To create a representative sample of data, our strategy relies on ``recreating" NYC taxi rides virtually on the Uber platform. We use the price estimates endpoint to query rides from exact same pick-up to drop-off locations at exact same time of the day on same calendar date, but exactly one year later i.e, a real recorded ride from 2015 is virtually recreated in 2016. However, Uber imposes a rate limit of 1,000 API requests per hour per account. To respect these API limits, we randomly sample rides between each pair of zones in the city every 15 minutes. We assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform have durations as multiples of 5 minutes. Hence, every 5 minutes, we also query the surge multiplier active within each zone.
+
+%Although the \texttt{estimates/time} endpoint of the Uber API returns the estimated waiting time for a passenger at a particular location, it provides no information on the supply of UberX cars in its neighborhood. Consequently, we do not possess an exact estimate of the time spent by an Uber driver waiting for a passenger in a particular zone. 
+%In the next section we discuss how we get an estimate of that quantity.
+%
+%However, in the next section, we provide a methodology to compute a conservative estimate of the driver waiting time in a particular zone at any time of the day using the successful passenger pick-up information from the NYC taxi rides dataset.
+
+Using aforementioned approach, we collected data for a period of 6 months, recreating rides from October, 2015 till March, 2016. However, due to the periodicity of the data, we provide experimental results for one week starting October 18, 2015\footnote{Our results do not vary qualitatively across different weeks.}.
+
+
+Using the same time-slicing as we described in the previous paragraph and the same
+29 city zones, the
+travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones
+as computed by the above data-collection process. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share. %of earnings.
+
+
+\iffalse
 \subsection{Data collection}
 \label{sec:data}
 To evaluate our methods, we need a representative sample of taxi rides data. To obtain this data, we strategically sample rides from the publicly available NYC taxi rides 
@@ -42,12 +124,7 @@ We divide each 24-hour day of the week in 144 time-slices of duration 10 minutes
 
 Similarly, travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share of earnings.
 
-\begin{figure*}
-	\centering
-	\includegraphics{figures/daily_earnings.pdf}
-	\caption{Daily earnings with different strategies}
-	\label{fig:daily_earnings}
-\end{figure*}
+
 
 Now, we describe the formation of the empirical transition matrix $\empiricaltransitionmatrix^t$. Every diagonal entry of the count matrix $\countmatrix^t$ is zero, as there are no passenger rides within same zone. However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. Hence, to form the empirical transition matrix, we first normalize the observed count matrix such that each of its rows sum up to 1 and call this matrix $\countmatrix^\prime$. 
 In the following section, we describe the formation of empirical transition matrix $\empiricaltransitionmatrix^t$, using the matrix $\countmatrix^\prime$.
@@ -78,7 +155,16 @@ The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all ou
 
 Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of successful pickups in different zones at various times of the day. As expected, we see that the probability of a successful pickup is higher outside Manhattan in the morning, and this trend reverses in the evening.
 
-\subsection{Experiments}
+\fi
+
+\subsection{Experimental results}
+\begin{figure*}
+	\centering
+	\includegraphics{figures/daily_earnings.pdf}
+	\caption{Daily earnings with different strategies}
+	\label{fig:daily_earnings}
+\end{figure*}
+
 Now, we use the experimental framework from the previous section to evaluate various driver strategies formulated in Section \ref{sec:driver_strategies}.
 
 \spara{Comparison of strategies}: First, we answer the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} strategy is the best strategy as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
