@@ -14,37 +14,47 @@ Vectors are denoted with lowercase bold letters (e.g., $\vec{a} = [a(i)]$) and m
 
 \subsection{Modeling the city}
 
-Throughout the paper, we will assume that a city is divided into non-overlapping set of zones denoted by \cityzones. 
-We represent a city in the form of a weighted directed graph $G=(\cityzones, E)$ with 
-$|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, an edge between each pair of nodes. 
-Some of the attributes of a city (over a fixed time interval) are as follows:
+Throughout the paper, we will assume that a city is divided into non-overlapping set of zones denoted 
+by \cityzones, and time $t$ runs in discrete time steps.
+We represent a city in the form of a complete weighted directed graph $G=(\cityzones, E)$ with 
+$|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, where the edge weight on 
+edge $e(i\rightarrow j)$ corresponds to the likelihood of a driver currently at 
+location $i$ receiving a ride request to location $j$.  Additionally, each edge is
+associated with a travel time $\tau(i, j)$, a travel cost, and a reward $r(i,j)$.
+In the general formulation of our problem, all of these edge attributes are time-varying,
+e.g., the rewards would vary with $t$ as $r^t(i,j)$, but to avoid excess notation, we drop
+those superscripts in our following discussion.  These attributes of a city, which we use as 
+input to our solver, are specified as follows:
+
+
 
 %\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
+\begin{comment} % Relocate to data section
 \spara{Count matrix (\countmatrix)}: 
 Every edge $e(i\rightarrow j) \in E$ is associated with an
 integer-valued weight $c(i,j)$ that denotes the number of requests
 at zone $i$ that had node $j$ as their destination.
+\end{comment}
 
 \spara{Empirical transition matrix (\empiricaltransitionmatrix)}:
-The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
-The entries of {\empiricaltransitionmatrix} correspond to probabilites and thus
-$f(i,j) \in [0,1]$ such that
-$\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.
+Every edge $e(i\rightarrow j) \in E$ is associated with a transition probability
+$f(i, j) \in [0,1]$ such that
+$\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.  
 
-Therefore, the weights give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
-where each entry $f(i,j)$ 
-denotes the empirically observed probability of a passenger in zone $i$
+%%The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
+Since the entries of {\empiricaltransitionmatrix} correspond to probabilites, the weights 
+give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
+where each entry $f(i,j)$ denotes the modeled probability of a passenger in zone $i$
 traveling to zone $j$. 
 As a special case, 
-$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. 
-%The empirical transition matrix {\empiricaltransitionmatrix}
-%changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
+$f(i,i)$ denotes the probability of a driver not finding a passenger in zone $i$ at a
+given time step.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
 \spara{Travel time matrix (\traveltimematrix)}:
-Every edge $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
+Every edge $e(i\rightarrow j) \in E$ is also associated with a value $\tau(i,j) > 0$ 
 denoting the travel time duration for a ride from zone $i$ to zone $j$. 
 These weights give us a travel time matrix {\traveltimematrix} with entries $\tau(i,j)$. 
 %Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
@@ -60,9 +70,12 @@ earnings and costs vary with mileage and transit time, each entry in the rewards
 is of the form $r(i,j)$ = earnings$(i,j)$ - cost$(i,j)$.
 %Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
-Note that all the above matrices, {\countmatrix}, {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, are time dependent, i.e., their entries change throughout the day. Therefore, at any point in time $t$, the instantiations of these matrices
-are different. We denote those instantiations by $\countmatrix^t$, $\empiricaltransitionmatrix^t$, $\traveltimematrix^t$ and $\rewardsmatrix^t$ respectively.
-For clarity of exposition we will ignore the time-dependent aspect of the model in what follows.
+Again, in general, all of the input matrices: %{\countmatrix}, 
+{\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
+are time-dependent, i.e., their entries could change throughout the day
+%Therefore, at any point in time $t$, the instantiations of these matrices are different. 
+%We denote those instantiations by $\countmatrix^t$, $\empiricaltransitionmatrix^t$, $\traveltimematrix^t$ and $\rewardsmatrix^t$ respectively.
+%For clarity of exposition we will ignore the time-dependent aspect of the model in what follows.
 
 
 \subsection{Modeling the driver}
@@ -102,7 +115,7 @@ Whenever faced with making a decision regarding next decision during a driving s
 A driver policy is an ordered set of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
-Each time and location dependent action $\mathbf{a}$ in the {\policy} can be expressed in form of a 3-tuple -- $(\actualaction, \actuallocation, \actualtime)$
+Each time and location dependent action $\mathbf{a}$ in the {\policy} can be expressed in form of a 3-tuple -- $(\actuallocation, \actualtime, \actualaction)$
 where $\actualaction \in \actionsset$ refers to actual action, $\actuallocation \in \cityzones$ is the zone at which action was taken and $\actualtime \leq N$ is the 
 time at which the action was taken.
 
@@ -192,11 +205,12 @@ Using this formulation, for each of the driver actions, we can recursively expre
 \fi
 
 \subsection{Problem definition}
-For given sets of time-evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the driver's budget $B$,
+For given input specification matrices {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
+as well as the driver's budget $B$,
 the \emph{total expected earnings} of a driver  with policy $\policy$ is simply:
 
 \begin{equation}\label{eq:totalexpectedearnings}
-\mathcal{E} (\policy,\empiricaltransitionmatrix^{t},\traveltimematrix^{t},\rewardsmatrix^{t},B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
+\mathcal{E} (\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
 \end{equation}
 where $\actionearning{\actuallocation}{\actualtime}{\actualaction}$ is computed
 using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2} we defined above.
@@ -206,12 +220,12 @@ we aim to solve the following optimization problem.
 
 \begin{problem}[{\originalproblem}]\label{problem:theproblem}
 Given sets of time-evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the driver's budget $B$,
-find $\policy^\ast$
+find a $\policy^\ast$
 such that:
 \[
-\policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B)
+\policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B).
 \]
-is maximized.
+%% REDUNDANT -- is maximized.
 \end{problem}
 
 %When the transition matrices, the travel time matrices and the reward matrices are exactly known, the above problem can be solved optimally using dynamic programming. We discuss this in the next section.

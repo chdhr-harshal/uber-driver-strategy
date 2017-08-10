@@ -2,22 +2,24 @@
 
 \section{Driver strategies and optimization algorithms}
 \label{sec:driver_strategies}
-In this section, we describe the different driver strategies, which are defined based on the
-set of actions, {\actionsset}, that the driver has at his disposal. We also show how to 
+We now describe the different driver strategies, which are defined based on the
+set of actions {\actionsset} that the driver has at his disposal. We also show how to 
 optimally solve
 the {\originalproblem} problem in polynomial time for different sets {\actionsset}.
 
 For the rest of the section, we will use the following notation: we will denote by 
-$\cumulativeearning{i}{b}{t}$ the \emph{total expected future earnings} of a driver who is in zone $i$ at time $t$ with budget $b$ of time units being consumed. Using this notation,
+$\cumulativeearning{i}{b}{t}$ the \emph{total expected future earnings} of a driver who is in zone $i$ at time $t$ with 
+budget $b$ time units remaining. Using this notation,
 the {\totalexpectedearnings} of a driver can be expressed as $\cumulativeearning{\homezone}{B}{N}$.
 
 
-If a driver at zone $i$ at time $t$ with $b$ budget units consumed takes a passenger ride to zone $j$, the rides end at time 
-$t' = t + \tau^t(i,j)$ with budget $b' = b + \tau^t(i,j)$ consumed. The 
+If a driver at zone $i$ at time $t$ with $b$ budget units remaining either takes a passenger ride to zone $j$
+or relocates to zone $j$, that trip ends at time 
+$t' = t + \tau^t(i,j)$ with remaining budget $b' = b - \tau^t(i,j)$. The 
 total expected future earnings at that point for the driver 
 is: {\cumulativeearning{j}{b'}{t'}. 
 For notational convenience we also use
-{\inducedearningvector{t}{i,b}{\getpassengeraction}} the vector of such
+{\inducedearningvector{i,b}{\getpassengeraction}} to denote the vector of such
 cumulative earnings across different zones $j$ induced when a driver takes an  {\getpassengeraction} 
 action.
 
@@ -31,18 +33,18 @@ This is the most general strategy where a driver has complete freedom for choice
 \begin{equation}
 \actionsset =  \{\getpassengeraction, \gohomeaction\} \cup \{\relocateaction | \forall j \in \cityzones, j \neq i \}
 \end{equation}
-Note that we restrict the {\relocate} actions to ones which do not result in $t \geq N$ or $b \geq B$.
+Note that we restrict the {\relocate} actions to ones which do not result in $t \geq N$ or $b < 0$.
 
 A driver following the relocation with flexible schedule strategy chooses the action that maximizes {\totalexpectedearnings}. This means that for this strategy, the solution to
-the {\originalproblem} problem can be found by the following dynamic-programming
-recursion:
+the {\originalproblem} problem can be found by the following dynamic programming (DP)
+recurrence:
 \begin{eqnarray}
 \label{eq:relocationflexible_strategy}
-\cumulativeearning{t}{i}{b} &=& \max_{a \in \actionsset}
+\cumulativeearning{i}{t}{b} &=& \max_{a \in \actionsset}
     \begin{cases}
-    \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} +  \inducedearningvector{t}{i,b}{a}), &\textrm{  if } a = \getpassengeraction\\ \\
-    -cost^t(i,\homezone) + \cumulativeearning{t'}{\homezone}{b}, &\textrm{  if } a = \gohomeaction \\ \\
-    \max_{j} \bigg\{-cost^t(i,j) + \cumulativeearning{t'}{j}{b'}\bigg\}, &\textrm{  if } a = \relocateaction
+    \empiricaltransitionmatrix_{i} (\rewardsmatrix_{i} +  \inducedearningvector{i}{t,b}), &\textrm{  if } a = \getpassengeraction\\ \\
+    -cost(i,\homezone) + \cumulativeearning{\homezone}{t'}{b}, &\textrm{  if } a = \gohomeaction \\ \\
+    \max_{j} \{-cost(i,j) + \cumulativeearning{j}{t'}{b'}\}, &\textrm{  if } a = \relocateaction
     \end{cases}
 \end{eqnarray}
 Each of the $O(n N B)$ entries in the output of this dynamic-program involves consideration of at most $O(n)$ actions. 
