@@ -55,26 +55,26 @@ We derive these from the data as follows.
 Let $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit, with Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Assuming that passenger and driver arrivals are independent Poisson processes, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution 
 %and can be depicted by states of a Markov Chain 
 such that:
-\begin{equation}
+\begin{equation*}
 \Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
-\end{equation}
+\end{equation*}
 where $I_k(z)$ is the modified Bessel function of the first kind\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.}.
 
 Whenever %the Markov Chain is in a non-positive state, 
-$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the end
- of the corresponding FIFO queue. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
-\begin{equation}
+$K<0$, there are more drivers than passengers. We assume the worst case scenario in which a driver joins the end
+ of the zone's FIFO queue. Hence, for $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals for a successful passenger pickup. Then, the probability of a successful passenger pickup is:
+\begin{equation*}
 \Pr[N(\passengerarrivalrate) = |k| + 1] = \frac{\passengerarrivalrate^{\big(|k|+1\big)} e^{-\passengerarrivalrate}}{\big(|k| + 1\big)!}
-\end{equation}
+\end{equation*}
 Thus, we can express a diagonal entry $f^t(i,i)$ of empirical transition matrix as follows,
-\begin{equation}
+\begin{equation*}
 f^t(i,i) = 1 - \sum_{k \leq 0} \Pr[K = k] \times \Pr[N(\passengerarrivalrate) \geq |k| + 1]
-\end{equation}
-To maintain the right stochasticity of {\empiricaltransitionmatrix}, every other entry 
-$f^t(i,j)$ is calculated as,
-\begin{equation}
+\end{equation*}
+For {\empiricaltransitionmatrix} to be stochastic, for every other entry 
+$f^t(i,j)$ we set:
+\begin{equation*}
 f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}. 
-\end{equation}
+\end{equation*}
 The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions and can be used as input to our algorithms. 
 
 Figure \ref{fig:successful_heatmap} shows an example of varying estimated probabilities of successful pickups 
@@ -92,27 +92,27 @@ As expected, we see that the probability of a successful pickup is higher outsid
 \spara{Forming time-evolving matrices {\traveltimematrix} and {\rewardsmatrix}:} Since information about travel times 
 and rewards was not available on the NYC Taxi dataset, we invoked the Uber API in order
 to obtain this information.
-The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query.  Here, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we impute this 
+The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products -- UberX, UberXL and UberBlack --  together with the active surge multiplier rate at the pick-up location at the time of query.  We only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information on the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of  drivers or demand of passengers; we impute this 
 information from the NYC taxi rides dataset.
 
-To create a representative sample of data, our approach relies on ``recreating'' NYC taxi rides virtually on the Uber platform. 
+To create a representative sample of the data, our approach relies on ``recreating'' NYC taxi rides virtually on the Uber platform. 
 Using the Uber API, we were able to take a NYC taxi ride recorded in 2015, and capture the Uber attributes of that ride exactly 
 one year later, collecting price estimates and other data above for that virtual ride.
 To respect the Uber rate limit of 1,000 API requests per hour per account, we sub-sampled one ride between each pair of zones in
 the city every 15 minutes (if such a ride occurred in the taxi dataset).
 We implicitly assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary 
-significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
-have durations lasting multiples of 5 minutes. Hence, every 5 minutes, we also query the surge multiplier active within each zone.
-Using this approach, we collected data from the Uber API for a period of 6 months from October 2016 to March 2017, 
+significantly in 15 minutes.~\footnote{Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
+have durations lasting multiples of 5 minutes.} Hence, every 5 minutes, we also query the surge multiplier active within each zone.
+Using this approach, we collected data from the Uber API for a period of 6 months (Oct. 2016--Mar 2017), 
 recreating rides that originally occurred from 
-October 2015 to March 2016.   From these recreated rides, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
+Oct. 2015 to Mar 2016.   From these recreated rides, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
 for all pairs of zones.  Finally, we were careful to maintain same-day of week estimates, so that, for example, travel time estimates
 and rewards computed for Sunday, October 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
 Sunday, October 18, 2015.
 %However, due to seasonality of the data, 
 In the remainder of this section, we provide experimental results for driving during one representative week in October.
 %starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. 
-Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Years' Eve.}. 
+Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Years' Eve. 
 
 %Although the \texttt{estimates/time} endpoint of the Uber API returns the estimated waiting time for a passenger at a particular location, it provides no information on the supply of UberX cars in its neighborhood. Consequently, we do not possess an exact estimate of the time spent by an Uber driver waiting for a passenger in a particular zone. 
 %%endpoint to query rides from exact same pick-up to drop-off locations at the exact same time of the 
@@ -185,7 +185,7 @@ such that:
 where $I_k(z)$ is the modified Bessel function of the first kind\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.}.
 
 Whenever %the Markov Chain is in a non-positive state, 
-$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the corresponding FIFO queue at the last spot. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
+$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the corresponding FIFO queue at the last spot. Hence, for $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals for a successful passenger pickup. Then, the probability of a successful passenger pickup is:
 \begin{equation}
 \Pr[N(\passengerarrivalrate) = |k| + 1] = \frac{\passengerarrivalrate^{\big(|k|+1\big)} e^{-\passengerarrivalrate}}{\big(|k| + 1\big)!}
 \end{equation}
@@ -227,7 +227,7 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 	\label{fig:simulated_schedules}
 \end{figure}
 
-Using the above input, we now evaluate our methodology. All the subsequent experiments were performed using a single process implementation of the dynamic programming algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Computational overhead for the {\naive} and the {\relocation} strategies is less than a minute, and about 5 minutes for the {\flexible} and the {\relocationflexible} strategies. Uncertainty analysis (presented in Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
+Using the above input, we now evaluate our methodology. All our experiments were performed using a single process implementation of our algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Computational time for the {\naive} and the {\relocation} strategies is less than a minute, and about 5 minutes for the {\flexible} and the {\relocationflexible} strategies. Uncertainty analysis (Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
 
 \spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy, as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
@@ -257,16 +257,16 @@ lead to earnings far higher than the costs they incur.
 
 \spara{Temporal dynamics of strategies}: Intuitively, due to the periodicity of demand, we expect driver earnings to strongly depend on the time of the day they are driving. 
 %We have also established via Figure \ref{fig:daily_earnings} that both of the flexible schedule strategies outperform their fixed schedule counterparts. 
-Thus, we address the question: \textit{what is the best time of the day to drive in order to maximize earnings?} To answer this question, we simulate 1000 drivers, each randomly assigned a home zone, for each of the {\flexible} and {\relocationflexible} strategies. 
+Thus, we address the question: \textit{what is the best time of the day to drive in order to maximize earnings?} To answer this, we simulate 1000 drivers, each randomly assigned a home zone, for each of the {\flexible} and {\relocationflexible} strategies. 
 We solve the {\originalproblem} problem for both strategies and create a recommended plan of action for the simulated drivers. 
-Thus, at every step of the simulation, a driver undertakes the personalized action recommended by the strategy, corresponding to
+Then, at every step of the simulation, a driver undertakes the personalized action recommended by the strategy, corresponding to
   the location, the time of the day and the budget remaining.
 
 
 In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the ``preferred'' driving schedules 
-output by {\flexible} and {\relocationflexible}, respectively.
+output by {\flexible} and {\relocationflexible}.
 In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. In contrast, the number of active
-drivers that follow {\relocationflexible} exhibits two distinct peaks; corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
+drivers that follow {\relocationflexible} exhibits two distinct peaks, corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
 Since {\flexible} and {\relocationflexible} only differ in 
 the {\relocate} action, all observed differences are due to this action.
 Hence, we can  conclude that the {\relocate} action is most effective in the evening hours, thereby prompting higher active percentages of {\relocationflexible} drivers at that time.
@@ -276,11 +276,11 @@ of {\relocate} actions for drivers following the two strategies can readily be s
 We observe a contrast between the preferred relocation zones for drivers of these two strategies. 
 Drivers following the {\relocation} strategy predominantly relocate themselves to the center of Manhattan. In contrast, the drivers following the {\relocationflexible} strategy do not exhibit a clear most-preferred relocation destination. Furthermore, the 
 {\em number} of relocations performed by the {\relocation} strategy drivers, 
-is, surprisingly, significantly higher than those by performed by the {\relocationflexible} strategy drivers. 
+is, surprisingly, significantly higher than those performed by the {\relocationflexible} strategy drivers. 
 This turns out to be due to the freedom of the work schedule of the latter, which allows them to drive 
   continuously during the hours of highest demand, reducing the frequency of {\relocate} actions they take. 
 
-\subsection{Surge Chasing}
+\subsection{Surge chasing}
 \begin{figure}
 	\centering
 	\includegraphics{figures/surge_heatmap.pdf}
@@ -293,8 +293,9 @@ aimed at matching supply with passenger demand by increasing prices at times of 
 According to Uber, it incentivizes drivers to start driving during the peak hours in order to efficiently meet demand with 
   supply, albeit at a higher cost to passengers.
 It also decreases demand, as the most price-sensitive customers drop out. 
-In fact, Uber prominently displays surge information to drivers on their Partner App,
-  in the form of a heat-map of surge multipliers in different geographical neighborhoods.
+%In fact, Uber prominently displays surge information to drivers on their Partner App.
+%  in the form of a heat-map of surge multipliers in different geographical neighborhoods.
+
 Figure \ref{fig:surge_heatmap} shows the active surge multiplier across different neighborhoods of NYC at 
 different times of the day. 
 This information is readily available to the drivers; however, due to uncertainty in the duration of surges 
@@ -308,12 +309,12 @@ where the multiplier is used while calculating earnings; and ``surge chasing'' -
 wherein a driver located in a non-surging zone always relocates to the zone with highest surge multiplier. 
 Simulated driver earnings in these three scenarios for each of the strategies are shown in Figure {\ref{fig:simulated_earnings}}. 
 We observe that blind ``surge chasing'' leads to lower earnings irrespective of the strategy being followed. 
-Figure \ref{fig:simulated_earnings} reinforces our previous observation regarding high variance of the {\naive} strategy. 
+Figure \ref{fig:simulated_earnings} reinforces our previous observation regarding the high variance of the {\naive} strategy. 
 At times, drivers following the {\naive} strategy with surge multiplier enabled may earn less than when it is disabled. 
 For other strategies, ``surge chasing'' consistently fails to provide any tangible benefits as compared to 
 following the pre-determined strategy. We conclude that actively and blindly chasing the surge is an ill-advised 
 strategy and may lead to losses. Furthermore, surges last for short durations and an unsuccessful surge chase 
-may land a driver in a sub-optimal location with respect to longer term earnings maximization. 
+may land a driver in a sub-optimal location with respect to longer term earnings. 
 
 \subsection{Effect of uncertainty}
 \label{sec:effect_of_uncertainty} 
