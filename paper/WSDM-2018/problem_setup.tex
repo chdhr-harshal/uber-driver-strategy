@@ -207,15 +207,15 @@ Using this formulation, for each of the driver actions, we can recursively expre
 \fi
 
 \subsection{Problem definition}
-For given input specification matrices {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
+Given input specification matrices {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
 as well as the driver's budget $B$,
-the \emph{total expected earnings} of a driver  with policy $\policy$ is simply:
+the \emph{total expected earnings} of the driver with policy $\policy$ is:
 
 \begin{equation}\label{eq:totalexpectedearnings}
 \mathcal{E} (\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
 \end{equation}
 where $\actionearning{\actuallocation}{\actualtime}{\actualaction}$ is computed
-using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2} we defined above.
+using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2}.
 
 As we seek to maximize the \emph{total expected earnings} of the driver,
 we aim to solve the following optimization problem.
