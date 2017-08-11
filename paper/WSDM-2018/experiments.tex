@@ -14,7 +14,7 @@ time-evolving matrices
 {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix} as defined in Section~\ref{sec:problem_setup},
 and {\countmatrix} as defined in Section~\ref{sec:sensitivity}.
 For this we use two data sources: (1) the NYC taxi rides 
-dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} and
+dataset\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} and
 (2) information we obtain from the Uber platform via queries to the Uber API.
 
 \begin{figure}
@@ -32,8 +32,8 @@ contains yellow street-hail records of over 65,000 daily taxi rides with fields 
 location co-ordinates, trip distances, and fares.
 Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
 Each location ID is associated with one of 29 non-overlapping city zones -- defined in the
-dataset.  While the set of taxi rides is undoubtedly produced from a different ridership than Uber
-rides, resulting in differences of geographical diversity, demographics, and timing, than Uber rides, 
+dataset.  While the set of taxi rides is undoubtedly produced from a different ridership than Uber, 
+resulting in differences of geographical diversity, demographics, and timing, 
 it nonetheless provides a useful baseline that reflects many of the broader dynamics of ridership in 
 NYC over space and time.  Thus we this to build count and frequency input matrices, as follows.
 
@@ -42,12 +42,15 @@ We divide each 24-hour day of the week into 144 time-slices of duration 10 minut
 time.  To model traffic demand in the city at time $t$, the $c(i,j)$ entry of the count matrix $\countmatrix^t$ is the total 
 number of rides from zone $i$ to zone $j$ in a 30-minute long time window centered at time $t$. In other words, $c(i,j)$ for the time slot corresponding
 to [10:40, 10:50] on a Wednesday is a count of all rides from $i$ to $j$ that were initiated between 10:30 and 11:00 
-on any Wednesday in the dataset. Our model does not allow rides within the same zone. Hence, we ignore such rides while populating the entries of the matrix $\countmatrix^t$, resulting into diagonal entries being zeros.
+on any Wednesday in the dataset. Our model does not allow rides within the same zone. Hence, we ignore such rides while populating the entries of the matrix $\countmatrix^t$, resulting into all diagonal entries of the count matrix being zero.
 
-The empirical transition matrix $\empiricaltransitionmatrix^t$ is now formed as follows.
- Every diagonal entry of the count matrix $\countmatrix^t$ is zero.
-However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. We compute these probabilities below.
+%% Every diagonal entry of the count matrix $\countmatrix^t$ is zero.
+%%However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f^t(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. We compute these probabilities below.
 
+To populate the entries of the empirical transition matrix $\empiricaltransitionmatrix^t$, as 
+  defined in Section \ref{sec:problem_setup}, we must estimate the values on the diagonal, 
+  corresponding to the probability of not finding a ride, as well as the transition probabilities.
+We derive these from the data as follows.
 %\spara{Modeling successful passenger pickup}:
 Let $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit, with Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Assuming that passenger and driver arrivals are independent Poisson processes, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution 
 %and can be depicted by states of a Markov Chain 
@@ -58,7 +61,8 @@ such that:
 where $I_k(z)$ is the modified Bessel function of the first kind\footnote{Although, for simplicity, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.}.
 
 Whenever %the Markov Chain is in a non-positive state, 
-$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the corresponding FIFO queue at the last spot. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
+$K<0$, there are more drivers than passengers in a given zone. We assume the worst case scenario in which a driver joins the end
+ of the corresponding FIFO queue. Hence, for a state $k \leq 0$, the driver has to wait for $(|k| + 1)$ passenger arrivals in a unit time for a successful passenger pickup. The probability of a successful passenger pickup can be expressed as,
 \begin{equation}
 \Pr[N(\passengerarrivalrate) = |k| + 1] = \frac{\passengerarrivalrate^{\big(|k|+1\big)} e^{-\passengerarrivalrate}}{\big(|k| + 1\big)!}
 \end{equation}
@@ -73,30 +77,52 @@ f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}.
 \end{equation}
 The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions and can be used as input to our algorithms. 
 
-Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of successful pickups in different zones at various times of the day. As expected, we see that the probability of a successful pickup is higher outside Manhattan in the morning, and this trend reverses in the evening.
+Figure \ref{fig:successful_heatmap} shows an example of varying estimated probabilities of successful pickups 
+  in different zones at various times of the day derived from the NYC data using the methods above. 
+As expected, we see that the probability of a successful pickup is higher outside Manhattan in the morning, 
+  and this trend reverses in the evening.
 
-\spara{Forming time-evolving matrices {\traveltimematrix}, {\rewardsmatrix}:} Since information about travel times 
-and rewards was not available on the NYC Taxi dataset we invoked the Uber API in order
+\spara{Forming time-evolving matrices {\traveltimematrix} and {\rewardsmatrix}:} Since information about travel times 
+and rewards was not available on the NYC Taxi dataset, we invoked the Uber API in order
 to obtain this information.
-The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant feature of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query.  Here, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we use this information from the
-NYC taxi rides dataset.
+The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query.  Here, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we impute this 
+information from the NYC taxi rides dataset.
 
-To create a representative sample of data, our strategy relies on ``recreating" NYC taxi rides virtually on the Uber platform. 
-We use the price estimates endpoint to query rides from exact same pick-up to drop-off locations at the exact same time of the 
-day on the same calendar date, but one year later i.e, a real recorded ride from November 10, 2015 was virtually recreated on November 10, 2016. However, Uber imposes a rate limit of 1,000 API requests per hour per account. To respect these API limits, we randomly sample rides between each pair of zones in the city every 15 minutes. We assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform have durations as multiples of 5 minutes. Hence, every 5 minutes, we also query the surge multiplier active within each zone.
+To create a representative sample of data, our approach relies on ``recreating" NYC taxi rides virtually on the Uber platform. 
+Using the Uber API, we were able to take a NYC taxi ride recorded in 2015, and capture the Uber attributes of that ride exactly 
+one year later, collecting price estimates and other data above for that virtual ride.
+To respect the Uber rate limit of 1,000 API requests per hour per account, we subsampled one ride between each pair of zones in
+the city every 15 minutes (if such a ride occurred in the taxi dataset).
+We implicitly assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary 
+significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
+have durations lasting multiples of 5 minutes. Hence, every 5 minutes, we also query the surge multiplier active within each zone.
+Using this approach, we collected data from the Uber API for a period of 6 months from October 2016 to March 2017, 
+recreating rides that originally occurred from 
+October, 2015 until March, 2016.   From these recreated rides, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
+for all pairs of zones.  Finally, we were careful to maintain same-day of week estimates, so that, for example, travel time estimates
+and rewards computed for Sunday, October 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
+Sunday, October 18, 2015.
+However, due to seasonality of the data, 
+In the remainder of this section, we provide experimental results for driving during one representative week in October.
+%starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. 
+Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Years' Eve.}. 
 
 %Although the \texttt{estimates/time} endpoint of the Uber API returns the estimated waiting time for a passenger at a particular location, it provides no information on the supply of UberX cars in its neighborhood. Consequently, we do not possess an exact estimate of the time spent by an Uber driver waiting for a passenger in a particular zone. 
+%%endpoint to query rides from exact same pick-up to drop-off locations at the exact same time of the 
+%%day on the same calendar date, but one year later.
+%% i.e, a real recorded ride from November 10, 2015 was virtually recreated on November 10, 2016. 
+%%However, Uber imposes a rate limit of 1,000 API requests per hour per account. To respect these API limits, we randomly sample rides between each pair of zones in the city every 15 minutes. 
 %In the next section we discuss how we get an estimate of that quantity.
 %
 %However, in the next section, we provide a methodology to compute a conservative estimate of the driver waiting time in a particular zone at any time of the day using the successful passenger pick-up information from the NYC taxi rides dataset.
 
-Using this aforementioned approach, we collected data for a period of 6 months, recreating rides from October, 2015 until March, 2016. However, due to seasonality of the data, we provide experimental results for one week starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. Our results do not vary qualitatively across different weeks or different days of the same week.}. 
+%However, due to seasonality of the data, we provide experimental results for one week starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. Our results do not vary qualitatively across different weeks or different days of the same week.}. 
 
 
-Using the same time-slicing as we described in the previous paragraph and the same
-29 city zones, the
-travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones
-as computed by the above data-collection process. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share. %of earnings.
+%Using the same time-slicing as we described in the previous paragraph and the same
+%29 city zones, the
+%travel time matrix $\traveltimematrix^t$ and rewards matrix $\rewardsmatrix^t$ entries contain the average travel times and average rewards of traveling between two zones
+%as computed by the above data-collection process. Note that each entry of the {\rewardsmatrix} matrix represents net reward, calculated after taking into account the surge information, along with driver expenses and Uber's share. %of earnings.
 
 
 \iffalse
