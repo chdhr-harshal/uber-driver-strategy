@@ -320,8 +320,8 @@ may land a driver in a sub-optimal location with respect to longer term earnings
 \label{sec:effect_of_uncertainty} 
 Our experiments indicate that our strategies always outperform a {\naive} strategy that is likely prevalent 
 among Uber drivers. However, it is worth noting that our strategies are evaluated based on historical data. Consequently, 
-our results can potentially be highly sensitive to perturbations of the empirically-observed transition matrices. 
-Intuitively, we can conclude that our results are robust if
+our results can potentially be sensitive to perturbations of the empirically-observed transition matrices. 
+Thus, we can only conclude that our results are robust if
 the drivers following one of the {\relocation}, {\flexible} and {\relocationflexible} strategies
 have higher earnings than those following {\naive} even when the input data is perturbed.
 \begin{figure}
@@ -330,13 +330,13 @@ have higher earnings than those following {\naive} even when the input data is p
 	\label{fig:simulated_earnings}
 \end{figure}
 
-Hence, the question we are addressing here is the following: 
-\textit{Are the conclusions we drew above robust to perturbations of the empirical transition matrices?} We address this question using
-the framework we developed in Section \ref{sec:sensitivity}. More specifically, 
+Hence, the question we have to address is the following: 
+\textit{Are the conclusions we drew above robust to perturbations of the empirical transition matrices?} We do so using
+the framework we developed in Section \ref{sec:sensitivity}:  
 we solve the {\robustproblem} problem for each of the four strategies for increasing levels of uncertainty ($\alpha$).
 
-Figure \ref{fig:uncertainty_evolution} shows the results of increasing uncertainty on the earnings of drivers 
-   following each of the four strategies.  We observe two main takeaways.  First, we find that all strategies
+Figure \ref{fig:uncertainty_evolution} shows the effect of increasing uncertainty on the earnings of drivers for
+    each of the four strategies.  We observe two main takeaways.  First, we find that all strategies
    suffer a loss under small amounts of uncertainty, even at levels of $\alpha$ in the range of 0.02, so all
    strategies are tuned closely to the empirical data.  
 However, all strategies then remain resilient to a wide range of additional uncertainty, and we find that
@@ -344,7 +344,7 @@ However, all strategies then remain resilient to a wide range of additional unce
   in the input transition matrices. 
 Interestingly, even with 99\% uncertainty, the {\relocationflexible} strategy significantly outperforms 
   the {\naive} strategy with no uncertainty.
-This observation further supports our claim that strategies based on historical data can improve driver 
+This observation further supports our claim that being strategic using historical data can significantly improve driver 
   earnings in on-demand ridesharing platforms. 
 
 \begin{figure}[hb]
