@@ -1,14 +1,17 @@
 %!TEX root = main.tex
 
 \begin{abstract}
-On-demand ridesharing platforms like Uber and Lyft are helping reshape urban transportation, 
-  by enabling car owners to become drivers for hire with minimal overhead.
-One natural research direction in this domain has focused on optimization of a fleet of
-  vehicles, with objective functions in route planning geared towards 
-  minimizing total resource utilization 
+On-demand ridesharing platforms like Uber and Lyft are helping reshape urban 
+transportation, 
+by enabling car owners to become drivers for hire with minimal overhead.
+%One natural research direction in this domain has focused on optimization of a fleet of
+%  vehicles, with objective functions in route planning geared towards 
+%  minimizing total resource utilization 
 %%(fuel consumption, miles driven, etc.) 
-  or improving overall service to passengers. 
-But much less emphasis has been placed on optimization for the individual, self-interested 
+%  or improving overall service to passengers. 
+Although there are a lot of studies that view ridesharing platform holistically as
+supply-demand economies, little
+emphasis has been placed on optimization for the individual, self-interested 
   drivers that currently comprise these fleets.
 While some individuals drive opportunistically either as their schedule allows or on a fixed 
   schedule, we show that strategic behavior regarding when and where to drive can substantially 
@@ -17,11 +20,11 @@ In this paper, we formalize the problem of devising a driver strategy to maximiz
   earnings, describe a series of dynamic programming algorithms to solve these problems
   under different sets of modeled actions available to the drivers, and exemplify
   the models and methods on a large scale simulation of driving for Uber in NYC.
-To conduct our experiments, we use a newly collected dataset that combines the NYC taxi 
+To conduct our experiments, we use a newly-collected dataset that combines the NYC taxi 
   rides dataset along with Uber API data, to build time-varying traffic and payout matrices
   for a representative six-month time period in greater NYC.
 From this input, we can reason probabilistically about prospective itineraries and payoffs.
-Moreover, the framework we use has the advantage of being able to rigorously reason about
+Moreover, the framework enables us to rigorously reason about
   and analyze the sensitivity of our results to perturbations in the input data. 
 Among our main findings is that repositioning throughout the day is key to maximizing
   driver 
