@@ -10,21 +10,20 @@ some recent popular-press articles that
 offer (often contradictory) advice to ridesharing drivers how to maximize earnings, mostly via chasing surge~\cite{dont,tips}, 
 the only relevant existing technical work 
 studies other aspects of ridesharing platforms like Lyft and Uber. 
-Next we discuss these works as well as some work related on optimization problems
+Next, we discuss these works as well as some work related to optimization problems
 for taxi fleets.
 %Also related can be considered existing work on optimization problems related to taxi fleets. We discuss existing works along these lines next.
 
 
 \spara{Studies of ridesharing platforms:}
-Recent work has investigated the supply-side effects of specific incentives that Uber and Lyft provide to drivers, notably the impact of surge pricing~\cite{slaves}.  For example, Chen and Sheldon~\cite{chen2016dynamic} showed 
-a causal relationship that drivers on Uber respond to surges by driving more during high surge times,  differentiating from previous work that suggests taxi drivers primarily focus on achieving earnings goals~\cite{camerer1997labor}. 
+Recent work has investigated the supply-side effects of specific incentives that Uber and Lyft provide to drivers, notably the impact of surge pricing~\cite{slaves}.  For example, Chen and Sheldon~\cite{chen2016dynamic} showed a causal relationship that drivers on Uber respond to surges by driving more during high surge times,  differentiating from previous work that suggests taxi drivers primarily focus on achieving earnings goals~\cite{camerer1997labor}. 
 Other work has viewed ridesharing platforms more holistically, at a macro level.
 Chen {\etal}~\cite{chen2015peeking} measured many facets of Uber in NYC, including the prevalence and extent 
   of surge pricing.
-Hall and Krueger~\cite{hall2016analysis} showed that drivers were attracted to Uber platform due to flexibility it offers, 
-and the level of compensation, but that earnings per hour do not vary much with number of hours worked. 
-All these studies perform an {\em a posteriori} analysis of the data
-and they do not focus on devising specific recommendations for drivers as we do.
+Hall and Krueger~\cite{hall2016analysis} showed that drivers were attracted to Uber platform due to the flexibility it offers, 
+and the level of compensation, but that earnings per hour do not vary much with the number of hours worked. 
+These studies perform an {\em a posteriori} analysis of the data
+but they do not focus on devising specific recommendations for drivers as we do.
 
 
  In another line of work, Banerjee {\etal}~\cite{banerjee2015pricing} studied  
@@ -35,8 +34,7 @@ They showed that dynamic pricing is robust to changes in system parameters, even
   achieve higher performance than static pricing.  
 More recently, Ozkan and Ward~\cite{ozkan2016dynamic} looked at strategic matching between supply (individual drivers) 
   and demand (requested rides) for Uber and Lyft.
-They showed that matching based on parameters like driver and customer arrival rates, 
-willingness of customers to wait and time-variance can achieve better performance than naively matching 
+They showed that matching based on parameters like driver and customer arrival rates,  the willingness of customers to wait and time-variance can achieve better performance than naively matching 
 passengers with the closest driver. 
 Although these works build interesting models for ridesharing economies, they are
 orthogonal to ours as they take a more holistic view of such economies, while we choose to focus 
@@ -48,18 +46,16 @@ orthogonal to ours as they take a more holistic view of such economies, while we
 \spara{Optimization problems for taxi fleets:}
 A considerable body of related work has focused on the optimization of taxi fleets, for
 example building economic network models to describe demand and supply equilibria of taxi 
-services under various tariff structures, fleet size regulations and other policy
+services under various tariff structures, fleet size regulations, and other policy
 alternatives~\cite{bailey1987simulation,yang2002demand}.  More recent work seeks to 
-maximize social welfare by optimizing allocation of taxi market resources~\cite{shi2016optimization}.
+maximize social welfare by optimizing the allocation of taxi market resources~\cite{shi2016optimization}.
 Another direction relates to route optimization by a centralized administrator, e.g., in
 the context of online and offline taxi dispatching services~\cite{maciejewski2013simulation,nunes2011taxi} 
 and in the case of maximizing occupancy and minimizing travel times (by minimizing passenger detours) 
 in a shared-ride setting~\cite{jung2013design}.
 Other work has studied the supply side of the driving market from the viewpoint of behavioral economics.
-A seminal paper by ~\cite{camerer1997labor} studied cabdrivers and found that  (1) `inexperienced' 
-cabdrivers make labor supply decisions ``one day at a time'' instead of substituting labor and leisure 
-across multiple days, and  (2) set a loose daily income target and quit working once they reach that 
-target.  
+A seminal paper by ~\cite{camerer1997labor} studied cab drivers and found that  (1) `inexperienced' 
+cab drivers make labor supply decisions ``one day at a time'' instead of substituting labor and leisure across multiple days, and  (2) set a loose daily income target and quit working once they reach that target.  
 Although related, all these works do not focus on the design of a specific gain-optimizing
 strategy for drivers, as we do.
 
@@ -71,9 +67,9 @@ strategy for drivers, as we do.
 
 3. \cite{wong2001modeling} - second paper, extends previous paper to incorporate effects of congestion and customer demand elasticity. 
 
-4. \cite{yang2002demand} - third paper, uses network model to describe demand and supply equilibrium of taxi services under fare structure and fleet size regulation in competitive / monopoly market.
+4. \cite{yang2002demand} - third paper, uses the network model to describe demand and supply equilibrium of taxi services under fare structure and fleet size regulation in competitive / monopoly market.
 
-5. \cite{bailey1987simulation} - directed at understanding the dynamic interaction between demand, service rates and policy alternatives. Finds that customer waiting time is insensitive to changes in demand, but highly sensitive to changes in taxi fleet size.
+5. \cite{bailey1987simulation} - directed at understanding the dynamic interaction between demand, service rates, and policy alternatives. Finds that customer waiting time is insensitive to changes in demand but highly sensitive to changes in taxi fleet size.
 
 6. \cite{qin2017mining} - explore the factors affecting driver incomes with quantitative estimates using GPS traces of over 167 million trips in Shanghai.
 
@@ -83,7 +79,7 @@ strategy for drivers, as we do.
 
 8. \cite{maciejewski2013simulation} - optimizes taxi routing by generating demand and congested network simulation. Defines online and offline taxi dispatching strategies and evaluate them. `No-scheduling' strategy works well under low demand but deteriorates under heavy load.
 
-9. \cite{nunes2011taxi} - formulates a TSP problem to find best route for a taxi company to satisfy demand.
+9. \cite{nunes2011taxi} - formulates a TSP problem to find the best route for a taxi company to satisfy demand.
 
 \textbf{Works on ride-sharing:}
 
