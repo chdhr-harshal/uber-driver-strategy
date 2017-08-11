@@ -48,8 +48,8 @@ on any Wednesday in the dataset. Our model does not allow rides within the same 
 %%However, the empirical transition matrix $\empiricaltransitionmatrix^t$ described in Section \ref{sec:problem_setup} assumes that the diagonal entries $f^t(i,i)$ denote the probabilities of a driver not finding a passenger in zone $i$ in the time-slice $t$. We compute these probabilities below.
 
 To populate the entries of the empirical transition matrix $\empiricaltransitionmatrix^t$, as 
-  defined in Section \ref{sec:problem_setup}, we must estimate the values on the diagonal, 
-  corresponding to the probability of not finding a ride, as well as the transition probabilities.
+  defined in Section \ref{sec:problem_setup}, we must estimate its diagonal entries, 
+  which correspond to the probability of not finding a ride, as well as the transition probabilities.
 We derive these from the data as follows.
 %\spara{Modeling successful passenger pickup}:
 Assuming that the parameters do not change significantly within a single time-slice, let $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit, with independent Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Hence, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution 
@@ -65,12 +65,12 @@ $K<0$, there are more drivers than passengers. We assume the worst case scenario
 \begin{equation*}
 \Pr[N(\passengerarrivalrate) = |k| + 1] = \frac{\passengerarrivalrate^{\big(|k|+1\big)} e^{-\passengerarrivalrate}}{\big(|k| + 1\big)!}.
 \end{equation*}
-Thus, we can express a diagonal entry $f^t(i,i)$ of empirical transition matrix as follows,
+Thus, we can express a diagonal entry $f^t(i,i)$ as follows:
 \begin{equation*}
 f^t(i,i) = 1 - \sum_{k \leq 0} \Pr[K = k] \times \Pr[N(\passengerarrivalrate) \geq |k| + 1].
 \end{equation*}
-For {\empiricaltransitionmatrix} to be stochastic, for every other entry 
-$f^t(i,j)$ we set:
+For {\empiricaltransitionmatrix} to be stochastic, we set every other entry 
+$f^t(i,j)$ to:
 \begin{equation*}
 f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}. 
 \end{equation*}
@@ -92,23 +92,23 @@ As expected, we see that the probability of a successful pickup is higher outsid
 It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products -- UberX, UberXL and UberBlack --  together with the active surge multiplier rate at the pick-up location at the time of query.  We only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information on the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of  drivers or demand of passengers; we impute this 
 information from the NYC taxi rides dataset.
 
-To create a representative sample of the data, our approach relies on ``recreating'' NYC taxi rides virtually on the Uber platform. 
+To create a representative sample of the data, we ``recreated'' NYC taxi rides virtually on the Uber platform. 
 Using the Uber API, we were able to take a NYC taxi ride recorded in 2015, and capture the Uber attributes of that ride exactly 
 one year later, collecting price estimates and other data above for that virtual ride.
 To respect the Uber rate limit of 1,000 API requests per hour per account, we sub-sampled one ride between each pair of zones in
 the city every 15 minutes.
 % (if such a ride occurred in the taxi dataset).
 We implicitly assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary 
-significantly in 15 minutes. Every 5 minutes, we also query the surge multiplier active within each zone.\footnote{Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
+significantly in 15 minutes. Every 5 minutes, we also queried the surge multiplier active within each zone.\footnote{Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
 have durations lasting multiples of 5 minutes.} 
-Using this approach, we collected data from the Uber API for a period of 6 months (Oct. 2016--Mar 2017), 
+Using this approach, we collected data from the Uber API for a 6-month period (Oct. 2016--Mar 2017), 
 recreating rides that originally occurred from 
-Oct. 2015 to Mar 2016.   From these recreated rides, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
-for all pairs of zones.  Finally, we were careful to maintain same-day of week estimates, so that, for example, travel time estimates
-and rewards computed for Sunday, October 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
-Sunday, October 18, 2015.
+Oct. 2015 to Mar 2016.   Thus, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
+for all pairs of zones.  Finally, we maintained same-day of week estimates, so that, for example, travel time estimates
+and rewards computed for Sunday, Oct 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
+Sunday, Oct. 18, 2015.
 %However, due to seasonality of the data, 
-In the remainder of this section, we provide experimental results for driving during one representative week in October.
+In the remainder of this section, we provide  results for driving during one representative week in October.
 %starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. 
 Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Years' Eve. 
 
@@ -234,7 +234,7 @@ the solution to {\originalproblem} by each of the strategies on different days o
 as expected, {\relocationflexible} is consistently the strategy with the highest earnings.
 Note that the {\relocationflexible} can lead to up to 100\% increase in the drivers'
 earnings when compared to {\naive}.  
-This shows that, indeed, our strategies are able to exploit the spatial and the temporal variation in demand across NYC. The results also show
+Thus, our strategies do exploit the spatial and the temporal variation in demand across NYC. The results also show
 that for a part-time Uber driver, it is beneficial to drive midweek from Wednesday to Friday, than during weekends.
 
 %Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
@@ -249,7 +249,7 @@ to earn more than those based in Brooklyn due to persistently higher demand in M
 
 The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8 hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones. Not only do we observe that the {\relocation} strategy has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
-This may be counterintuitive to some drivers, as a {\relocate} action (which is essentially an empty ride) 
+This may be counterintuitive to some drivers, as a {\relocate} action (essentially an empty ride) 
 incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
 lead to earnings far higher than the costs they incur.
 
