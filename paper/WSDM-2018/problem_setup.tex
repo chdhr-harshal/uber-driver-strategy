@@ -45,12 +45,11 @@ $f(i, j) \in [0,1]$ such that
 $\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.  
 
 %%The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
-Since the entries of {\empiricaltransitionmatrix} correspond to probabilites, the weights 
+Since the entries of {\empiricaltransitionmatrix} correspond to probabilities, the weights 
 give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
 where each entry $f(i,j)$ denotes the probability of a passenger in zone $i$
 traveling to zone $j$. 
-As a special case, 
-$f(i,i)$ denotes the probability of a driver not finding a passenger in zone $i$ at a
+As we do not allow trips within the same zone in our model, we let $f(i,i)$ denote the probability of a driver not finding a passenger in zone $i$ at a
 given time step.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
@@ -81,7 +80,7 @@ are time-dependent, i.e., their entries could change throughout the day
 
 
 \subsection{Modeling the driver}
-Throughout the paper, we will assume that 
+In this paper, we will assume that 
 each driver comes with a 
 maximum budget of $B$ time units
 he is willing to work. During these time units, the driver 
@@ -96,12 +95,12 @@ a 7 day week shall have $B=40$ hours and $N=168$ hours.
 
 \spara{Home zone (\homezone)}: 
 Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
-We always assume that the driver starts from his home zone and returns to it
-at the end of each of his shifts.
+We always assume that the driver starts from a home zone and returns to it
+at the end of each of the shifts.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
 \spara{Driver actions (\actionsset)}: 
-Whenever faced with making a decision regarding next decision during a driving strategy, a driver has $n+2$ possible actions he can take: 
+In a driver strategy, whenever faced with a choice regarding next decision, a driver has $n+2$ possible actions to choose from: 
 %\begin{itemize}
 \squishlist
     \item {\getpassenger} (\getpassengeraction): Wait for a passenger in the current zone. 
@@ -114,10 +113,10 @@ Whenever faced with making a decision regarding next decision during a driving s
 %\subsubsection{\sc{DriverPolicy} (\policy)}
 
 \spara{Driver policy (\policy)}:
-A driver policy is an ordered set of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
+A driver policy is a sequence of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
-Each time and location dependent action $\mathbf{a}$ in the {\policy} can be expressed in form of a 3-tuple -- $(\actuallocation, \actualtime, \actualaction)$
+Each time and location dependent action in {\policy}, denoted by $\mathbf{a}$, can be expressed in form of a 3-tuple -- $(\actuallocation, \actualtime, \actualaction)$
 where $\actualaction \in \actionsset$ refers to actual action, $\actuallocation \in \cityzones$ is the zone at which action was taken and $\actualtime \leq N$ is the 
 time at which the action was taken.
 
@@ -131,7 +130,7 @@ time at which the action was taken.
 % \end{itemize}
 
 Furthermore, for a policy of length $L$, the corresponding policy space can be denoted by
-$\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \{\policyspace_1, \cdots, \policyspace_N\}$, as the maximum length of a policy can be $N$.
+$\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \policyspace_1 \cup \cdots \cup \policyspace_N$, as the maximum length of a policy can be $N$.
 
 
 \subsection{Computing driver earnings}
@@ -210,7 +209,6 @@ Using this formulation, for each of the driver actions, we can recursively expre
 Given input specification matrices {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
 as well as the driver's budget $B$,
 the \emph{total expected earnings} of the driver with policy $\policy$ is:
-
 \begin{equation}\label{eq:totalexpectedearnings}
 \mathcal{E} (\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
 \end{equation}
@@ -219,7 +217,6 @@ using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2}.
 
 As we seek to maximize the \emph{total expected earnings} of the driver,
 we aim to solve the following optimization problem.
-
 \begin{problem}[{\originalproblem}]\label{problem:theproblem}
 Given sets of time-evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the driver's budget $B$,
 find a $\policy^\ast$
