@@ -28,7 +28,7 @@ dataset\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.sh
 \spara{Forming time-evolving matrices {\countmatrix} and {\empiricaltransitionmatrix}:}
 Our starting point is the the NYC Taxi  dataset (2015-2016), which
 %%\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}}. 
-contains yellow street-hail records of over 65,000 daily taxi rides with fields capturing pickup and dropoff dates/times, 
+contains yellow street-hail records of over 200,000 daily taxi rides with fields capturing pickup and dropoff dates/times, 
 location co-ordinates, trip distances, and fares.
 Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
 Each location ID is associated with one of 29 non-overlapping city zones -- defined in the
@@ -82,16 +82,23 @@ Figure \ref{fig:successful_heatmap} shows an example of varying estimated probab
 As expected, we see that the probability of a successful pickup is higher outside Manhattan in the morning, 
   and this trend reverses in the evening.
 
+\begin{figure*}
+	\centering
+	\includegraphics{figures/daily_earnings.pdf}
+	\caption{Representative daily earnings with different strategies for a driver with home zone as the Financial District, NY.}
+	\label{fig:daily_earnings}
+\end{figure*}
+
 \spara{Forming time-evolving matrices {\traveltimematrix} and {\rewardsmatrix}:} Since information about travel times 
 and rewards was not available on the NYC Taxi dataset, we invoked the Uber API in order
 to obtain this information.
 The HTTP-based Uber API allows third-party developers to retrieve information about Uber. For our study, the most relevant endpoint of the API is \texttt{estimates/price}. It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products - UberX, UberXL and UberBlack. Along with the price estimates, it also provides the active surge multiplier rate at the pick-up location at the time of query.  Here, we only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information regarding the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of UberX drivers or demand of passengers; we impute this 
 information from the NYC taxi rides dataset.
 
-To create a representative sample of data, our approach relies on ``recreating" NYC taxi rides virtually on the Uber platform. 
+To create a representative sample of data, our approach relies on ``recreating'' NYC taxi rides virtually on the Uber platform. 
 Using the Uber API, we were able to take a NYC taxi ride recorded in 2015, and capture the Uber attributes of that ride exactly 
 one year later, collecting price estimates and other data above for that virtual ride.
-To respect the Uber rate limit of 1,000 API requests per hour per account, we subsampled one ride between each pair of zones in
+To respect the Uber rate limit of 1,000 API requests per hour per account, we sub-sampled one ride between each pair of zones in
 the city every 15 minutes (if such a ride occurred in the taxi dataset).
 We implicitly assume that price estimates, travel times and distance of preferred travel paths by drivers do not vary 
 significantly in 15 minutes. Chen {\etal}~\cite{chen2015peeking} have observed that 90\% of the surges on Uber platform 
@@ -196,20 +203,13 @@ Figure \ref{fig:successful_heatmap} shows an example of varying probabilities of
 
 \fi
 
-\begin{figure*}
-	\centering
-	\includegraphics{figures/daily_earnings.pdf}
-	\caption{Daily driver earnings with different strategies in a representative week.}
-	\label{fig:daily_earnings}
-\end{figure*}
+\subsection{Experimental results}
 
 \begin{figure}
 	\includegraphics{figures/earnings_heatmap.pdf}
-	\caption{Disparity of earnings between {\naive} and {\relocation} strategies on a representative day.}
+	\caption{Earnings from {\naive} and {\relocation} strategies for drivers with different home zones. Location-based disparity in earnings is prominent for the {\naive} strategy.}
 	\label{fig:earnings_heatmap}
 \end{figure}
-
-\subsection{Experimental results}
 
 \begin{figure*}
 	\centering
@@ -232,7 +232,7 @@ Using the above input, we now evaluate our methodology.
 \spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy, as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9AM to 5PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
 Figure \ref{fig:daily_earnings} shows the earnings achieved by 
-the solution to {\originalproblem} by each of the strategies on different days of the week. We observe that all ``smart" strategies consistently outperform {\naive};
+the solution to {\originalproblem} by each of the strategies on different days of a representative week for a driver with home zone as the Financial District, NY. On account of higher demand, the Financial District is one of the highest earning home zones for the {\naive} strategy. However, we observe that all ``smart'' strategies consistently outperform the {\naive};
 as expected, {\relocationflexible} is consistently the strategy with the highest earnings.
 Note that {\relocationflexible} can lead to up to 100\% increase in the drivers'
 earnings when compared to {\naive}.  
@@ -249,8 +249,7 @@ Next, we address the question - \textit{what are the benefits of the {\relocate}
 to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, at different times of the day, drivers located within different parts of Manhattan itself will earn different amounts on account of temporal trends.
 
 
-
-The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} is a box-plot of earnings from an 8-hour workday for drivers following {\naive} and {\relocation} strategies with different home zones. Not only do we observe that the {\relocation} strategy has a higher median than {\naive}, but also, the inter-quartile range (IQR) is significantly narrower\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.}. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhood, translating 
+The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from an 8-hour workday for drivers with different home zones, following {\naive} and {\relocation} strategies. Not only do we observe that the {\relocation} strategy has a higher median than {\naive}, but also, the inter-quartile range (IQR) is significantly narrower\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.}. This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
 This may be counterintuitive to some drivers, as a {\relocate} action (which is essentially an empty ride) 
 incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
@@ -282,17 +281,11 @@ This turns out to be due to the freedom of the work schedule of the latter, whic
   continuously during the hours of highest demand, reducing the frequency of {\relocate} actions they take. 
 
 \subsection{Surge Chasing}
-\begin{figure}[h]
+\begin{figure}
 	\centering
 	\includegraphics{figures/surge_heatmap.pdf}
 	\caption{Active surge multiplier across NYC zones at different times of a representative day.}
 	\label{fig:surge_heatmap}
-\end{figure}
-
-\begin{figure}[h]
-	\includegraphics{figures/simulated_earnings.pdf}
-	\caption{Exploring surge: Simulated earnings for drivers across different strategies on a representative day.}
-	\label{fig:simulated_earnings}
 \end{figure}
 
 We now turn our attention to surge pricing. Surge pricing was a controversial feature of the Uber platform\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.} 
@@ -301,7 +294,7 @@ According to Uber, it incentivizes drivers to start driving during the peak hour
   supply, albeit at a higher cost to passengers.
 It also decreases demand, as the most price-sensitive customers drop out. 
 In fact, Uber prominently displays surge information to drivers on their Partner App,
-  in the form of a heatmap of surge multipliers in different geographical neighborhoods.
+  in the form of a heat-map of surge multipliers in different geographical neighborhoods.
 Figure \ref{fig:surge_heatmap} shows the active surge multiplier across different neighborhoods of NYC at 
 different times of the day. 
 This information is readily available to the drivers; however, due to uncertainty in the duration of surges 
@@ -329,11 +322,14 @@ our results can potentially be highly sensitive to perturbations of the empirica
 Intuitively, we can conclude that our results are robust if
 the drivers following one of the {\relocation}, {\flexible} and {\relocationflexible} strategies
 have higher earnings than those following {\naive} even when the input data is perturbed.
-
-
+\begin{figure}
+	\includegraphics{figures/simulated_earnings.pdf}
+	\caption{Exploring surge: Simulated earnings for drivers across different strategies on a representative day.}
+	\label{fig:simulated_earnings}
+\end{figure}
 
 Hence, the question we are addressing here is the following: 
-\textit{Are the conclusions we drew above robust to perturbations of the empirical tansition matrices?} We address this question using
+\textit{Are the conclusions we drew above robust to perturbations of the empirical transition matrices?} We address this question using
 the framework we developed in Section \ref{sec:sensitivity}. More specifically, 
 we solve the {\robustproblem} problem for each of the four strategies for increasing levels of uncertainty ($\alpha$).
 
@@ -349,7 +345,7 @@ Interestingly, even with 99\% uncertainty, the {\relocationflexible} strategy si
 This observation further supports our claim that strategies based on historical data can improve driver 
   earnings in on-demand ridesharing platforms. 
 
-\begin{figure}[H]
+\begin{figure}[hb]
 	\centering
 	\includegraphics{figures/uncertainty_evolution.pdf}
 	\caption{Sensitivity to uncertainty in parameters.}
