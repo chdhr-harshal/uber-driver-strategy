@@ -5,28 +5,31 @@
 
 The proliferation of on-demand ridesharing platforms like Lyft and Uber
 have changed the way people move within urban environments. 
-% \note[ET]{Maybe we need some statistics of how many people use uber/lyft and how much these companies have grown?}
-% \note[HC]{The statistics are available here: \url{http://toddwschneider.com/posts/taxi-uber-lyft-usage-new-york-city/}}
-In last two years alone, number of daily trips with using ridesharing platforms like Uber, Lyft, etc. in NYC have grown five-fold to about 350,000 trips per day. Over 65,000 drivers drive in the streets of NYC as Uber or Lyft drivers.
+In last two years alone, number of daily trips with using ridesharing platforms like 
+Uber and Lyft in NYC have grown five-fold to about 350,000 trips per day. Over 65,000 drivers drive in the streets of NYC as Uber or Lyft drivers.
 Explosive growth of these ridesharing platforms have created a supply-and-demand environment that offers 
 plenty opportunities for academic research that focuses on pricing mechanisms
 as well as algorithms for matching drivers to 
 customers~\cite{banerjee2015pricing,ozkan2016dynamic}.
 
-Although those studies view ridesharing platforms holistically, little formal work
-has been done on optimizing strategies for drivers. To date, we can only find some data-analytic studies, that focus on identifying the reasons that motivate drivers to join such platforms -- flexible working hours and chasing surge being the main reasons~\cite{chen2015peeking,chen2016dynamic,hall2016analysis}.
 
-However, there is little emphasis on how to optimize the earnings of such drivers.
-To date, there are no tools for drivers to use that could optimize their earnings.
-They can only rely on some 
+Although those studies view ridesharing platforms holistically, little work
+has been done on optimizing strategies for drivers. 
+However, the challenge of how to maximize one's individual earnings as a driver for a 
+ridesharing platform like Uber or Lyft is a pressing question that millions of micro-entrepreneurs 
+across the world now face.  Anecdotally, many drivers spend a great deal of time 
+strategizing about where and when to drive.  However, to date, drivers are either
+self-taught and use heuristics of their own devising, or learn from one another.
+Indeed, rumors suggest that some drivers even collude in attempts to induce spikes in surge prices that they can then exploit.
+To date there is only  some 
 popular-press articles that offer(often contradictory) advice to ridesharing drivers how to maximize their earnings, mostly via chasing surge~\cite{dont,tips}. 
 
  In this paper, we formalize the problem of devising a driver strategy to maximize expected 
- earnings, describe a series of dynamic programming algorithms to solve these problems
+ earnings, describe a series of dynamic programming algorithms to solve this problem
  under different sets of modeled actions available to the drivers. 
- Moreover, the framework we use has the advantage of being able to rigorously reason about  and analyze the sensitivity of our results to perturbations in the input data. 
+ Moreover, the framework we propose enables us to rigorously reason about  and analyze the sensitivity of our results to perturbations in the input data. 
  Thus, we can justify the proposed strategies even under some uncertainty level in the
- collected data.
+ collected data. 
   
 We exemplify our  results with a large-scale simulation of driving for Uber in NYC. For this simulation we assemble a new dataset that uses both the publicly available NYC taxi rides 
 dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} as well as calls to the Uber API. From the former we obtain information about trips that happen between different NYC zones. From the latter we obtain pricing as well as traffic-time information for those trips. This newly-collected dataset is of independent interest and can itself be used for a multitude of other studies.
