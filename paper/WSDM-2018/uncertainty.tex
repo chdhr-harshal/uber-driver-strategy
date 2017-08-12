@@ -125,10 +125,9 @@ Formally, this is shaped in the following problem definition:
 Given sets of time evolving {\countmatrix}, {\traveltimematrix} and {\rewardsmatrix}, the driver's budget $B$ and input uncertainty level $\alpha$,
 find $\widehat{\policy}$
 such that:
-\[
-\min_{\truetransitionmatrix\in\mathcal{P}_\alpha}\mathcal{E}(\widehat{\policy},\truetransitionmatrix,\traveltimematrix,\rewardsmatrix,B)
+\[  \widehat{\policy} = \argmax_{\policy}
+\min_{\truetransitionmatrix\in\mathcal{P}_\alpha}\mathcal{E}(\policy,\truetransitionmatrix,\traveltimematrix,\rewardsmatrix,B).
 \]
-is maximized.
 \end{problem}
 Note that the above problem requires searching among all possible true transition 
 matrices in $\mathcal{P}_\alpha$, which is a non-enumerable set. 
