@@ -80,27 +80,29 @@ are time-dependent, i.e., their entries could change throughout the day
 
 
 \subsection{Modeling the driver}
-In this paper, we will assume that 
+Our model assumes that 
 each driver comes with a 
 maximum budget of $B$ time units
 he is willing to work. During these time units, the driver 
  can pick
 up passenger rides. Depending on the specific setting, the driver can
 work $B$ time units consecutively or split them 
-over a finite horizon of $N$ time units. Obviously, $N \geq B$. 
-As an example, a driver seeking to optimize a 40 hour work week over
-a 7 day week shall have $B=40$ hours and $N=168$ hours.
+over a finite horizon of $N$ time units, where $N \geq B$. 
+As an example, a driver seeking to optimize an 8 hour work day over
+a 24 hour day at a ten-minute decision granularity (six per hour), 
+will have $B=48$ and $N=144$.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
 
 \spara{Home zone (\homezone)}: 
 Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
-We always assume that the driver starts from a home zone and returns to it
-at the end of each of the shifts.
+We always assume that each driver starts from their home zone and returns to it
+at the end of each of their shifts.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
 \spara{Driver actions (\actionsset)}: 
-In a driver strategy, whenever faced with a choice regarding next decision, a driver has $n+2$ possible actions to choose from: 
+In a driver strategy, whenever faced with a choice regarding their
+  next decision, a driver has $n+2$ possible actions to choose from: 
 %\begin{itemize}
 \squishlist
     \item {\getpassenger} (\getpassengeraction): Wait for a passenger in the current zone. 
