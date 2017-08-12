@@ -61,6 +61,7 @@ class City(object):
                                 self.time_unit_duration,
                                 self.city_zones)
             city_attributes[t]['transition_matrix'] = TM.transition_matrix
+            city_attributes[t]['count_matrix'] = TM.count_matrix
 
             # 2. Travel Time Matrix
             TT = TravelTimeMatrix(city_attributes[t]['start_time'],
@@ -77,6 +78,7 @@ class City(object):
                             TT.travel_time_matrix)
             city_attributes[t]['driver_earnings_matrix'] = RM.driver_earnings_matrix
             city_attributes[t]['driver_costs_matrix'] = RM.driver_costs_matrix
+            city_attributes[t]['surge_vector'] = RM.surge_vector
 
             # Set time of next time slice
             real_time = real_time + timedelta(minutes=self.time_unit_duration)

@@ -1,5 +1,11 @@
 #! /usr/local/bin/python
 
+# For relative import add parent directory to system path
+import sys
+sys.path.insert(1, '..')
+
+from uncertainty_utils.bisection3 import Bisection
+
 class Actions(object):
     def __init__(self, N, B, home_zone, city_zones, strategy):
         self.N = N
@@ -12,8 +18,8 @@ class Actions(object):
     def initialize_actions_universe(self):
         # Each action is a 2-tuple (action_name, action_target_zone)
         get_passenger_action = ('a0', None)
-        go_home_action = ('a1', self.home_zone)
-        relocate_action = [('a2', zone) for zone in self.city_zones]
+        go_home_action = ('a1', self.city_zones.index(self.home_zone))
+        relocate_action = [('a2', zone) for zone in xrange(len(self.city_zones))]
 
         actions_universe = [get_passenger_action]
         if self.strategy == "flexi" or self.strategy == "reloc_flexi":
@@ -27,7 +33,8 @@ class Actions(object):
     def get_available_actions(self, current_zone, t, b, travel_time_matrix):
         available_actions = []
         for action in self.actions_universe:
-            if action[0] == 'a1' or action[0] == 'a2':
+            # if action[0] == 'a1' or action[0] == 'a2':
+            if action[0] == 'a2':
                 target_zone = action[1]
                 if current_zone == target_zone:
                     continue
@@ -46,17 +53,23 @@ class Actions(object):
 
     # Calculate cumulative action earnings
     def get_passenger_cumulative_earnings(self,
-                                        empirical_transition_vector,        # F_{i}^{t}
+                                        num_trips_vector,                   # F_{i}^{t}
                                         rewards_vector,                     # R_{i}^{t}
                                         induced_earnings_vector,            # \vec{v}_{i}^{t,b}
-                                        robust=False):
+                                        robust=False,                       # Use robust formulation
+                                        beta_max=None,                      # row beta max
+                                        beta=None,                          # row beta
+                                        delta=None):                        # Accuracy for bisection algorithm
         # Nominal earnings
         if not robust:
+            empirical_transition_vector = num_trips_vector
             return empirical_transition_vector.dot(rewards_vector + induced_earnings_vector)
         # Robust earnings
         else:
             # Fill this up with call to bisection algorithm
-            pass
+            # bisect = Bisection(beta_max, beta, delta, empirical_transition_vector, rewards_vector + induced_earnings_vector)
+            bisect = Bisection(beta, num_trips_vector, rewards_vector + induced_earnings_vector)
+            return bisect.solve_inner_problem()  # + 1
 
     def go_home_cumulative_earnings(self,
                                 action_earnings,                            # r^{t}(i,i_0)
@@ -66,4 +79,9 @@ class Actions(object):
     def relocate_cumulative_earnings(self,
                                     action_earnings,                        # r^{t}(i, j)
                                     induced_earnings):                      # v_{j}^{t',b')
+        return action_earnings + induced_earnings
+
+    def chase_surge_cumulative_earnings(self,
+                                    action_earnings,
+                                    induced_earnings):
         return action_earnings + induced_earnings
