@@ -84,7 +84,7 @@ As expected, we see that the probability of a successful pickup is higher outsid
 \begin{figure*}
 	\centering
 	\includegraphics{figures/daily_earnings_avg.pdf}
-	\caption{Average daily driver earnings with different strategies.}
+	\caption{Daily driver earnings for different strategies averaged over different home zones on a representative day.}
 	\label{fig:daily_earnings}
 \end{figure*}
 
@@ -205,7 +205,7 @@ Our results do not vary qualitatively across different weeks, with the exception
 
 \begin{figure}
 	\includegraphics{figures/earnings_heatmap.pdf}
-	\caption{Earnings from {\naive} and {\relocation} strategies for drivers with different home zones. Location-based disparity in earnings is prominent for the {\naive} strategy.}
+	\caption{Earnings from {\naive} and {\relocation} strategies for drivers across multiple 8-hour shifts starting from different home zones on a representative day.}
 	\label{fig:earnings_heatmap}
 \end{figure}
 
@@ -243,11 +243,17 @@ that for a part-time Uber driver, it is beneficial to drive midweek from Wednesd
 
 
 \spara{Spatial dynamics of strategies}: 
-Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day. Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
-to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, at different times of the day, drivers located within different parts of Manhattan itself will earn different amounts on account of temporal trends.
+Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day.
+Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
+to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. However, even
+at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts on account of temporal trends.
+Hence, instead of concentrating on the average earnings across different zones in a typical 9-5 workday from Figure \ref{fig:daily_earnings}, now we explore
+the variation in earnings of drivers starting from different home zones at different times of the day.
 
 
-The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8 hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones. Not only do we observe that the {\relocation} strategy has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
+The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8 hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones.
+Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
+Furthermore, not only do we observe that the {\relocation} strategy has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
 This may be counterintuitive to some drivers, as a {\relocate} action (essentially an empty ride) 
 incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
@@ -286,8 +292,8 @@ This turns out to be due to the freedom of the work schedule of the latter, whic
 	\label{fig:surge_heatmap}
 \end{figure}
 
-We now turn our attention to surge pricing. Surge pricing was a controversial feature of the Uber platform\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.} 
-aimed at matching supply with passenger demand by increasing prices at times of high demand. 
+We now turn our attention to surge pricing. Surge pricing was a controversial feature of the Uber platform
+aimed at matching supply with passenger demand by increasing prices at times of high demand.\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.}  
 According to Uber, it incentivizes drivers to start driving during the peak hours in order to efficiently meet demand with 
   supply, albeit at a higher cost to passengers.
 It also decreases demand, as the most price-sensitive customers drop out. 
