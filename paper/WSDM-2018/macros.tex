@@ -1,4 +1,6 @@
 %!TEX root = main.tex
+\usepackage[show]{chato-notes}
+
 
 \newcommand\fnote[1]{\captionsetup{font=small}\caption*{\textmd{#1}}}
 
@@ -26,11 +28,11 @@
 \newcommand{\robustproblem}{{\textsc{RobustEarnings}}}
 
 % strategies
-\newcommand{\naive}{{\textsc{Naive Strategy}}}
-\newcommand{\relocation}{{\textsc{Relocation Strategy}}}
-\newcommand{\flexible}{{\textsc{Flexible Strategy}}}
-\newcommand{\relocationflexible}{{\textsc{Flexible Relocation Strategy}}}
-\newcommand{\earningsgoal}{{\textsc{Fixed Earnings Goal Strategy}}}
+\newcommand{\naive}{{\textit{naive}}}
+\newcommand{\relocation}{{\textit{relocation}}}
+\newcommand{\flexible}{{\textit{flexible}}}
+\newcommand{\relocationflexible}{{\textit{flexible-relocation}}}
+\newcommand{\earningsgoal}{{\textit{fixed earnings goal}}}
 
 % actions
 \newcommand{\getpassenger}{{\it Get Passenger}}
@@ -68,8 +70,8 @@
 
 % For action reward #1 is subscript (zone) #2 is superscript (time) #3 is action.
 \newcommand{\actionearning}[3]{\ensuremath{E({#1},{#2},{#3})}}
-\newcommand{\cumulativeearning}[2]{\ensuremath{v_{#1}^{#2}}}
-\newcommand{\inducedearningvector}[3]{\ensuremath{\mathbf{v}_{#1}^{#2}({#3})}}
+\newcommand{\cumulativeearning}[3]{\ensuremath{\Phi({#1,#2,#3})}}
+\newcommand{\inducedearningvector}[2]{\ensuremath{\mathbf{v}({#1},{#2})}}
 
 
 \DeclareMathOperator*{\argmin}{arg\,min}

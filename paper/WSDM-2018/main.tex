@@ -1,5 +1,7 @@
 \documentclass[sigconf]{acmart}
-
+\settopmatter{printacmref=false} % Removes citation information below abstract
+%\renewcommand\footnotetextcopyrightpermission[1]{} % removes footnote with conference information in first column
+\usepackage{balance} 
 \usepackage{booktabs} % For formal tables
 \usepackage[vlined,linesnumbered,ruled,noend]{algorithm2e}     % algorithms
 \usepackage[show]{chato-notes}
@@ -9,6 +11,7 @@
 \usepackage{lipsum}% http://ctan.org/pkg/lipsum
 \usepackage{multicol}% http://ctan.org/pkg/multicols
 \usepackage{float}
+\usepackage{wrapfig}
 
 \input{macros}
 
@@ -38,27 +41,29 @@
 
 
 \begin{document}
-\title{Optimal Driver Strategies for On-Demand Ridesharing}
+\title{Putting Data in the Driver's Seat:\\
+Optimizing Earnings for On-Demand Ridesharing}
 % \titlenote{Produces the permission block, and copyright information}
 % \subtitle{Extended Abstract}
 
-\author{Harshal A. Chaudhari}
-\affiliation{%
-  \institution{Boston University}
-}
-\email{harshal@cs.bu.edu}
 
-\author{John W. Byers}
-\affiliation{%
-  \institution{Boston University}
-}
-\email{byers@cs.bu.edu}
-
-\author{Evimaria Terzi}
-\affiliation{%
-  \institution{Boston University}
-}
-\email{evimaria@cs.bu.edu}
+%\author{Harshal A. Chaudhari}
+%\affiliation{%
+%  \institution{Boston University}
+%}
+%\email{harshal@cs.bu.edu}
+%
+%\author{John W. Byers}
+%\affiliation{%
+%  \institution{Boston University}
+%}
+%\email{byers@cs.bu.edu}
+%
+%\author{Evimaria Terzi}
+%\affiliation{%
+%  \institution{Boston University}
+%}
+%\email{evimaria@cs.bu.edu}
 
 % The default list of authors is too long for headers}
 % \renewcommand{\shortauthors}{F. Lastname et al.}
@@ -113,10 +118,11 @@
 \input{driver_strategies}
 \input{uncertainty}
 \input{experiments}
-\input{results}
+\input{conclusion}
 
 \bibliographystyle{ACM-Reference-Format}
-%\bibliographystyle{ormsv080}
+% \bibliographystyle{ormsv080}
+\balance
 \bibliography{sigproc} 
 
 \end{document}

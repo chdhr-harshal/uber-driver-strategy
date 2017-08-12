@@ -3,7 +3,7 @@
 \section{Problem setup}
 \label{sec:problem_setup}
 
-In this section, we describe the basics of our problem setup and provide the necessary notations.
+In this section, we describe the basics of our problem setup and provide the necessary notation.
 
 \iffalse
 \subsection{Notation}
@@ -14,38 +14,49 @@ Vectors are denoted with lowercase bold letters (e.g., $\vec{a} = [a(i)]$) and m
 
 \subsection{Modeling the city}
 
-Throughout the paper, we will assume that a city is divided into non-overlaping set of zones denoted by \cityzones. 
-We represent a city in form of a weighted directed graph $G=(\cityzones, E)$ with 
-$|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, an edge between each pair of nodes. 
-Some of the attributes of a city are as follows:
+Throughout the paper, we will assume that a city is divided into non-overlapping set of zones denoted 
+by \cityzones, and time $t$ runs in discrete time steps.
+We represent a city in the form of a complete weighted directed graph $G=(\cityzones, E)$ with 
+$|\cityzones| = n$ and $|E| = {n \choose 2}$ edges, where the edge weight on 
+edge $e(i\rightarrow j)$ corresponds to the likelihood of a driver currently at 
+location $i$ receiving a ride request to location $j$.  Additionally, each edge is
+associated with a travel time $\tau(i, j)$, a travel cost, and a reward $r(i,j)$.
+In the general formulation of our problem, all of these edge attributes are time-varying,
+e.g., the rewards would vary with $t$ as $r^t(i,j)$, but to avoid excess notation, we drop
+those superscripts in our following discussion of models and algorithms, and reintroduce 
+them only in our experiments in Section~\ref{sec:experiments}.
+ These attributes of a city, which we use as 
+an input to our solver, are specified as follows:
+
+
 
 %\subsubsection{\sc{EmpiricalTransitionMatrix} (\empiricaltransitionmatrix)}
 
+\begin{comment} % Relocate to data section
 \spara{Count matrix (\countmatrix)}: 
 Every edge $e(i\rightarrow j) \in E$ is associated with an
 integer-valued weight $c(i,j)$ that denotes the number of requests
 at zone $i$ that had node $j$ as their destination.
+\end{comment}
 
 \spara{Empirical transition matrix (\empiricaltransitionmatrix)}:
-The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
-The entries of {\empiricaltransitionmatrix} correspond to probabilites and thus
-$f(i,j) \in [0,1]$ such that
-$\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.
+Every edge $e(i\rightarrow j) \in E$ is associated with a transition probability
+$f(i, j) \in [0,1]$ such that
+$\sum_{j \in \cityzones} f(i,j) = 1$, $\forall i \in \cityzones$.  
 
-Therefore, the weights give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
-where each entry $f(i,j)$ 
-denotes the empirically observed probability of a passenger in zone $i$
+%%The count matrix gives rise to the transition matrix {\empiricaltransitionmatrix}.
+Since the entries of {\empiricaltransitionmatrix} correspond to probabilities, the weights 
+give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
+where each entry $f(i,j)$ denotes the probability of a passenger in zone $i$
 traveling to zone $j$. 
-As a special case, 
-$f(i,i)$ denotes the probability of not finding a passenger in zone $i$. 
-%The empirical transition matrix {\empiricaltransitionmatrix}
-%changes throughout the day. Hence, we use $\empiricaltransitionmatrix^t$ to denote the matrix at time $t$.
+As we do not allow trips within the same zone in our model, we let $f(i,i)$ denote the probability of a driver not finding a passenger in zone $i$ at a
+given time step.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
 
 \spara{Travel time matrix (\traveltimematrix)}:
-Every edge $e(i\rightarrow j) \in E$ is also associated with a positive valued weight $\tau(i,j) > 0$ 
-denoting the travel time duration for a taxi ride from zone $i$ to zone $j$. 
+Every edge $e(i\rightarrow j) \in E$ is also associated with  $\tau(i,j) > 0$, 
+ the travel time of a ride from zone $i$ to zone $j$. 
 These weights give us a travel time matrix {\traveltimematrix} with entries $\tau(i,j)$. 
 %Just like {\empiricaltransitionmatrix},  travel time matrix also evolves throughout the day. 
 %Hence, we use $\traveltimematrix^t$ to denote the matrix at time $t$.
@@ -54,68 +65,74 @@ These weights give us a travel time matrix {\traveltimematrix} with entries $\ta
 
 \spara{Rewards matrix (\rewardsmatrix)}:
 Every edge $e(i \rightarrow j) \in E$ is also associated with a real valued reward $r(i,j)$ denoting
-the net reward for a taxi driver in ride from zone $i$ to zone $j$. The net rewards include the driver's
-share of earnings from a passenger minus the sundry expenses like gas, vehicle value depreciations, etc. This rewards are stored in the rewards matrix $\rewardsmatrix$
-with entries $r(i,j)$.
+the net reward for a driver delivering a passenger from zone $i$ to zone $j$. The net rewards include the driver's
+share of earnings from a passenger minus the sundry costs like gas, vehicle depreciation, etc.  Since these
+earnings and costs vary with mileage and transit time, each entry in the rewards matrix $\rewardsmatrix$ 
+is of the form $r(i,j)$ = earnings$(i,j)$ - cost$(i,j)$.
 %Following our earlier convention, rewards matrix at time $t$ is denoted by $\rewardsmatrix^t$.
 
-Note that all the above matrices, {\countmatrix}, {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, are time dependent, i.e., their entries change throughout the day. Therefore, at any point in time $t$, the instantiations of these matrices
-are different. We denote those instantiations by $\countmatrix^t$, $\empiricaltransitionmatrix^t$, $\traveltimematrix^t$ and $\rewardsmatrix^t$ respectively.
-For clarity of exposition we will ignore the time-dependent aspect of the model in what follows.
+Again, in general, all of the input matrices: %{\countmatrix}, 
+{\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
+are time-dependent, i.e., their entries could change throughout the day
+%Therefore, at any point in time $t$, the instantiations of these matrices are different. 
+%We denote those instantiations by $\countmatrix^t$, $\empiricaltransitionmatrix^t$, $\traveltimematrix^t$ and $\rewardsmatrix^t$ respectively.
+%For clarity of exposition we will ignore the time-dependent aspect of the model in what follows.
 
 
 \subsection{Modeling the driver}
-Throughout the paper, we will assume that 
+Our model assumes that 
 each driver comes with a 
 maximum budget of $B$ time units
-he is willing to work. During these time units the driver 
+he is willing to work. During these time units, the driver 
  can pick
 up passenger rides. Depending on the specific setting, the driver can
 work $B$ time units consecutively or split them 
-over a finite horizon of $N$ time units. Obviously, $N \geq B$. 
-As an example, a driver with a 40 hour work week
-shall have $B=40$ hours and $N=168$ hours.
+over a finite horizon of $N$ time units, where $N \geq B$. 
+As an example, a driver seeking to optimize an 8 hour work day over
+a 24 hour day at a ten-minute decision granularity (six per hour), 
+will have $B=48$ and $N=144$.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
 
 \spara{Home zone (\homezone)}: 
 Each driver has a unique home zone denoted by $i_0 \in \cityzones$. 
-We always assume that the driver starts from his home zone and returns to it
-at the end of his shift.
+We always assume that each driver starts from their home zone and returns to it
+at the end of each of their shifts.
 %\subsubsection{\sc{DriverActions} (\actionsset)}
 
 \spara{Driver actions (\actionsset)}: 
-Whenever faced with making a decision regarding next decision during a driving strategy, a driver has $n+2$ possible actions he can take: 
+In a driver strategy, whenever faced with a choice regarding their
+  next decision, a driver has $n+2$ possible actions to choose from: 
 %\begin{itemize}
 \squishlist
-	\item {\getpassenger} \getpassengeraction: Wait for a passenger in the current zone. 
-	\item {\gohome} \gohomeaction: Log out of the on-demand ride service, go to home zone and wait in it. A driver can
-	choose this action only while away from home zone.
-	\item {\relocate} \relocateaction: Relocate to city zone $j$.
+    \item {\getpassenger} (\getpassengeraction): Wait for a passenger in the current zone. 
+    \item {\gohome} (\gohomeaction): Log out of the on-demand ride service, relocate to the home zone (if needed) 
+  and stop working.   This action does not consume the driver's budget.
+    \item {\relocate} (\relocateaction): Relocate to city zone $j$.  This action consumes the driver's budget.
 %\end{itemize}
 \squishend
 
 %\subsubsection{\sc{DriverPolicy} (\policy)}
 
 \spara{Driver policy (\policy)}:
-A driver policy is an ordered set of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
+A driver policy is a sequence of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
-Each time and location dependent action $\mathbf{a}$ in the {\policy} can be expressed in form of a 3-tuple -- $(\actualaction, \actuallocation, \actualtime)$
+Each time and location dependent action in {\policy}, denoted by $\mathbf{a}$, can be expressed in form of a 3-tuple -- $(\actuallocation, \actualtime, \actualaction)$
 where $\actualaction \in \actionsset$ refers to actual action, $\actuallocation \in \cityzones$ is the zone at which action was taken and $\actualtime \leq N$ is the 
 time at which the action was taken.
+Finally, we use $\policyspace$ to denote the set of all possible policies.
 
 % A policy of length $L$, $\policy_L = (\mathbf{a}^1, \cdots, \mathbf{a}^L)$, induces
 % three ordered sets of length $L$ each.
 
 % \begin{itemize}
-% 	\item \textit{Action Trajectory} : An ordered set of actions taken by driver following the policy, denoted by \actiontrajectory{\policy_L}.
-% 	\item \textit{Location Trajectory} : An ordered set of nodes at which the driver takes each of the actions from \actiontrajectory{\policy_L}, denoted by \locationtrajectory{\policy_L}.
-% 	\item \textit{Time Trajectory} : An ordered set of times at which the driver takes each of the actions from \actiontrajectory{\policy_L}, denoted by \timetrajectory{\policy_L}.
+%     \item \textit{Action Trajectory} : An ordered set of actions taken by driver following the policy, denoted by \actiontrajectory{\policy_L}.
+%     \item \textit{Location Trajectory} : An ordered set of nodes at which the driver takes each of the actions from \actiontrajectory{\policy_L}, denoted by \locationtrajectory{\policy_L}.
+%     \item \textit{Time Trajectory} : An ordered set of times at which the driver takes each of the actions from \actiontrajectory{\policy_L}, denoted by \timetrajectory{\policy_L}.
 % \end{itemize}
-
-Furthermore, for a policy of length $L$, the corresponding policy space can be denoted by
-$\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \{\policyspace_1, \cdots, \policyspace_N\}$, as the maximum length of a policy can be $N$.
+%Furthermore, for a policy of length $L$, the corresponding policy space can be denoted by
+%$\policyspace_L = \actionsset^{nL}$. The set of all possible policies is $\policyspace = \policyspace_1 \cup \cdots \cup \policyspace_N$, as the maximum length of a policy can be $N$.
 
 
 \subsection{Computing driver earnings}
@@ -124,25 +141,25 @@ who at a specific time $t$ is in zone $i$ and takes action $a$. We denote this b
 $\actionearning{i}{t}{a}$ and depending on the action $a$ it is computed as follows.
 
 \squishlist
-	\item For action {\getpassengeraction} ({\getpassenger}), taken inside zone $i$ at time $t$, the action earnings function
-	is calculated as,
-	\begin{equation}\label{eq:a0}
-	\actionearning{i}{t}{a_0} = \empiricaltransitionmatrix^t_{i}\bigcdot \rewardsmatrix^t_{i}
-	\end{equation}
-	where $\empiricaltransitionmatrix^t_{i}$ and $\rewardsmatrix^t_{i}$ denote the $i$-th rows of $\empiricaltransitionmatrix^t$ and $\rewardsmatrix^t$ respectively. 
-	
-	\item For action {\gohomeaction} ({\gohome}), taken inside zone $i$ at time $t$, the action earnings function is simply
-	\begin{equation}\label{eq:a1}
-	\actionearning{i}{t}{a_1} = r^t(i,\homezone)
-	\end{equation}
-	where $r^t(i,\homezone)$ is the $(i,\homezone)$ entry of $\rewardsmatrix^t$. 
+    \item For action {\getpassengeraction} ({\getpassenger}), taken inside zone $i$ at time $t$, the action earnings function
+    is calculated as an expectation over possible rides,
+    \begin{equation}\label{eq:a0}
+    \actionearning{i}{t}{a_0} = \empiricaltransitionmatrix_{i}\bigcdot \rewardsmatrix_{i}
+    \end{equation}
+    where $\empiricaltransitionmatrix_{i}$ and $\rewardsmatrix_{i}$ denote the $i$-th rows of $\empiricaltransitionmatrix$ and $\rewardsmatrix$ respectively. 
+    
+    \item For action {\gohomeaction} ({\gohome}), taken inside zone $i$ at time $t$, the action earnings function is simply
+    \begin{equation}\label{eq:a1}
+    \actionearning{i}{t}{a_1} = - cost(i,\homezone)
+    \end{equation}
+    where we incur a negative reward due to the absence of a paying customer. 
 
-	\item Action {\relocateaction} ({\relocate}), taken inside zone $i$ at time $t$, 
-	takes the driver to zone $j$. Therefore, the action earnings function is
-	\begin{equation}\label{eq:a2}
-	\actionearning{i}{t}{a_2(j)} = r^t(i,j)
-	\end{equation}
-	where $r^t(i,j)$ is the $(i,j)$ entry of $\rewardsmatrix$ and $j \neq i$. \\
+    \item Action {\relocateaction} ({\relocate}), taken inside zone $i$ at time $t$, 
+    takes the driver to zone $j \neq i$. Therefore, the action earnings function is 
+    \begin{equation}\label{eq:a2}
+    \actionearning{i}{t}{a_2(j)} = - cost(i,j)
+    \end{equation}
+    where the driver again incurs a negative reward due to the absence of a paying customer. 
 %\end{itemize}
 \squishend
 
@@ -156,61 +173,60 @@ as {\cumulativeearning{\homezone}{N,B}}.
 %\subsubsection{\sc{InducedEarningVector}}
 \spara{\sc{InducedEarningVector}}:
 If a driver at zone $i$ at time $t$ with $b$ budget units consumed takes a passenger ride to zone $j$, the rides end at time 
-$t' = t + \tau^t(i,j)$ with budget $b' = b + \tau^t(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
+$t' = t + \tau(i,j)$ with budget $b' = b + \tau(i,j)$ consumed. The \textsc{CumulativeEarning} of the driver in zone $j$ at time $t'$ with $b'$
 budget units consumed is {\cumulativeearning{j}{t',b'}}. Let us denote using {\inducedearningvector{i}{t,b}{\getpassengeraction}} the vector of such
 cumulative earnings across different zones $j$ induced when a driver takes an action {\getpassengeraction} and call it an 
 \textsc{InducedEarningVector}. Instead of a vector of cumulative earnings, {\gohome} action induces a single value i.e., {\cumulativeearning{\homezone}{t',b}}. 
-As the driver has logged out of system, the consumed budget units $b$ remained unchanged. {\relocate} action induces a single value of cumulative earnings per destination zone $j$, {\cumulativeearning{j}{t',b'}}. 
+As the driver has logged out of the system, the consumed budget units $b$ remained unchanged. {\relocate} action induces a single value of cumulative earnings per destination zone $j$, {\cumulativeearning{j}{t',b'}}. 
 Using this formulation, for each of the driver actions, we can recursively express \textsc{CumulativeEarning} as follows,
 \begin{itemize}
-	\item {\getpassenger} : For {\getpassengeraction} taken inside zone $i$ at time $t$ with $b$ budget units consumed,
-	\begin{eqnarray}
-	\cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\getpassengeraction} + \empiricaltransitionmatrix_{i}^{t} \bigcdot \inducedearningvector{i}{t,b}{\getpassengeraction} \\
-	\nonumber\\
-	&=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction}) \label{eq:cumulative_earning_get_passenger}
-	\end{eqnarray}
-	where $\empiricaltransitionmatrix_{i}^{t}$ and $\rewardsmatrix_{i}^{t}$ denote the $i$-th rows of $\empiricaltransitionmatrix^{t}$ and $\rewardsmatrix^{t}$ respectively. \\
+    \item {\getpassenger} : For {\getpassengeraction} taken inside zone $i$ at time $t$ with $b$ budget units consumed,
+    \begin{eqnarray}
+    \cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\getpassengeraction} + \empiricaltransitionmatrix_{i}^{t} \bigcdot \inducedearningvector{i}{t,b}{\getpassengeraction} \\
+    \nonumber\\
+    &=& \empiricaltransitionmatrix_{i}^{t} (\rewardsmatrix_{i}^{t} + \inducedearningvector{i}{t,b}{\getpassengeraction}) \label{eq:cumulative_earning_get_passenger}
+    \end{eqnarray}
+    where $\empiricaltransitionmatrix_{i}^{t}$ and $\rewardsmatrix_{i}^{t}$ denote the $i$-th rows of $\empiricaltransitionmatrix^{t}$ and $\rewardsmatrix^{t}$ respectively. \\
 
-	\item {\gohome} : For {\gohomeaction} taken inside zone $i$ at time $t$ with $b$ budget units consumed,
-	\begin{eqnarray}
-	\cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\gohomeaction} + \cumulativeearning{\homezone}{t',b} \\
-	\nonumber\\
-	&=& r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b} 
-	\end{eqnarray}
-	where $t' = t + \tau^t(i,\homezone)$. \\
+    \item {\gohome} : For {\gohomeaction} taken inside zone $i$ at time $t$ with $b$ budget units consumed,
+    \begin{eqnarray}
+    \cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\gohomeaction} + \cumulativeearning{\homezone}{t',b} \\
+    \nonumber\\
+    &=& r^t(i,\homezone) + \cumulativeearning{\homezone}{t',b} 
+    \end{eqnarray}
+    where $t' = t + \tau(i,\homezone)$. \\
 
-	\item {\relocate} : Action {\relocateaction} taken inside zone $i$ at time $t$ with $b$ budget units consumed takes the driver to zone $j$.
-	Hence,
-	\begin{eqnarray}
-	\cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\relocateaction} + \cumulativeearning{j}{t',b'} \\
-	\nonumber \\
-	&=& r^t(i,j) + \cumulativeearning{j}{t',b'}
-	\end{eqnarray}
-	where $t' = t + \tau^t(i,j)$ and $b' = b + \tau^t(i,j)$. 
+    \item {\relocate} : Action {\relocateaction} taken inside zone $i$ at time $t$ with $b$ budget units consumed takes the driver to zone $j$.
+    Hence,
+    \begin{eqnarray}
+    \cumulativeearning{i}{t,b} &=& \actionearning{i}{t}{\relocateaction} + \cumulativeearning{j}{t',b'} \\
+    \nonumber \\
+    &=& r^t(i,j) + \cumulativeearning{j}{t',b'}
+    \end{eqnarray}
+    where $t' = t + \tau(i,j)$ and $b' = b + \tau(i,j)$. 
 \end{itemize}
 \fi
 
 \subsection{Problem definition}
-For a given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the drivers budget $B$
-the \emph{total expected earnings} of a driver  with policy $\policy$ is simply:
-
+Given input specification matrices {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, 
+as well as the driver's budget $B$,
+the \emph{total expected earnings} of the driver with policy $\policy$ is:
 \begin{equation}\label{eq:totalexpectedearnings}
-\mathcal{E} (\policy,\empiricaltransitionmatrix^{t},\traveltimematrix^{t},\rewardsmatrix^{t},B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
+\mathcal{E} (\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B) = \sum_{(\actuallocation,\actualtime,\actualaction)\in\policy}\actionearning{\actuallocation}{\actualtime}{\actualaction},
 \end{equation}
 where $\actionearning{\actuallocation}{\actualtime}{\actualaction}$ is computed
-using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2} we defined above.
+using the Equations~\eqref{eq:a0},~\eqref{eq:a1} and~\eqref{eq:a2}.
 
 As we seek to maximize the \emph{total expected earnings} of the driver,
 we aim to solve the following optimization problem.
-
 \begin{problem}[{\originalproblem}]\label{problem:theproblem}
-Given sets of time evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the drivers budget $B$
-find $\policy^\ast$
+Given sets of time-evolving {\empiricaltransitionmatrix}, {\traveltimematrix} and {\rewardsmatrix}, as well as the driver's budget $B$,
+find a $\policy^\ast$
 such that:
 \[
-\policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B)
+\policy^\ast = \argmax_{\policy\in \policyspace}\mathcal{E}(\policy,\empiricaltransitionmatrix,\traveltimematrix,\rewardsmatrix,B).
 \]
-is maximized.
+%% REDUNDANT -- is maximized.
 \end{problem}
 
 %When the transition matrices, the travel time matrices and the reward matrices are exactly known, the above problem can be solved optimally using dynamic programming. We discuss this in the next section.
