@@ -595,8 +595,8 @@ Computing Machinery]
     textfont={sf, small},  margin=\z@}
   \captionsetup[figure]{name={Fig.}}
 \else
-  \captionsetup{labelfont={bf, small},
-    textfont={bf,small}, labelsep=colon, margin=\z@}
+  \captionsetup{labelfont={bf},
+    textfont={bf}, labelsep=colon, margin=\z@}
   \ifcase\ACM@format@nr
   \relax % manuscript
   \or % acmsmall
