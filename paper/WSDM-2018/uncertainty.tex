@@ -125,7 +125,7 @@ Formally, this is shaped in the following problem definition:
 Given sets of time evolving {\countmatrix}, {\traveltimematrix} and {\rewardsmatrix}, the driver's budget $B$ and input uncertainty level $\alpha$,
 find $\widehat{\policy}$
 such that:
-\[  \widehat{\policy} = \argmax_{\policy}
+\[  \widehat{\policy} = \argmax_{\policy\in \policyspace}
 \min_{\truetransitionmatrix\in\mathcal{P}_\alpha}\mathcal{E}(\policy,\truetransitionmatrix,\traveltimematrix,\rewardsmatrix,B).
 \]
 \end{problem}
