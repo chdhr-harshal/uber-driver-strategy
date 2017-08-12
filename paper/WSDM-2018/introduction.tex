@@ -14,15 +14,16 @@ The explosive growth of these ridesharing platforms has motivated a wide
   science and economics, ranging from the design of effective pricing mechanisms, 
   to equilibrium analysis, to the design of reputation management systems for 
   drivers, to algorithms for matching drivers with 
-  customers~\cite{banerjee2015pricing,ozkan2016dynamic}.
+  customers, as we discuss in our related work section.
+%%~\cite{banerjee2015pricing,ozkan2016dynamic}.
 
 While these studies consider the study of ridesharing platforms holistically, 
    little work has been done on optimizing strategies for individual drivers. 
 Nevertheless, the challenge of how to maximize one's individual earnings as a driver for a 
 ridesharing platform like Uber or Lyft is a pressing question that millions of micro-entrepreneurs 
 across the world now face.  Anecdotally, many drivers spend a great deal of time 
-strategizing about where and when to drive.  However, drivers today are either
-self-taught and use heuristics of their own devising, learn from one another, 
+strategizing about where and when to drive.  However, drivers today are 
+self-taught, using heuristics of their own devising or learn from one another, 
 and employ relatively simple analytics dashboards such as SherpaShare.
 Indeed, rumors suggest that some drivers even collude in attempts to induce spikes in surge prices that they can then exploit.
 But in terms of concrete guidance, to date there are only articles in the
@@ -34,7 +35,7 @@ In this paper, we formalize the problem of devising a driver strategy to maximiz
  under different sets of modeled actions available to the drivers. 
 Our strategies take as input a detailed model of city-level data that constitutes a 
   fine-grained weekly projection of forecasted demand for rides, comprising 
-  predicted spatiotemporal distribution of source-destination pairs, driver payments,
+  predicted spatiotemporal distributions of source-destination pairs, driver payments,
   transit times, and surge multipliers. 
 The optimization framework we propose not only produces contingency plans in the form of
   highly optimized driving schedules and real-time in-course corrections to drivers, but 
@@ -48,17 +49,18 @@ For this simulation, we assemble a new dataset that uses both the publicly avail
 dataset~\footnote{\url{http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml}} as well as calls to the Uber API.
 From the former, we obtain information about over 200,000 taxi rides that occurred between different NYC zones. 
 From the latter, we obtain representative pricing and traffic-time information for those trips, were they to reoccur on Uber.
-From this newly-collected dataset, we construct a mathematical model to produce input to our algorithms. However, 
-  we view the dataset of independent interest and can itself be used for a multitude of other studies.
+From this newly-collected dataset, we construct a mathematical model to produce input to our algorithms. 
+However, we view the dataset, which we plan to release, to be of independent interest that could subsequently 
+be used for a multitude of other studies.
 
 Our experiments with our methods on this dataset demonstrate the following findings:
-being strategic about the rides they pick, the areas they focus on picking up riders
-and the times they work can significantly increase a driver's income, sometimes by
+being strategic about the areas they focus on picking up riders and the times they work, 
+can significantly increase a driver's income, sometimes by
 as much as 2x, when compared to a naive optimization strategy.
 Moreover, we show that a pronounced difference between the earnings obtained by the 
 two strategies holds even when there is a large uncertainty in the input data. 
 We argue that our results are therefore not purely an artifact of the NYC dataset we employ, 
-  but also that they have high potential ot generalize well.
+  but also that they have high potential to generalize well.
 Finally, our experiments show that naively chasing surging prices does not typically lead 
   to significant earnings gains, but it can even introduce large opportunity costs, as drivers
   waste time driving to subsiding surges. 
