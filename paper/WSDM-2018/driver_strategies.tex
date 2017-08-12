@@ -56,7 +56,7 @@ the {\naive}, the {\relocation} and the {\flexible} strategies.
 In the {\naive} strategy, a driver performs a random walk over the city on weekdays from 9 AM-5 PM, with locations dictated exclusively by the passengers picked up. At the end of every passenger ride, the driver waits in the current zone for next passenger pickup. 
 Hence, the only allowable action is {\getpassenger}.
 
-In the {\relocation} strategy, an idle driver in zone $i$ has two choices, viz. {\getpassenger} and {\relocate}. Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone.  Thus: $
+In the {\relocation} strategy, an idle driver in zone $i$ has two choices: {\getpassenger} and {\relocate}. Hence, the set of allowable actions for a driver contains $n$ different actions, one of which is {\getpassenger} and $(n-1)$ {\relocate} actions, one for each different city zone.  Thus: $
 \actionsset =  \{\getpassengeraction\} \cup \{\relocateaction | \forall j \in \cityzones, j \neq i \}
 $.
 We remove from consideration the zones where relocating exhausts the budget or where $t \geq N$.
@@ -66,9 +66,9 @@ in-expectation work schedule for the driver.
 At any stage, a driver can log out of the on-demand ride service and return to home zone. Hence, the set of allowable actions for a driver contains 2 different actions, {\getpassenger} and {\gohome}.  Thus: $
 \actionsset = \{\getpassengeraction, \gohomeaction\}$.
 
-Solving the {\originalproblem} problem for the {\naive}, the {\relocation} and the
+Solving {\originalproblem} for the {\naive}, the {\relocation} and the
 {\flexible} strategies can be done by streamlined versions of the DP presented in 
-Equation~\eqref{eq:relocationflexible_strategy}; the details
+Eq.~\eqref{eq:relocationflexible_strategy}; the details
 are omitted due to space constraints.
 
 
