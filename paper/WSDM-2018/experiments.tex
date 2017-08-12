@@ -226,7 +226,7 @@ Our results do not vary qualitatively across different weeks, with the exception
 	\label{fig:simulated_schedules}
 \end{figure}
 
-Using the above input, we now evaluate our methodology. All our experiments were performed using a single process implementation of our algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Computational time for the {\naive} and the {\relocation} strategies is less than a minute, and about 5 minutes for the {\flexible} and the {\relocationflexible} strategies. Uncertainty analysis (Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
+Here, we evaluate our methodology. For all our experiments we use a single process implementation of our algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Running time for  {\naive} and {\relocation}  is less than a minute, and about 5 minutes for  {\flexible} and  {\relocationflexible}. Uncertainty analysis (Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
 
 \spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy, as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9 AM to 5 PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
