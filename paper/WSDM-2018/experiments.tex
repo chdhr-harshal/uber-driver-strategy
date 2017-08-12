@@ -33,12 +33,12 @@ location co-ordinates, trip distances, and fares.
 Each taxi record is accompanied with taxi location ID for the pick-up and drop-off locations. 
 Each location ID is associated with one of 29 non-overlapping city zones -- defined in the
 dataset.  While the set of taxi rides is undoubtedly produced from a different ridership than Uber, 
-resulting in differences of geographical diversity, demographics, and timing, 
+%resulting in differences of geographical diversity, demographics, and timing, 
 it nonetheless provides a useful baseline that reflects many of the broader dynamics of ridership in 
-NYC over space and time.  Thus we this to build count and frequency input matrices, as follows.
+NYC over space and time.  %Thus we this to build count and frequency input matrices, as follows.
 
 
-We divide each 24-hour day of the week into 144 time-slices of duration 10 minutes each, indexed by their start 
+Given this data, we divide each 24-hour day of the week into 144 time-slices of duration 10 minutes each, indexed by their start 
 time.  To model traffic demand in the city at time $t$, the $c(i,j)$ entry of the count matrix $\countmatrix^t$ is the total 
 number of rides from zone $i$ to zone $j$ in a 30-minute long time window centered at time $t$. In other words, $c(i,j)$ for the time slot corresponding
 to [10:40, 10:50] on a Wednesday is a count of all rides from $i$ to $j$ that were initiated between 10:30 and 11:00 
@@ -74,7 +74,7 @@ $f^t(i,j)$ to:
 \begin{equation*}
 f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}. 
 \end{equation*}
-The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions and can be used as input to our algorithms. 
+The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions. %and can be used as input to our algorithms. 
 
 Figure \ref{fig:successful_heatmap} shows an example of varying estimated probabilities of successful pickups 
   in different zones at various times of the day derived from the NYC data using the methods above. 
@@ -89,7 +89,7 @@ As expected, we see that the probability of a successful pickup is higher outsid
 \end{figure*}
 
 \spara{Forming time-evolving matrices {\traveltimematrix} and {\rewardsmatrix}:} We obtain information regarding travel times and rewards using the \texttt{estimates/price} endpoint of the Uber API.
-It takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products -- UberX, UberXL and UberBlack --  together with the active surge multiplier rate at the pick-up location at the time of query.  We only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information on the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of  drivers or demand of passengers; we impute this 
+The API takes longitude and latitude of pick-up and drop-off locations and returns price estimates for all types of Uber products -- UberX, UberXL and UberBlack --  together with the active surge multiplier rate at the pick-up location at the time of query.  We only focus on UberX, the most popular Uber product. We also use the \texttt{/products} endpoint to get information on the base fare, minimum fare, cost per minute and cost per unit distance for UberX. However, none of the Uber API endpoints provide information about the supply of  drivers or demand of passengers; we impute this 
 information from the NYC taxi rides dataset.
 
 To create a representative sample of the data, we ``recreated'' NYC taxi rides virtually on the Uber platform. 
@@ -103,7 +103,7 @@ significantly in 15 minutes. Every 5 minutes, we also queried the surge multipli
 have durations lasting multiples of 5 minutes.} 
 Using this approach, we collected data from the Uber API for a 6-month period (Oct. 2016--Mar 2017), 
 recreating rides that originally occurred from 
-Oct. 2015 to Mar 2016.   Thus, we were able to build realistic estimates for $r(i,j)$ and $\tau(i,j)$
+Oct. 2015 to Mar 2016.   Thus, we built realistic estimates for $r(i,j)$ and $\tau(i,j)$
 for all pairs of zones.  Finally, we maintained same-day of week estimates, so that, for example, travel time estimates
 and rewards computed for Sunday, Oct 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
 Sunday, Oct. 18, 2015.
@@ -212,7 +212,7 @@ Our results do not vary qualitatively across different weeks, with the exception
 \begin{figure*}
 	\centering
 	\includegraphics{figures/relocation_endzones.pdf}
-	\caption{Preferred relocation destinations for drivers with 
+	\caption{Contrast between preferred relocation destinations for drivers with 
 	{\relocation} and {\relocationflexible} strategies on a representative day.}
 	\label{fig:relocation_endzones}
 \end{figure*}
@@ -251,9 +251,10 @@ Hence, instead of concentrating on the average earnings across different zones i
 the variation in earnings of drivers starting from different home zones at different times of the day.
 
 
-The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8 hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones.
-Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
-Furthermore, not only do we observe that the {\relocation} strategy has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
+The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8-hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones.
+Note that Figure~\ref{fig:earnings_heatmap} depicts the median earnings, as opposed to mean earnings shown in Figure~\ref{fig:daily_earnings}. Moreover, Figure~\ref{fig:earnings_heatmap} contains earnings from driving late-night shifts, which brings the median much lower.
+%Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
+Furthermore, not only do we observe that  {\relocation} has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
 This may be counterintuitive to some drivers, as a {\relocate} action (essentially an empty ride) 
 incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
@@ -276,12 +277,12 @@ the {\relocate} action, all observed differences are due to this action.
 Hence, we can  conclude that the {\relocate} action is most effective in the evening hours, thereby prompting higher active percentages of {\relocationflexible} drivers at that time.
 
 \spara{Preferred relocation zones}: By simulating drivers, we can also compare the {\relocate} actions between drivers following {\relocation} strategy and those following {\relocationflexible} strategy. The contrast between popular destinations 
-of {\relocate} actions for drivers following the two strategies can readily be seen in Figure \ref{fig:relocation_endzones}. 
-We observe a contrast between the preferred relocation zones for drivers of these two strategies. 
+of {\relocate} actions for drivers following the two strategies can be seen in Figure \ref{fig:relocation_endzones}. 
+%We observe a contrast between the preferred relocation zones for drivers of these two strategies. 
 Drivers following the {\relocation} strategy predominantly relocate themselves to the center of Manhattan. In contrast, the drivers following the {\relocationflexible} strategy do not exhibit a clear most-preferred relocation destination. Furthermore, the 
 {\em number} of relocations performed by the {\relocation} strategy drivers, 
 is, surprisingly, significantly higher than those performed by the {\relocationflexible} strategy drivers. 
-This turns out to be due to the freedom of the work schedule of the latter, which allows them to drive 
+This is due to the flexible work schedule of the latter, which allows them to drive 
   continuously during the hours of highest demand, reducing the frequency of {\relocate} actions they take. 
 
 \subsection{Surge chasing}
