@@ -34,7 +34,7 @@ by \citet{nilim2004robustness}.
 %\label{sec:likelihood_model}
 
 \spara{Modeling uncertainty:}
-For this section, we assume that there is an underlying \emph{true} transition matrix
+We now assume that there is an underlying \emph{true} transition matrix
 {\truetransitionmatrix}, and the question we explore is 
 our confidence that the
 {\countmatrix} we observe is actually 
@@ -109,14 +109,16 @@ is satisfied.
 
 %\subsection{\textsc{The robust control problem}}
 \spara{The {\robustproblem} problem:} 
-Clearly, there are a large number of matrices in the set $\mathcal{P}_\alpha$.
-Here we discuss how to compute the \emph{worst-case}{ {\totalexpectedearnings} for a driver. That is, we find the {\truetransitionmatrix} among all matrices in $\mathcal{P}_\alpha$ such that the {\totalexpectedearnings} of the driver
-are minimized. Being able to do that will enable us to 
-quantify the worst-case difference between the earnings computed
+%%Clearly, there are a large number of matrices in the set $\mathcal{P}_\alpha$.
+Our approach is to compute the \emph{worst-case}{ {\totalexpectedearnings} for a driver, by
+  finding the {\truetransitionmatrix} among all matrices in $\mathcal{P}_\alpha$ 
+ such that the {\totalexpectedearnings} of the driver
+ are minimized.  
+This quantifies the worst-case difference between the earnings computed
 as a solution to the {\originalproblem} and the worst-case earnings of the
 driver, given uncertainty level $\alpha$.
-
-
+%%
+%%
 Formally, this is shaped in the following problem definition:
 
 \begin{problem}[{\robustproblem}]\label{problem:robust}

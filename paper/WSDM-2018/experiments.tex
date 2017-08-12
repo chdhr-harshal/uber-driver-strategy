@@ -74,7 +74,7 @@ $f^t(i,j)$ to:
 \begin{equation*}
 f^t(i,j) = (1 - f^t(i,i)) \times \frac{c^t(i,j)}{\sum_{j}c^t(i,j)}. 
 \end{equation*}
-The matrix $\empiricaltransitionmatrix^t$, built in this manner satisfies all our assumptions. %and can be used as input to our algorithms. 
+The matrix $\empiricaltransitionmatrix^t$ built in this manner satisfies all our assumptions. %and can be used as input to our algorithms. 
 
 Figure \ref{fig:successful_heatmap} shows an example of varying estimated probabilities of successful pickups 
   in different zones at various times of the day derived from the NYC data using the methods above. 
@@ -110,7 +110,7 @@ Sunday, Oct. 18, 2015.
 %However, due to seasonality of the data, 
 In the remainder of this section, we provide  results for driving during one representative week in October.
 %starting on Sunday, October 18, 2015\footnote{In order to maintain uniformity of the day of the week between the NYC taxi rides dataset (2015) and the Uber data (2016), we use the Uber API data for the week starting on Sunday, October 16, 2016 to form the matrices {\traveltimematrix}, {\rewardsmatrix}. 
-Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Years' Eve. 
+Our results do not vary qualitatively across different weeks, with the exception of seasonal peak days, such as New Year's Eve. 
 
 %Although the \texttt{estimates/time} endpoint of the Uber API returns the estimated waiting time for a passenger at a particular location, it provides no information on the supply of UberX cars in its neighborhood. Consequently, we do not possess an exact estimate of the time spent by an Uber driver waiting for a passenger in a particular zone. 
 %%endpoint to query rides from exact same pick-up to drop-off locations at the exact same time of the 
@@ -235,7 +235,7 @@ as expected, {\relocationflexible} is consistently the strategy with the highest
 Note that the {\relocationflexible} can lead to up to 100\% increase in the drivers'
 earnings when compared to {\naive}.  
 Thus, our strategies do exploit the spatial and the temporal variation in demand across NYC. The results also show
-that for a part-time Uber driver, it is beneficial to drive midweek from Wednesday to Friday, than during weekends.
+that for a part-time Uber driver, it is more beneficial to drive midweek, from Wednesday to Friday, than during weekends.
 
 %Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
 
@@ -246,7 +246,8 @@ that for a part-time Uber driver, it is beneficial to drive midweek from Wednesd
 Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day.
 Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
 to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. However, even
-at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts on account of temporal trends.
+at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts, 
+on account of temporal trends.
 Hence, instead of concentrating on the average earnings across different zones in a typical 9-5 workday from Figure \ref{fig:daily_earnings}, now we explore
 the variation in earnings of drivers starting from different home zones at different times of the day.
 
@@ -265,7 +266,7 @@ lead to earnings far higher than the costs they incur.
 Thus, we address the question: \textit{what is the best time of the day to drive in order to maximize earnings?} To answer this, we simulate 1000 drivers, each randomly assigned a home zone, for each of the {\flexible} and {\relocationflexible} strategies. 
 We solve the {\originalproblem} problem for both strategies and create a recommended plan of action for the simulated drivers. 
 Then, at every step of the simulation, a driver undertakes the personalized action recommended by the strategy, corresponding to
-  the location, the time of the day and the budget remaining.
+  their location, the time of day and their budget remaining.
 
 
 In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the ``preferred'' driving schedules 
@@ -293,7 +294,7 @@ This is due to the flexible work schedule of the latter, which allows them to dr
 	\label{fig:surge_heatmap}
 \end{figure}
 
-We now turn our attention to surge pricing. Surge pricing was a controversial feature of the Uber platform
+We now turn our attention to surge pricing. Surge pricing is a controversial feature of the Uber platform
 aimed at matching supply with passenger demand by increasing prices at times of high demand.\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.}  
 According to Uber, it incentivizes drivers to start driving during the peak hours in order to efficiently meet demand with 
   supply, albeit at a higher cost to passengers.
