@@ -34,6 +34,16 @@ class RewardsMatrix(object):
         df = pd.DataFrame({'mean_distance': df.groupby(['pickup_zone','dropoff_zone'])['distance'].mean()})
         df = df.reset_index()
 
+        # Get surge vector
+        query = """\
+                select pickup_zone, surge_multiplier \
+                from `surge-multiplier-crawl` where timestamp between '{0}' and '{1}' \
+                and display_name='uberX'; \
+                """
+        query = query.format(start_time, end_time)
+        surge_df = pd.read_sql(query, conn)
+        surge_df = pd.DataFrame({'max_surge': surge_df.groupby('pickup_zone')['surge_multiplier'].max()})
+        surge_df = surge_df.reindex(index=city_zones)
         conn.close()
 
         # Get distance matrix
@@ -44,6 +54,9 @@ class RewardsMatrix(object):
 
         # Get driver earnings matrix
         self.driver_earnings_matrix = self.get_driver_earnings_matrix(travel_time_matrix, time_unit_duration)
+
+        # Get surge vector
+        self.surge_vector = surge_df['max_surge'].values
 
     def get_distance_matrix(self, df, city_zones):
         # Create networkx graph
@@ -82,7 +95,3 @@ class RewardsMatrix(object):
         np.fill_diagonal(driver_earnings_matrix, 0)
 
         return driver_earnings_matrix
-
-
-
-

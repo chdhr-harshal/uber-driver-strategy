@@ -31,5 +31,5 @@ class EarningsMatrix(object):
             return 0
         if b >= len(self.earnings_matrix[0]):
             return 0
-        return self.earnings_matrix[t][b][zone]
+        return self.earnings_matrix[int(t)][int(b)][zone]
 

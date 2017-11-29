@@ -23,7 +23,7 @@ class TransitionMatrix(object):
 
         # Get pickup dataframe
         query = """\
-                select pickup_zone, dropoff_zone \
+                select pickup_zone, dropoff_zone, 1 as weight \
                 from `yellow-taxi-trips-october-15` where tpep_pickup_datetime between '{0}' and '{1}' \
                 and pickup_zone is not NULL \
                 and dropoff_zone is not NULL \
@@ -54,14 +54,21 @@ class TransitionMatrix(object):
                    time_unit_duration,
                    city_zones)
 
+        # Remove 0 values
+        self.transition_matrix[self.transition_matrix == 0] = 0.001
+        self.transition_matrix = self.transition_matrix/self.transition_matrix.sum(axis=1)[:,None]
+
     def get_transition_matrix(self, pickup_df, city_zones):
         # Create networkx graph
-        G = nx.from_pandas_dataframe(pickup_df, 'pickup_zone', 'dropoff_zone', create_using=nx.DiGraph())
+        G = nx.from_pandas_dataframe(pickup_df, 'pickup_zone', 'dropoff_zone', create_using=nx.MultiDiGraph(attr='weight'))
         G.add_nodes_from(city_zones)
+        self.count_matrix = nx.to_numpy_matrix(G, nodelist=city_zones, weight='weight')
 
+        G = nx.from_numpy_matrix(self.count_matrix, create_using=nx.DiGraph(attr='weight'))
         # Create right stochastic transition matrix
-        G = nx.stochastic_graph(G)
-        transition_matrix = nx.to_numpy_matrix(G, nodelist=city_zones)
+        G = nx.stochastic_graph(G, weight='weight')
+
+        transition_matrix = nx.to_numpy_matrix(G, weight='weight')
         transition_matrix = np.squeeze(np.asarray(transition_matrix))
 
         return transition_matrix
