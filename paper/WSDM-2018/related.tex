@@ -35,10 +35,11 @@ They showed that dynamic pricing is robust to changes in system parameters, even
   achieve higher performance than static pricing.  
 More recently, Ozkan and Ward~\cite{ozkan2016dynamic} looked at strategic matching between supply (individual drivers) 
   and demand (requested rides) for Uber and Lyft.
-They showed that matching based on parameters like driver and customer arrival rates,  the willingness of customers to wait and time-variance can achieve better performance than naively matching 
+They showed that matching based on time-varying parameters like driver and customer arrival rates,  and
+willingness of customers to wait can achieve better performance than naively matching 
 passengers with the closest driver. 
 Although these works build interesting models for ride-hailing economies, they are
-orthogonal to ours, as they take a more holistic view of such economies, while we focus 
+orthogonal to ours, as they take a holistic view of such economies, while we focus 
  on earnings of individual, self-interested drivers.
 
 
@@ -57,7 +58,7 @@ in a shared-ride setting~\cite{jung2013design}.
 Other work has studied the supply side of the driving market from the viewpoint of behavioral economics.
 A seminal paper by Camerer {\etal}~\cite{camerer1997labor} studied cab drivers and found that  inexperienced
 cab drivers (1) make labor supply decisions ``one day at a time'' instead of substituting labor and leisure across multiple days, and  (2) set a loose daily income target and quit working once they reach that target.  
-All these works do not focus on the design of a specific gain-optimizing
+These works, however, do not focus on the design of a specific gain-optimizing
 strategy for drivers, as we do.
 
 \begin{comment}

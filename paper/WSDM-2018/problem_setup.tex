@@ -49,7 +49,8 @@ Since the entries of {\empiricaltransitionmatrix} correspond to probabilities, t
 give rise to a {\markovchain} with a transition matrix {\empiricaltransitionmatrix} -- 
 where each entry $f(i,j)$ denotes the probability of a passenger in zone $i$
 traveling to zone $j$. 
-As we do not allow trips within the same zone in our model, we let $f(i,i)$ denote the probability of a driver not finding a passenger in zone $i$ at a
+As we disallow trips within the same zone in our model (an assumption which could be relaxed), 
+  we let $f(i,i)$ denote the probability of a driver not finding a passenger in zone $i$ at a
 given time step.
 
 %\subsubsection{\sc{TravelTimeMatrix} (\traveltimematrix)}
@@ -82,13 +83,12 @@ are time-dependent, i.e., their entries could change throughout the day
 \subsection{Modeling the driver}
 Our model assumes that 
 each driver comes with a 
-maximum work budget of $B$ time units. During these time units, the driver 
- can pick
-up passenger rides. Depending on the specific setting, the driver can
+maximum work budget of $B$ time units, during which the driver 
+ can pick up passengers. Depending on the specific setting, the driver can
 work $B$ time units consecutively or split them 
 over a finite horizon of $N$ time units, where $N \geq B$. 
 As an example, a driver seeking to optimize an 8 hour work day over
-a 24 hour day at a ten-minute decision granularity (six per hour), 
+a 24 hour day at a ten-minute decision granularity (at most six decisions per hour), 
 will have $B=48$ and $N=144$.
 
 %\subsubsection{\sc{HomeZone} (\homezone)}
@@ -114,7 +114,7 @@ In a driver strategy, whenever faced with a choice regarding their
 %\subsubsection{\sc{DriverPolicy} (\policy)}
 
 \spara{Driver policy (\policy)}:
-A driver policy is a sequence of time and location dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
+A driver policy is a sequence of time and location-dependent actions taken by a driver at different steps of the strategy. As the total number of actions taken by a driver while exhausting the budget $B$ depends on the actual actions, the length
 of a driver policy {\policy} varies. 
 
 Each time and location dependent action in {\policy}, denoted by $\mathbf{a}$, can be expressed in form of a 3-tuple -- $(\actuallocation, \actualtime, \actualaction)$

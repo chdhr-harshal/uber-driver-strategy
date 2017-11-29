@@ -5,7 +5,7 @@
 \label{sec:sensitivity}
 The primary source of variability in the input of the {\originalproblem} problem
 is the set of empirical transition matrices {\empiricaltransitionmatrix}.  In a typical application,
-we expect that predictive models would be employed to generate these matrices based upon observations
+we expect that predictive models would be employed to generate estimates of these matrices based upon observations
 from historical data (as we do in our own experiments).  Empirically observed transition matrices may 
 suffer from estimation errors due to the presence of external confounding factors (e.g., 
 weather, special 
@@ -15,7 +15,7 @@ we address the question of how the results of the solutions we described in the 
 under the assumption that there is some uncertainty (and thus noise) in the underlying empirical transition 
 matrices we use as part of our input.
 
-Concretely, we now assume that the empirical transition matrix~(\empiricaltransitionmatrix),  is generated from an 
+Concretely, we now assume that the empirical transition matrix~(\empiricaltransitionmatrix)  is generated from an 
 underlying traffic matrix, or count matrix, recording trips between locations $i$ and $j$.
 
 \spara{Count matrix (\countmatrix)}:
@@ -63,7 +63,7 @@ we get
 \begin{equation}\label{eq:constraint}
 \sum_{i=1}^n\rowc(i)\log\rowp(i) \leq \frac{2(\beta_\text{max}-n\log n)-\text{F}^{-1}_{\chi^2_{n-1}}(\alpha)}{2},
 \end{equation}
-where $\text{F}^{-1}_{\chi^2_{n-1}}$ is the inverse of $\chi^2$ cdf. 
+where $\text{F}^{-1}_{\chi^2_{n-1}}$ is the inverse of the $\chi^2$ cdf. 
 In other words, for all vectors $\rowp$ for which inequality~\eqref{eq:constraint}
 is satisfied, $\rowc$ is within the $(1-\alpha)$-confidence interval of $\rowp$.
 
@@ -116,7 +116,7 @@ Our approach is to compute the \emph{worst-case}{ {\totalexpectedearnings} for a
  are minimized.  
 This quantifies the worst-case difference between the earnings computed
 as a solution to the {\originalproblem} and the worst-case earnings of the
-driver, given uncertainty level $\alpha$.
+driver, given bounded uncertainty $\alpha$.
 %%
 %%
 Formally, this is shaped in the following problem definition:
@@ -133,7 +133,8 @@ Note that the above problem requires searching among all possible true transitio
 matrices in $\mathcal{P}_\alpha$, which is a non-enumerable set. 
 In fact, we can show (details omitted due to space constraints) that 
 Problem~\ref{problem:robust} can be solved by enhancing the \emph{total expected future earnings} associated with {\getpassenger} action in the  dynamic-programming routines we described in Section~\ref{sec:driver_strategies}
-with an optimization problem. We use an off-the-shelf minimizer to solve this optimization problem. However, a bisection algorithm can approximate this problem within an accuracy $\delta$ in $O(\log(V_{\max}/\delta))$ time, where $V_{\max}$ is the maximum value of the value function~\cite{nilim2004robustness}.
+with an optimization problem. We use an off-the-shelf minimizer to solve this optimization problem. 
+Alternatively, a bisection algorithm can approximate this problem within an accuracy $\delta$ in $O(\log(V_{\max}/\delta))$ time, where $V_{\max}$ is the maximum value of the value function~\cite{nilim2004robustness}.
 
 % \iffalse
 % which assumes that every ${\empiricaltransitionmatrix}^t$ has an uncertainty level of $\beta$, and a likelihood region $\likelihoodregion^t$ associated with them. While the {\originalproblem} problem maximizes the {\totalexpectedearnings}, the {\nominalproblem} maximises the `worst-case' {\totalexpectedearnings}. In order to do that, we devise a situation where the driver seeks to maximize the {\totalexpectedearnings} 
