@@ -225,7 +225,8 @@ on a representative day.}     \label{fig:relocation_endzones}
 	\label{fig:simulated_schedules}
 \end{figure}
 
-Here, we evaluate our methodology. For all our experiments we use a single process implementation of our algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Running time for  {\naive} and {\relocation}  is less than a minute, and about 5 minutes for  {\flexible} and  {\relocationflexible}. Uncertainty analysis (Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
+%Here, we evaluate our methodology. 
+For all our experiments we use a single process implementation of our algorithms on a 24-core 2.9GHz Intel Xeon E5 processor with 512GB memory. Running time for  {\naive} and {\relocation}  is less than a minute, and about 5 minutes for  {\flexible} and  {\relocationflexible}. Uncertainty analysis (Section \ref{sec:effect_of_uncertainty}), with an off-the-shelf minimizer, takes around 3 hours.
 
 \spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy, as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9 AM to 5 PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
@@ -246,7 +247,7 @@ that for a part-time Uber driver, it is more beneficial to drive midweek, from W
 \spara{Spatial dynamics of strategies}: 
 Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day.
 Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
-to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. We observe that on the days of low-demand, especially on weekends, not only are the median earnings for {\relocation} consistently higher than those for {\naive} but also the inter-quartile range (IQR) and the length of whiskers for {\relocation} are narrower. On days of high but localized demands like Fridays, the {\relocation} strategy performs on par with the {\relocationflexible} strategy and significantly outperforms the {\naive} strategy.
+to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. We observe that on the days of low-demand, especially on weekends, not only are the median earnings for {\relocation} consistently higher than those for {\naive} but also the inter-quartile range (IQR) and the length of whiskers for {\relocation} are narrower. On days with high but localized demand like Fridays, the {\relocation} strategy performs on par with the {\relocationflexible} strategy and significantly outperforms {\naive}.
 % However, even
 % at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts, 
 % on account of temporal trends.
@@ -276,8 +277,8 @@ Then, at every step of the simulation, a driver undertakes the personalized acti
 
 In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the ``preferred'' driving schedules 
 output by {\flexible} and {\relocationflexible}.
-In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM 
-\footnote{This provides strong evidence supporting our experimental setup that evaluates fixed schedule strategies during the period from 9AM to 5PM because a high percentage of simulated drivers following an optimal in expectation schedule operate during these hours.}. In contrast, the number of active
+In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. This also 
+supports our choice to evaluate fixed schedule strategies in the interval 9AM to 5PM. In contrast, the number of active
 drivers that follow {\relocationflexible} exhibits two distinct peaks, corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
 Since {\flexible} and {\relocationflexible} only differ in 
 the {\relocate} action, all observed differences are due to this action.
@@ -301,7 +302,7 @@ This is due to the flexible work schedule of the latter, which allows them to dr
 \end{figure}
 
 We now turn our attention to surge pricing. Surge pricing is a controversial feature of the Uber platform
-aimed at matching supply with passenger demand by increasing prices at times of high demand.\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.}  
+aimed at matching supply with passenger demand by increasing prices at times of high demand.%\footnote{Uber stopped displaying the `surge multiplier' prominently in its customer app since June 2016, instead now it displays price estimates after accounting for the surge~\cite{surge}.} 
 According to Uber, it incentivizes drivers to start driving during the peak hours in order to efficiently meet demand with 
   supply, albeit at a higher cost to passengers.
 It also decreases demand, as the most price-sensitive customers drop out. 
@@ -314,7 +315,9 @@ This information is readily available to the drivers; however, due to uncertaint
   as well as the proprietary nature of Uber's surge pricing algorithm, 
   it is unclear whether drivers should relocate themselves to surging areas in order to maximize their earnings. 
 
-Coupling our data on surge multipliers with other data\footnote{Note that the NYC taxi demand data strongly correlates with active surge multiplier in Figure 5, however we do not have a way to model the impact of surge multiplier on the demand and it should be considered a limitation of our study.}, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
+%Coupling our data on surge multipliers with other data\footnote{Note that the NYC taxi demand data strongly correlates with active surge multiplier in Figure 5, however we do not have a way to model the impact of surge multiplier on the demand and it should be considered a limitation of our study.}, 
+
+Next, we address the question-- \textit{Should drivers engage in surge chasing?}
 In order to do so, we evaluate earnings of simulated drivers in three scenarios viz., 
 ``no surge'' - where we disable the surge multiplier to compute earnings; ``surge'' - 
 where the multiplier is used while calculating earnings; and ``surge chasing'' -
@@ -326,7 +329,9 @@ At times, drivers following the {\naive} strategy with surge multiplier enabled 
 For other strategies, ``surge chasing'' consistently fails to provide any tangible benefits as compared to 
 following the pre-determined strategy. We conclude that actively and blindly chasing the surge is an ill-advised 
 strategy and may lead to losses. Furthermore, surges last for short durations and an unsuccessful surge chase 
-may land a driver in a sub-optimal location with respect to longer term earnings. 
+may land a driver in a sub-optimal location with respect to longer term earnings. Note that although the NYC taxi demand data strongly 
+correlates with active surge multiplier, we do 
+not have a way to model the impact of surge multiplier on the consumer demand. This should be considered a limitation of our study.
 
 \subsection{Effect of uncertainty}
 \label{sec:effect_of_uncertainty} 
