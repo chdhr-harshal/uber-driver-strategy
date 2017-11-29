@@ -4,20 +4,20 @@
 \label{sec:related_work}
 
 To the best of our knowledge, we are the first to formally address the problem of optimizing
-the driver's strategy in ridesharing platforms like Uber and Lyft. 
+the driver's strategy in ride-hailing platforms like Uber and Lyft. 
 Apart from 
 some recent popular-press articles that 
-offer, often contradictory, advice to ridesharing drivers on how to maximize earnings, mostly via chasing surge~\cite{dont,tips}, 
+offer, often contradictory, advice to ride-hailing drivers on how to maximize earnings, mostly via chasing surge~\cite{dont,tips}, 
 the only relevant existing technical work 
-studies other aspects of ridesharing. 
+studies other aspects of ride-hailing. 
 Next, we discuss these works as well as some work related to optimization problems
 for taxi fleets.
 %Also related can be considered existing work on optimization problems related to taxi fleets. We discuss existing works along these lines next.
 
 
-\spara{Studies of ridesharing platforms:}
+\spara{Studies of ride-hailing platforms:}
 Recent work has investigated the supply-side effects of specific incentives (e.g., surge pricing) that Uber and Lyft provide to drivers~\cite{slaves}.  For example, Chen and Sheldon~\cite{chen2016dynamic} showed a causal relationship that drivers on Uber respond to surges by driving more during high surge times,  differentiating from previous work that suggests taxi drivers primarily focus on achieving earnings goals~\cite{camerer1997labor}. 
-%Other work has viewed ridesharing platforms more holistically, at a macro level.
+%Other work has viewed ride-hailing platforms more holistically, at a macro level.
 In another line of research,
 Chen {\etal}~\cite{chen2015peeking} measured many facets of Uber in NYC, including the prevalence and extent 
   of surge pricing.
@@ -29,7 +29,7 @@ but they do not focus on devising specific recommendations for drivers as we do.
 
  In another line of work, Banerjee {\etal}~\cite{banerjee2015pricing} studied  
  dynamic
-pricing strategies for ridesharing platforms (such as Lyft) using a 
+pricing strategies for ride-hailing platforms (such as Lyft) using a 
 queuing-theoretic economic model. 
 They showed that dynamic pricing is robust to changes in system parameters, even if it does not 
   achieve higher performance than static pricing.  
@@ -37,7 +37,7 @@ More recently, Ozkan and Ward~\cite{ozkan2016dynamic} looked at strategic matchi
   and demand (requested rides) for Uber and Lyft.
 They showed that matching based on parameters like driver and customer arrival rates,  the willingness of customers to wait and time-variance can achieve better performance than naively matching 
 passengers with the closest driver. 
-Although these works build interesting models for ridesharing economies, they are
+Although these works build interesting models for ride-hailing economies, they are
 orthogonal to ours, as they take a more holistic view of such economies, while we focus 
  on earnings of individual, self-interested drivers.
 
@@ -82,17 +82,17 @@ strategy for drivers, as we do.
 
 9. \cite{nunes2011taxi} - formulates a TSP problem to find the best route for a taxi company to satisfy demand.
 
-\textbf{Works on ride-sharing:}
+\textbf{Works on ride-hailing:}
 
-10. \cite{agatz2012optimization} - outline optimization challenges in developing technology to support ride-sharing services. Survey of operations research papers in the domain.
+10. \cite{agatz2012optimization} - outline optimization challenges in developing technology to support ride-hailing services. Survey of operations research papers in the domain.
 
 11. \cite{santos2013dynamic} - Prove that problem of maximizing shared trips within a fixed time window to minimize shared expenses is NP-Hard and a propose heuristic solution.
 
 12. \cite{jung2013design} - Simulated Annealing algorithm to maximize occupancy and minimize travel times (by minimizing passenger detours) in shared-ride concept.
 
-\textbf{Works on ride-sharing vehicle routing:}
+\textbf{Works on ride-hailing vehicle routing:}
 
-13. \cite{lin2012research} - simulated annealing algorithm to optimize routing of ride-sharing taxi to minimize operating costs while maximizing customer satisfaction.
+13. \cite{lin2012research} - simulated annealing algorithm to optimize routing of ride-hailing taxi to minimize operating costs while maximizing customer satisfaction.
 
 \textbf{Strategic behavior:}
 
@@ -104,7 +104,7 @@ strategy for drivers, as we do.
 
 16. \cite{chen2016dynamic} - Show a causal relationship that drivers on Uber respond to `surges' by driving more during high surge times, in contrast to \cite{camerer1997labor} which says that drivers driver until they achieve earnings goals.
 
-17. \cite{banerjee2015pricing} - Study complex dynamic pricing strategies for ride-sharing platforms (Lyft) using a queuing-theoretic economic model. They show the dynamic pricing is robust to changes in system parameters, even if it does not achieve higher performance than static pricing. 
+17. \cite{banerjee2015pricing} - Study complex dynamic pricing strategies for ride-hailing platforms (Lyft) using a queuing-theoretic economic model. They show the dynamic pricing is robust to changes in system parameters, even if it does not achieve higher performance than static pricing. 
 
 18. \cite{ozkan2016dynamic} - Strategic matching between Uber or Lyft's supply and demand. Matching based on parameters like customer/driver arrival rates, willingness of customers to wait and time-variance can achieve better performance than naively matching passenger with closest driver.
 

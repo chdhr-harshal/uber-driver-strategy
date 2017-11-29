@@ -58,7 +58,7 @@ such that:
 \begin{equation*}
 \Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
 \end{equation*}
-where $I_k(z)$ is the modified Bessel function of the first kind.~\cite{wiki:skellam} 
+where $I_k(z)$ is the modified Bessel function of the first kind~\cite{wiki:skellam}. 
 
 Whenever %the Markov Chain is in a non-positive state, 
 $K<0$, there are more drivers than passengers. We assume the worst case scenario in which a driver joins the end
@@ -84,7 +84,7 @@ As expected, we see that the probability of a successful pickup is higher outsid
 
 \begin{figure*}
 	\centering
-	\includegraphics{figures/daily_earnings_avg.pdf}
+	\includegraphics{figures/daily_simulated_earnings.pdf}
 	\caption{Daily driver earnings for different strategies averaged over different home zones on a representative day.}
 	\label{fig:daily_earnings}
 \end{figure*}
@@ -105,7 +105,7 @@ have durations lasting multiples of 5 minutes.}
 Using this approach, we collected data from the Uber API for a 6-month period (Oct. 2016--Mar 2017), 
 recreating rides that originally occurred from 
 Oct. 2015 to Mar 2016.   Thus, we built realistic estimates for $r(i,j)$ and $\tau(i,j)$
-for all pairs of zones.  Finally, we maintained same-day of week estimates, so that, for example, travel time estimates
+for all pairs of zones\footnote{We take into account the Uber fee structure in NYC as reported by the Uber API, as well as the overall \emph{cost per mile} estimates provided by American Automobile Association (AAA) in order to build realistic estimates for $r(i,j).$}.  Finally, we maintained same-day of week estimates, so that, for example, travel time estimates
 and rewards computed for Sunday, Oct 16, 2016, were paired with frequency estimates drawn from the NYC taxi rides dataset for
 Sunday, Oct. 18, 2015.
 %However, due to seasonality of the data, 
@@ -204,18 +204,17 @@ Our results do not vary qualitatively across different weeks, with the exception
 
 \subsection{Experimental results}
 
-\begin{figure}
-	\includegraphics{figures/earnings_heatmap.pdf}
-	\caption{Earnings from {\naive} and {\relocation} strategies for drivers across multiple 8-hour shifts starting from different home zones on a representative day.}
-	\label{fig:earnings_heatmap}
-\end{figure}
+% \begin{figure}
+% 	\includegraphics{figures/earnings_heatmap.pdf}
+% 	\caption{Earnings from {\naive} and {\relocation} strategies for drivers across multiple 8-hour shifts starting from different home zones on a representative day.}
+% 	\label{fig:earnings_heatmap}
+% \end{figure}
 
-\begin{figure*}
-	\centering
-	\includegraphics{figures/relocation_endzones.pdf}
-	\caption{Contrast between preferred relocation destinations for drivers with 
-	{\relocation} and {\relocationflexible} strategies on a representative day.}
-	\label{fig:relocation_endzones}
+\begin{figure*}     \centering
+\includegraphics{figures/relocation_endzones.pdf}
+\caption{Contrast between preferred relocation destinations for
+drivers with      {\relocation} and {\relocationflexible} strategies
+on a representative day.}     \label{fig:relocation_endzones}
 \end{figure*}
 
 \begin{figure}[h]
@@ -230,37 +229,42 @@ Here, we evaluate our methodology. For all our experiments we use a single proce
 
 \spara{Comparison of strategies}: First, we address the question: \textit{what is the best driver strategy?} Intuitively, it is clear that {\relocationflexible} is the best strategy, as it takes advantage of spatial as well as temporal variations in the passenger demand across NYC. In order to verify this intuition, we compare driver earnings across different strategies. Drivers following the {\naive} and the {\relocation} strategies are assumed to drive from 9 AM to 5 PM, a standard 8 hour workday, while those following the {\flexible} or the {\relocationflexible} strategies drive for a total of 8 hours each day with a flexible schedule.
 
-Figure \ref{fig:daily_earnings} shows the average earnings achieved by 
-the solution to {\originalproblem} by each of the strategies on different days of a representative week. We observe that all ``smart'' strategies consistently outperform {\naive};
-as expected, {\relocationflexible} is consistently the strategy with the highest earnings.
-Note that the {\relocationflexible} can lead to up to 100\% increase in the drivers'
+% Figure \ref{fig:daily_earnings} shows the average earnings achieved by 
+% the solution to {\originalproblem} by each of the strategies on different days of a representative week. 
+In order to evaluate the performance of our strategies, we find the solution to {\originalproblem} and simulate 100 drivers, each randomly assigned a 
+home zone, operating on these strategies on the same day of the following week, for a total of 10 weeks. Figure \ref{fig:daily_earnings} presents a box-plot of the resulting earnings.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:daily_earnings} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.}.
+
+We observe that all ``smart'' strategies consistently outperform {\naive};
+as expected. On most days, {\relocationflexible} is the strategy with the highest earnings.
+Note that the {\relocationflexible} can lead to up to 75\% increase in the median driver
 earnings when compared to {\naive}.  
 Thus, our strategies do exploit the spatial and the temporal variation in demand across NYC. The results also show
 that for a part-time Uber driver, it is more beneficial to drive midweek, from Wednesday to Friday, than during weekends.
 
 %Having established that the {\relocation}, {\flexible} and {\relocationflexible} strategies result in higher driver earnings than the {\naive} strategy, in the subsequent sections, we further analyze various aspects related to them.
 
-
-
-
 \spara{Spatial dynamics of strategies}: 
 Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day.
 Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
-to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. However, even
-at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts, 
-on account of temporal trends.
-Hence, instead of concentrating on the average earnings across different zones in a typical 9-5 workday from Figure \ref{fig:daily_earnings}, now we explore
-the variation in earnings of drivers starting from different home zones at different times of the day.
+to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. We observe that on the days of low-demand, especially on weekends, not only are the median earnings for {\relocation} consistently higher than those for {\naive} but also the inter-quartile range (IQR) and the length of whiskers for {\relocation} are narrower. On days of high but localized demands like Fridays, the {\relocation} strategy performs on par with the {\relocationflexible} strategy and significantly outperforms the {\naive} strategy.
+% However, even
+% at different times of the same day, drivers located within different parts of Manhattan itself will earn different amounts, 
+% on account of temporal trends.
+% Hence, instead of concentrating on the average earnings across different zones in a typical 9-5 workday from Figure \ref{fig:daily_earnings}, now we explore
+% the variation in earnings of drivers starting from different home zones at different times of the day.
 
 
-The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8-hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones.
-Note that Figure~\ref{fig:earnings_heatmap} depicts the median earnings, as opposed to mean earnings shown in Figure~\ref{fig:daily_earnings}. Moreover, Figure~\ref{fig:earnings_heatmap} contains earnings from driving late-night shifts, which brings the median much lower.
-%Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
-Furthermore, not only do we observe that  {\relocation} has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.\footnote{The lower and upper edges of the boxes in Figure \ref{fig:earnings_heatmap} indicate quartiles Q1 and Q3 respectively, and length of whisker is 1.5 times IQR.} This indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
+% The {\relocation} strategy attempts to mitigate the location-based disparity in earnings by suggesting optimal relocation actions to drivers at various times of the day. Figure \ref{fig:earnings_heatmap} shows variation in earnings from 8-hour driving shifts starting morning 8 AM, noon 12 PM, evening 5 PM and night 10 PM, for drivers with different home zones.
+% Note that Figure~\ref{fig:earnings_heatmap} depicts the median earnings, as opposed to mean earnings shown in Figure~\ref{fig:daily_earnings}. Moreover, Figure~\ref{fig:earnings_heatmap} contains earnings from driving late-night shifts, which brings the median much lower.
+% %Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
+% Furthermore, not only do we observe that  {\relocation} has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.
+
+These observations indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
 This may be counterintuitive to some drivers, as a {\relocate} action (essentially an empty ride) 
 incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
 lead to earnings far higher than the costs they incur.
+
 
 \spara{Temporal dynamics of strategies}: Intuitively, due to the periodicity of demand, we expect driver earnings to strongly depend on the time of the day they are driving. 
 %We have also established via Figure \ref{fig:daily_earnings} that both of the flexible schedule strategies outperform their fixed schedule counterparts. 
@@ -272,7 +276,8 @@ Then, at every step of the simulation, a driver undertakes the personalized acti
 
 In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated drivers driving in the city at different times of the day. We observe a noticeable difference between the ``preferred'' driving schedules 
 output by {\flexible} and {\relocationflexible}.
-In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. In contrast, the number of active
+In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM 
+\footnote{This provides strong evidence supporting our experimental setup that evaluates fixed schedule strategies during the period from 9AM to 5PM because a high percentage of simulated drivers following an optimal in expectation schedule operate during these hours.}. In contrast, the number of active
 drivers that follow {\relocationflexible} exhibits two distinct peaks, corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the later half of the day starting approximately at 3PM, continuing through till midnight. 
 Since {\flexible} and {\relocationflexible} only differ in 
 the {\relocate} action, all observed differences are due to this action.
@@ -309,11 +314,11 @@ This information is readily available to the drivers; however, due to uncertaint
   as well as the proprietary nature of Uber's surge pricing algorithm, 
   it is unclear whether drivers should relocate themselves to surging areas in order to maximize their earnings. 
 
-Coupling our data on surge multipliers with other data, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
+Coupling our data on surge multipliers with other data\footnote{Note that the NYC taxi demand data strongly correlates with active surge multiplier in Figure 5, however we do not have a way to model the impact of surge multiplier on the demand and it should be considered a limitation of our study.}, we are in a position to answer the question-- \textit{Should drivers engage in surge chasing?}
 In order to do so, we evaluate earnings of simulated drivers in three scenarios viz., 
 ``no surge'' - where we disable the surge multiplier to compute earnings; ``surge'' - 
 where the multiplier is used while calculating earnings; and ``surge chasing'' -
-wherein a driver located in a non-surging zone always relocates to the zone with highest surge multiplier. 
+wherein a driver located in a non-surging zone always relocates to the zone with highest surge multiplier within a 10-minute drive radius. 
 Simulated driver earnings in these three scenarios for each of the strategies are shown in Figure {\ref{fig:simulated_earnings}}. 
 We observe that blind ``surge chasing'' leads to lower earnings irrespective of the strategy being followed. 
 Figure \ref{fig:simulated_earnings} reinforces our previous observation regarding the high variance of the {\naive} strategy. 
@@ -340,7 +345,7 @@ have higher earnings than those following {\naive} even when the input data is p
 Hence, the question we have to address is the following: 
 \textit{Are the conclusions we drew above robust to perturbations of the empirical transition matrices?} We do so using
 the framework we developed in Section \ref{sec:sensitivity}:  
-we solve the {\robustproblem} problem for each of the four strategies for increasing levels of uncertainty ($\alpha$).
+we solve the {\robustproblem} problem for each of the four strategies for increasing levels of uncertainty ($\alpha$) using the Sequential Least Squares Programming (SLSQP) minimizer implementation provided by Jones {\etal}~\cite{scipy}.
 
 Figure \ref{fig:uncertainty_evolution} shows the effect of increasing uncertainty on the earnings of drivers for
     each of the four strategies.  We observe two main takeaways.  First, we find that all strategies
@@ -352,7 +357,7 @@ However, all strategies then remain resilient to a wide range of additional unce
 Interestingly, even with 99\% uncertainty, the {\relocationflexible} strategy significantly outperforms 
   the {\naive} strategy with no uncertainty.
 This observation further supports our claim that being strategic using historical data can significantly improve driver 
-  earnings in on-demand ridesharing platforms. 
+  earnings in on-demand ride-hailing platforms. 
 
 \begin{figure}[hb]
 	\centering
