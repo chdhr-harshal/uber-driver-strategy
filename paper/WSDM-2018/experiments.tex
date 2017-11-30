@@ -59,7 +59,7 @@ To populate the entries of the empirical transition matrix $\empiricaltransition
 We derive these from the data as follows.
 %\spara{Modeling successful passenger pickup}:
 Assuming that the parameters do not change significantly within a single time-slice, let $N(\passengerarrivalrate)$ and $N(\driverarrivalrate)$ denote the number of passenger and driver arrivals in zone $i$ in one time unit, with 
-independent\footnote{Although, we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.} Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Hence, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution
+independent\footnote{Although we assume the independence of the passenger and driver arrival processes, we can also accommodate correlated processes with slight modification.} Poisson arrival rates {\passengerarrivalrate} and {\driverarrivalrate} respectively. Hence, the random variable $K = N(\passengerarrivalrate) - N(\driverarrivalrate)$ follows a Skellam distribution
 such that:
 \begin{equation*}
 \Pr[K=k] = e^{-(\passengerarrivalrate + \driverarrivalrate)} \bigg(\frac{\passengerarrivalrate}{\driverarrivalrate}\bigg) I_k\big(2 \sqrt{\passengerarrivalrate \driverarrivalrate}\big)
