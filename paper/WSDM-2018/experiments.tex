@@ -250,7 +250,7 @@ home zone, operating on these strategies on the same day of the following week, 
 We observe that all ``smart'' strategies consistently outperform {\naive};
 as expected. On most days, {\relocationflexible} is the strategy with the highest earnings.
 The median earning of a driver following the {\naive} strategy on a Sunday is \$104 while that of a driver following {\relocationflexible} is \$177, representing a 70\% increase in median earnings. 
-Averaged over all days of the week, this results into a 47\% increase in median earnings per work day when following the {\relocationflexible} strategy. 
+Averaged over all days of the week, this results in a 47\% increase in median earnings per work day when following the {\relocationflexible} strategy. 
 Thus, our strategies do exploit the spatial and the temporal variation in demand across NYC. The results also show
 that for a part-time Uber driver in NYC, it is more beneficial to drive midweek, from Wednesday to Friday, and Sunday
 than during Saturday and Monday.
@@ -259,7 +259,7 @@ than during Saturday and Monday.
 
 \spara{Spatial dynamics of strategies}: 
 Next, we address the question - \textit{what are the benefits of the {\relocate} action?} Figure \ref{fig:successful_heatmap} already shows the spatial variation in the demand across different NYC zones at different times of the day.
-Intuitively, this spatial variation can cause a disparity in the driver earnings based upon the zone of the driver. For example, drivers based in Manhattan should be expected 
+Intuitively, this spatial variation can cause a disparity in the driver earnings based on the zone of the driver. For example, drivers based in Manhattan should be expected 
 to earn more than those based in Brooklyn due to persistently higher demand in Manhattan. Similarly, Figure \ref{fig:daily_earnings} shows temporal variation in earnings across days of the week. We observe that on the days of low-demand,
 %%, especially on weekends, 
 not only are the median earnings for {\relocation} consistently higher than those for {\naive} but also the inter-quartile range (IQR) and the length of whiskers for {\relocation} are narrower. On days with high but localized demand like Fridays, the {\relocation} strategy performs on par with the {\relocationflexible} strategy and significantly outperforms {\naive}.
@@ -275,10 +275,10 @@ not only are the median earnings for {\relocation} consistently higher than thos
 % %Note that, on account of low earnings during shifts starting at noon and night, the median earnings in Figure \ref{fig:earnings_heatmap} are significantly lower than the mean earnings in Figure \ref{fig:daily_earnings}.
 % Furthermore, not only do we observe that  {\relocation} has a higher median than the {\naive}, but also, the inter-quartile range (IQR) is significantly narrower.
 
-These observations indicates that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
+These observations indicate that the location-based disparity in earnings for the {\naive} strategy is much larger than the {\relocation} strategy. Thus, we conclude that smart relocations throughout the day prevent a driver from becoming ``trapped'' in low-earning neighborhoods, translating 
 into significant increases in the earnings. 
 This may be counterintuitive to some drivers, as a {\relocate} action (essentially an empty ride) 
-incurs cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
+incurs a cost to the driver. Yet, the results demonstrate that these actions, when timed appropriately, 
 lead to earnings far higher than the costs they incur.
 
 
@@ -294,7 +294,7 @@ In Figure \ref{fig:simulated_schedules}, we plot the percentage of simulated dri
 output by {\flexible} and {\relocationflexible}.
 In particular, a high percentage of {\flexible} schedule drivers are active during the standard working hours of the day from 9AM to 6PM. This also 
 supports our choice to evaluate fixed schedule strategies in the interval 9AM to 5PM. In contrast, the number of active
-drivers that follow {\relocationflexible} exhibits two distinct peaks, corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the latter half of the day starting approximately at 3PM, continuing through till midnight. 
+drivers that follow {\relocationflexible} exhibits two distinct peaks, corresponding to the morning and the evening rush hours. Furthermore, over 50\% of {\relocationflexible} drivers use their driving budget in the latter half of the day starting approximately at 3PM, continuing through until midnight. 
 Since {\flexible} and {\relocationflexible} only differ in 
 the {\relocate} action, all observed differences are due to this action.
 Hence, we can  conclude that the {\relocate} action is most effective in the evening hours, thereby prompting higher active percentages of {\relocationflexible} drivers at that time.
