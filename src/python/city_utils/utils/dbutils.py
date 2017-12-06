@@ -3,13 +3,13 @@
 from sqlalchemy import *
 
 class DBUtils:
-    # Database access constants for mysql connections
+    # Database access constants for mysql connections (Sensitive data hidden)
 
     database_server = 'ist-www-mysql-prod.bu.edu'
-    database_port = 3309
-    database_name = 'amazon_appstore'
-    database_username = 'amazon_appstore'
-    database_password = 'sP7sw8chuchu'
+    database_port = 
+    database_name = ''
+    database_username = ''
+    database_password = ''
 
 def get_db_connection():
     # Create SQLAlchemy engine and connection
