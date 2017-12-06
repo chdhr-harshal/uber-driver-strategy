@@ -114,3 +114,6 @@ ENV/
 
 # Sensitive data file
 /src/python/city_utils/utils/dbutils.py
+/src/bash/create_db_index.sh
+/src/bash/create_default_zone_points.sh
+/src/bash/create_uber_index.sh
