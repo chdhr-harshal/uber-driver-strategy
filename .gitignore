@@ -111,3 +111,6 @@ ENV/
 
 # .DStore
 *.DS_Store
+
+# Sensitive data file
+/src/python/city_utils/utils/dbutils.py
