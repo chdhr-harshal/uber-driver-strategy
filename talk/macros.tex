@@ -1,0 +1,42 @@
+\def\signed #1{{\leavevmode\unskip\nobreak\hfil\penalty50\hskip1em
+  \hbox{}\nobreak\hfill #1%
+  \parfillskip=0pt \finalhyphendemerits=0 \endgraf}}
+
+\newsavebox\mybox
+\newenvironment{aquote}[1]
+  {\savebox\mybox{#1}\begin{quote}\openautoquote\hspace*{-.7ex}}
+  {\unskip\closeautoquote\vspace*{1mm}\signed{\usebox\mybox}\end{quote}}
+
+\newcommand{\naive}{%
+    \begin{tikzpicture}[remember picture,overlay]
+		\draw[decorate,decoration={brace,raise=30pt}]
+  		([yshift=2ex]{{pic cs:end}|-{pic cs:start}}) --
+    	node[xshift=35pt,anchor=west] {\alert{\bf Naive Uber Driver}}
+  		([yshift=-0.5ex]pic cs:end);
+	\end{tikzpicture}
+}
+\newcommand{\flexible}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\draw[decorate,decoration={brace,raise=30pt}]
+  		([yshift=2ex]{{pic cs:end}|-{pic cs:start}}) --
+    	node[xshift=35pt,anchor=west] {\alert{\bf Flexible Strategy}}
+  		([yshift=-0.5ex]pic cs:end);
+	\end{tikzpicture}
+}
+\newcommand{\relocation}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\draw[decorate,decoration={brace,raise=30pt}]
+  		([yshift=2ex]{{pic cs:end}|-{pic cs:start}}) --
+    	node[xshift=35pt,anchor=west] {\alert{\bf Relocation Strategy}}
+  		([yshift=-0.5ex]pic cs:end);
+	\end{tikzpicture}
+}
+\newcommand{\flexiblerelocation}{%
+	\begin{tikzpicture}[remember picture,overlay]
+		\draw[decorate,decoration={brace,raise=30pt}]
+  		([yshift=2ex]{{pic cs:end}|-{pic cs:start}}) --
+    	node[xshift=35pt,anchor=west] {\alert{\bf Flexible-Relocation Strategy}}
+  		([yshift=-0.5ex]pic cs:end);
+	\end{tikzpicture}
+}
+\DeclareMathOperator*{\argmax}{arg\,max}

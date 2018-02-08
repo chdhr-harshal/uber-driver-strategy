@@ -1,0 +1,452 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.9 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{anyt/global//global/global}
+    \entry{bimpikis2016spatial}{article}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=9ed12e57d60110431407cc52be04e0f7}{%
+           family={Bimpikis},
+           familyi={B\bibinitperiod},
+           given={Kostas},
+           giveni={K\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=c403d351f6a484aab86508bdad720cb5}{%
+           family={Candogan},
+           familyi={C\bibinitperiod},
+           given={Ozan},
+           giveni={O\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=4609b760d922a17754bdde53bcb9fef2}{%
+           family={Daniela},
+           familyi={D\bibinitperiod},
+           given={Saban},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{d32e52196565f47bc0098dd2d0c91eda}
+      \strng{fullhash}{d32e52196565f47bc0098dd2d0c91eda}
+      \strng{bibnamehash}{d32e52196565f47bc0098dd2d0c91eda}
+      \strng{authorbibnamehash}{d32e52196565f47bc0098dd2d0c91eda}
+      \strng{authornamehash}{d32e52196565f47bc0098dd2d0c91eda}
+      \strng{authorfullhash}{d32e52196565f47bc0098dd2d0c91eda}
+      \field{labelalpha}{BCD16}
+      \field{sortinit}{B}
+      \field{sortinithash}{276475738cc058478c1677046f857703}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Spatial pricing in ride-sharing networks}
+      \field{year}{2016}
+    \endentry
+    \entry{banerjee2015pricing}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=c23b202e921a5bafdc4c42ec79f1ae1f}{%
+           family={Banerjee},
+           familyi={B\bibinitperiod},
+           given={Siddhartha},
+           giveni={S\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=10a9767ed09abfeaf389ec81adfeff9f}{%
+           family={Johari},
+           familyi={J\bibinitperiod},
+           given={Ramesh},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=cee59af5363f5cb5e5e95d437dd91534}{%
+           family={Riquelme},
+           familyi={R\bibinitperiod},
+           given={Carlos},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \strng{fullhash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \strng{bibnamehash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \strng{authorbibnamehash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \strng{authornamehash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \strng{authorfullhash}{7eb0b7cb660cc578d60c43e05aa03243}
+      \field{labelalpha}{BJR15}
+      \field{sortinit}{B}
+      \field{sortinithash}{276475738cc058478c1677046f857703}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{https://dl.acm.org/citation.cfm?id=2764527}}
+      \field{note}{Abstract appeared in ACM EC-2015.}
+      \field{title}{Pricing in Ride-Sharing Platforms: A Queueing-Theoretic Approach}
+      \field{year}{2015}
+    \endentry
+    \entry{camerer1997labor}{article}{}
+      \name{author}{4}{}{%
+        {{uniquename=0,uniquepart=base,hash=1dd7907f2e73bf06388a41e10690fef7}{%
+           family={Camerer},
+           familyi={C\bibinitperiod},
+           given={Colin},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=fdb460aa398580637f624e0818f1eab3}{%
+           family={Babcock},
+           familyi={B\bibinitperiod},
+           given={Linda},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=898ca02622955fd1ccdcf47220061ed2}{%
+           family={Loewenstein},
+           familyi={L\bibinitperiod},
+           given={George},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=9ea4d2b6f99a522a66b1b929473633d0}{%
+           family={Thaler},
+           familyi={T\bibinitperiod},
+           given={Richard},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{a9c7397c90df14a8c3d49053bb998e3c}
+      \strng{fullhash}{3c57f4ba6b3e11716d5ecd8724eba388}
+      \strng{bibnamehash}{a9c7397c90df14a8c3d49053bb998e3c}
+      \strng{authorbibnamehash}{a9c7397c90df14a8c3d49053bb998e3c}
+      \strng{authornamehash}{a9c7397c90df14a8c3d49053bb998e3c}
+      \strng{authorfullhash}{3c57f4ba6b3e11716d5ecd8724eba388}
+      \field{labelalpha}{Cam+97}
+      \field{sortinit}{C}
+      \field{sortinithash}{963e9d84a3da2344e8833203de5aed05}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{The Quarterly Journal of Economics}
+      \field{number}{2}
+      \field{title}{Labor Supply of New York City Cabdrivers: One day at a Time}
+      \field{volume}{112}
+      \field{year}{1997}
+      \field{pages}{407\bibrangedash 441}
+      \range{pages}{35}
+    \endentry
+    \entry{castillo2017surge}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=507e3148cd5d4ed4dd20c0e7679ad1e4}{%
+           family={Castillo},
+           familyi={C\bibinitperiod},
+           given={Juan\bibnamedelima Camilo},
+           giveni={J\bibinitperiod\bibinitdelim C\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=d10e840777becfb8521be48914529334}{%
+           family={Knoepfle},
+           familyi={K\bibinitperiod},
+           given={Dan},
+           giveni={D\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=d5581087e730c86795ca3bbf295889f1}{%
+           family={Weyl},
+           familyi={W\bibinitperiod},
+           given={Glen},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{organization}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{538f6df89fdcf46357d508acbecb404b}
+      \strng{fullhash}{538f6df89fdcf46357d508acbecb404b}
+      \strng{bibnamehash}{538f6df89fdcf46357d508acbecb404b}
+      \strng{authorbibnamehash}{538f6df89fdcf46357d508acbecb404b}
+      \strng{authornamehash}{538f6df89fdcf46357d508acbecb404b}
+      \strng{authorfullhash}{538f6df89fdcf46357d508acbecb404b}
+      \field{labelalpha}{CKW17}
+      \field{sortinit}{C}
+      \field{sortinithash}{963e9d84a3da2344e8833203de5aed05}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 2017 ACM Conference on Economics and Computation}
+      \field{title}{Surge pricing solves the wild goose chase}
+      \field{year}{2017}
+      \field{pages}{241\bibrangedash 242}
+      \range{pages}{2}
+    \endentry
+    \entry{chen2015peeking}{inproceedings}{}
+      \name{author}{3}{}{%
+        {{uniquename=1,uniquepart=given,hash=0316584e0bc99e70bf9db7ea4321100b}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={Le},
+           giveni={L\bibinitperiod},
+           givenun=1}}%
+        {{uniquename=0,uniquepart=base,hash=d85916d80055740c531622abd1c90d7c}{%
+           family={Mislove},
+           familyi={M\bibinitperiod},
+           given={Alan},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=74e7d878b09bbacd81917f355904ac86}{%
+           family={Wilson},
+           familyi={W\bibinitperiod},
+           given={Christo},
+           giveni={C\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{organization}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{f36bff473a9b12856f48ba1b381cee99}
+      \strng{fullhash}{f36bff473a9b12856f48ba1b381cee99}
+      \strng{bibnamehash}{f36bff473a9b12856f48ba1b381cee99}
+      \strng{authorbibnamehash}{f36bff473a9b12856f48ba1b381cee99}
+      \strng{authornamehash}{f36bff473a9b12856f48ba1b381cee99}
+      \strng{authorfullhash}{f36bff473a9b12856f48ba1b381cee99}
+      \field{labelalpha}{CMW15}
+      \field{sortinit}{C}
+      \field{sortinithash}{963e9d84a3da2344e8833203de5aed05}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 2015 ACM Internet Measurement Conference}
+      \field{title}{Peeking beneath the hood of Uber}
+      \field{year}{2015}
+      \field{pages}{495\bibrangedash 508}
+      \range{pages}{14}
+    \endentry
+    \entry{chen2016dynamic}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{uniquename=1,uniquepart=given,hash=c0594201b243480661e142d2801f178e}{%
+           family={Chen},
+           familyi={C\bibinitperiod},
+           given={M\bibnamedelima Keith},
+           giveni={M\bibinitperiod\bibinitdelim K\bibinitperiod},
+           givenun=1}}%
+        {{uniquename=0,uniquepart=base,hash=dc678ca0eeafe4e0de5517ca73d42331}{%
+           family={Sheldon},
+           familyi={S\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{52cab540cde9109b69a7f12f100f65b9}
+      \strng{fullhash}{52cab540cde9109b69a7f12f100f65b9}
+      \strng{bibnamehash}{52cab540cde9109b69a7f12f100f65b9}
+      \strng{authorbibnamehash}{52cab540cde9109b69a7f12f100f65b9}
+      \strng{authornamehash}{52cab540cde9109b69a7f12f100f65b9}
+      \strng{authorfullhash}{52cab540cde9109b69a7f12f100f65b9}
+      \field{labelalpha}{CS16}
+      \field{sortinit}{C}
+      \field{sortinithash}{963e9d84a3da2344e8833203de5aed05}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{howpublished}{\url{http://www.anderson.ucla.edu/faculty_pages/keith.chen/papers/SurgeAndFlexibleWork_WorkingPaper.pdf}}
+      \field{note}{Working paper. Abstract appeared in ACM EC-2016.}
+      \field{title}{Dynamic Pricing in a Labor Market: Surge Pricing and Flexible Work on the Uber Platform}
+      \field{year}{2016}
+    \endentry
+    \entry{hall2016analysis}{report}{}
+      \name{author}{2}{}{%
+        {{uniquename=0,uniquepart=base,hash=ed71f28257fbdd7a05431a37476b49c7}{%
+           family={Hall},
+           familyi={H\bibinitperiod},
+           given={Jonathan\bibnamedelima V.},
+           giveni={J\bibinitperiod\bibinitdelim V\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=2126d88c1bdd7c4b3ad76d19273c70e2}{%
+           family={Krueger},
+           familyi={K\bibinitperiod},
+           given={Alan\bibnamedelima B.},
+           giveni={A\bibinitperiod\bibinitdelim B\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{institution}{1}{%
+        {National Bureau of Economic Research}%
+      }
+      \strng{namehash}{f7062d04048233f30b29307a3fdb89f9}
+      \strng{fullhash}{f7062d04048233f30b29307a3fdb89f9}
+      \strng{bibnamehash}{f7062d04048233f30b29307a3fdb89f9}
+      \strng{authorbibnamehash}{f7062d04048233f30b29307a3fdb89f9}
+      \strng{authornamehash}{f7062d04048233f30b29307a3fdb89f9}
+      \strng{authorfullhash}{f7062d04048233f30b29307a3fdb89f9}
+      \field{labelalpha}{HK16}
+      \field{sortinit}{H}
+      \field{sortinithash}{5f15a7bc777ad49ff15aa4d2831b1681}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{number}{No. w22843}
+      \field{title}{An Analysis of the Labor Market for Uber's Driver-Partners in the United States}
+      \field{type}{techreport}
+      \field{year}{2016}
+    \endentry
+    \entry{ma2018spatio}{article}{}
+      \name{author}{3}{}{%
+        {{uniquename=0,uniquepart=base,hash=49ad00218e1e38e74026323572f6a28c}{%
+           family={Ma},
+           familyi={M\bibinitperiod},
+           given={Hongyao},
+           giveni={H\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=50229c3fdb5e7f30b2bd918528bdc0df}{%
+           family={Fang},
+           familyi={F\bibinitperiod},
+           given={Fei},
+           giveni={F\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=70c5e4ac3dbc223c8033c5846b6e77c1}{%
+           family={Parkes},
+           familyi={P\bibinitperiod},
+           given={David\bibnamedelima C},
+           giveni={D\bibinitperiod\bibinitdelim C\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{474c818524a85b0742a400c888007f64}
+      \strng{fullhash}{474c818524a85b0742a400c888007f64}
+      \strng{bibnamehash}{474c818524a85b0742a400c888007f64}
+      \strng{authorbibnamehash}{474c818524a85b0742a400c888007f64}
+      \strng{authornamehash}{474c818524a85b0742a400c888007f64}
+      \strng{authorfullhash}{474c818524a85b0742a400c888007f64}
+      \field{labelalpha}{MFP18}
+      \field{sortinit}{M}
+      \field{sortinithash}{cfd219b90152c06204fab207bc6c7cab}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:1801.04015}
+      \field{title}{Spatio-Temporal Pricing for Ridesharing Platforms}
+      \field{year}{2018}
+    \endentry
+    \entry{nilim2004robustness}{inproceedings}{}
+      \name{author}{2}{}{%
+        {{uniquename=0,uniquepart=base,hash=05e8124230fa1970b3ce0d766807cd8c}{%
+           family={Nilim},
+           familyi={N\bibinitperiod},
+           given={Arnab},
+           giveni={A\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=2b5f66f4cbe74404f03ee94004ef490a}{%
+           family={El\bibnamedelima Ghaoui},
+           familyi={E\bibinitperiod\bibinitdelim G\bibinitperiod},
+           given={Laurent},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \strng{fullhash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \strng{bibnamehash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \strng{authorbibnamehash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \strng{authornamehash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \strng{authorfullhash}{5ad327d5a8c7027a827b69bb33bc212b}
+      \field{labelalpha}{NE04}
+      \field{sortinit}{N}
+      \field{sortinithash}{f7242c3ed3dc50029fca1be76c497c7c}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Advances in Neural Information Processing Systems}
+      \field{title}{Robustness in Markov decision problems with uncertain transition matrices}
+      \field{year}{2004}
+      \field{pages}{839\bibrangedash 846}
+      \range{pages}{8}
+    \endentry
+    \entry{zhang2017taxi}{inproceedings}{}
+      \name{author}{8}{}{%
+        {{uniquename=0,uniquepart=base,hash=9db3e81a73d7692afe488fcdedc3d8d0}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Lingyu},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=26b653e77d14e3a3adc799d0eb31c689}{%
+           family={Hu},
+           familyi={H\bibinitperiod},
+           given={Tao},
+           giveni={T\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=583f5b85b1d22f52d9138abfda5dad2e}{%
+           family={Min},
+           familyi={M\bibinitperiod},
+           given={Yue},
+           giveni={Y\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=d8e4ae6338398d8a30cd9e47ebcf7a75}{%
+           family={Wu},
+           familyi={W\bibinitperiod},
+           given={Guobin},
+           giveni={G\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=b5466d6274aae3b4b57f6557e13aafc1}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Junying},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=9940bfa3ae47b1043697dd9aecf02ee6}{%
+           family={Feng},
+           familyi={F\bibinitperiod},
+           given={Pengcheng},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=81978e7bbcf18dfd95bd32b292881e47}{%
+           family={Gong},
+           familyi={G\bibinitperiod},
+           given={Pinghua},
+           giveni={P\bibinitperiod},
+           givenun=0}}%
+        {{uniquename=0,uniquepart=base,hash=45f8892411700a9b1d4fcd3acaeeefd0}{%
+           family={Ye},
+           familyi={Y\bibinitperiod},
+           given={Jieping},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+      }
+      \list{organization}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{53dd4de182055b8187d8b337788decbe}
+      \strng{fullhash}{22756e2013a20ec2946e5da40b3e4093}
+      \strng{bibnamehash}{53dd4de182055b8187d8b337788decbe}
+      \strng{authorbibnamehash}{53dd4de182055b8187d8b337788decbe}
+      \strng{authornamehash}{53dd4de182055b8187d8b337788decbe}
+      \strng{authorfullhash}{22756e2013a20ec2946e5da40b3e4093}
+      \field{labelalpha}{Zha+17}
+      \field{sortinit}{Z}
+      \field{sortinithash}{156173bd08b075d7295bc3e0f4735a04}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{year}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of the 23rd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining}
+      \field{title}{A taxi order dispatch model based on combinatorial optimization}
+      \field{year}{2017}
+      \field{pages}{2151\bibrangedash 2159}
+      \range{pages}{9}
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

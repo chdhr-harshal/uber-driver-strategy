@@ -1,0 +1,63 @@
+%!TEX program = xelatex
+
+\documentclass[10pt]{beamer}
+\usepackage{tikz}
+\usepackage{appendixnumberbeamer}
+\usepackage{booktabs}
+\usepackage[scale=2]{ccicons}
+\usepackage{pgfplots}
+\usepackage{caption}
+\usepackage{xcolor}
+\usepackage[backend=biber,style=alphabetic, citestyle=authoryear]{biblatex}
+\usepackage[style=british]{csquotes}
+\usetikzlibrary{positioning,automata,arrows,positioning,calc,tikzmark,decorations.pathreplacing}
+\input{macros}
+\input{colors}
+\addbibresource{bibliography.bib}
+
+% Make Title
+\title{\textcolor{white}{PUTTING DATA} \textcolor{UberGreen} {in the} \textcolor{white}{DRIVER'S SEAT}}
+\subtitle{\textcolor{white}{Optimizing Earnings for On-Demand Ride-Hailing}}
+\author{\textcolor{white}{Harshal Chaudhari \and \hspace{2cm}John Byers \and \hspace{2cm}Evimaria Terzi}}
+\date{}
+
+\begin{document}
+    % Local background must be enclosed by curly braces for grouping.
+	{
+		\usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{logos/uber-nyc.jpg}}
+    	\begin{frame}[plain, noframenumbering]
+        	\maketitle
+        	\begin{tikzpicture}[overlay, remember picture]
+            	\node[above left=.2cm and .2cm of current page.south east][anchor=south east]{\includegraphics[scale=0.12]{logos/logo-bu.png}};
+        	\end{tikzpicture}
+    	\end{frame}
+    }
+
+    \input{motivation}
+
+    \input{modeling}
+
+    \input{experiments}
+
+    \input{robustness}
+
+    \input{conclusion}
+
+    % Thank You Page
+    {
+    	\usebackgroundtemplate{\includegraphics[width=\paperwidth, height=\paperheight]{logos/uber-nyc.jpg}}
+    	\begin{frame}[plain, noframenumbering]
+    	\centering
+    	\Huge{\textcolor{white}{\bf Thank You!}}
+    	\begin{tikzpicture}[overlay, remember picture]
+        	\node[above left=.06cm and .06cm of current page.south east][anchor=south east]{\includegraphics[scale=0.12]{logos/logo-bu.png}};
+    	\end{tikzpicture}
+    	\end{frame}
+    }
+
+    % Bibliography
+    \begin{frame}[allowframebreaks]{References}
+        \printbibliography
+    \end{frame}
+
+\end{document}

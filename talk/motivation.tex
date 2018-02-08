@@ -1,0 +1,59 @@
+%!TEX root = uber.tex
+
+\section{Problem Motivation}
+\begin{frame}
+\vspace{1cm}
+\begin{figure}
+\includegraphics[width=0.65\paperwidth]{figures/uber_earnings.png}
+\end{figure}
+\vspace{0.4cm}
+\begin{aquote}{}
+\ \ ... about half of the hours logged into the app in New York City are spent without passengers in the car. And that’s in one of Uber’s busiest markets in the country.\ \ 
+\end{aquote}
+\end{frame}
+
+\begin{frame}{Spatio-Temporal Demand Variation in NYC}
+\begin{figure}
+\centering
+\includegraphics[width=0.85\paperwidth]{figures/surge_heatmap.pdf}
+\end{figure}
+\pause
+\begin{center}
+As an Uber driver, how do you maximize earnings?
+\end{center}
+\end{frame}
+
+\begin{frame}{Silicon Valley Steps In ...}
+\begin{figure}
+\centering
+\includegraphics[width=0.8\paperwidth]{figures/sherpa-share.png}
+\end{figure}
+\begin{center}
+SherpaShare provides `myopic' guide to drivers in form of heat-maps. No predictions! 
+\end{center}
+\end{frame}
+
+\begin{frame}{Literature}
+\begin{itemize}
+    \item<1->\textcolor{BlueGreen}{\bf Why is Uber an attractive platform for drivers?}
+        \begin{itemize}
+            \item[--]<1-> \textcite{chen2016dynamic,hall2016analysis}.
+        \end{itemize}
+        \vspace{0.3cm}
+    \item<2->\textcolor{BlueGreen}{\bf Understanding dynamic pricing}
+        \begin{itemize}
+        	\item[--]<2-> \textcite{chen2015peeking} did an empirical study on surge pricing in Uber.
+        	\item[--]<2-> \textcite{castillo2017surge} show that surge pricing is essential for success of ride-hailing platforms.
+            \item[--]<2-> \textcite{banerjee2015pricing,ma2018spatio,bimpikis2016spatial} provide theoretical models to study dynamic pricing. 
+        \end{itemize}
+        \vspace{0.3cm}
+    \item<3->\textcolor{BlueGreen}{\bf Taxi driver models}
+        \begin{itemize}
+            \item[--]<3-> \textcite{camerer1997labor} study strategies of taxi drivers.
+            \item[--]<3-> \textcite{zhang2017taxi} devise models for optimal taxi dispatch. 
+        \end{itemize}
+\end{itemize}
+\begin{center}
+\uncover<4->{\alert{\textbf{We focus on earnings of individual, self-interested drivers empowered by data.}}}
+\end{center}
+\end{frame}

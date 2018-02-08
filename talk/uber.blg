@@ -1,0 +1,15 @@
+[0] Config.pm:302> INFO - This is Biber 2.10
+[0] Config.pm:305> INFO - Logfile is 'uber.blg'
+[45] biber-darwin:313> INFO - === Wed Feb  7, 2018, 15:57:28
+[74] Biber.pm:371> INFO - Reading 'uber.bcf'
+[182] Biber.pm:857> INFO - Found 10 citekeys in bib section 0
+[199] Biber.pm:3976> INFO - Processing section 0
+[215] Biber.pm:4136> INFO - Looking for bibtex format file 'bibliography.bib' for section 0
+[216] bibtex.pm:1490> INFO - LaTeX decoding ...
+[234] bibtex.pm:1306> INFO - Found BibTeX data source 'bibliography.bib'
+[348] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[348] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[348] Biber.pm:3804> INFO - Sorting list 'anyt/global//global/global' of type 'entry' with template 'anyt' and locale 'en-US'
+[348] Biber.pm:3810> INFO - No sort tailoring available for locale 'en-US'
+[364] bbl.pm:617> INFO - Writing 'uber.bbl' with encoding 'UTF-8'
+[377] bbl.pm:720> INFO - Output to uber.bbl
