@@ -49,9 +49,10 @@ Following the ideas of Kullback {\etal}~\cite{kullback62tests}, we have a discri
 Thus, 
 for $\rowc$ to be in the  \emph{$(1-\alpha)$ (or $100(1-\alpha)\%$) 
 confidence interval of $\rowp$}, we need:
-\begin{equation*}\label{eq:ul}
-\text{F}_{\chi^2_{n-1}}\left[2\hat{I}\right] =  2\sum_{i=1}^n\rowc(i)\log\rowc(i)+2n\log n -2\sum_{i=1}^n\rowc(i)\log\rowp(i) \geq \alpha,
-\end{equation*}
+\begin{align*}\label{eq:ul}
+\text{F}_{\chi^2_{n-1}}\left[2\hat{I}\right] &=  \text{F}_{\chi^2_{n-1}}\left[2\sum_{i=1}^n\rowc(i)\log\rowc(i)-2n\log n -2\sum_{i=1}^n\rowc(i)\log\rowp(i)\right] \nonumber\\
+&= 1 - \alpha,
+\end{align*}
 where 
  $\rowp(i)$ (resp. $\rowc(i)$) is the $i$-th element of vector $\rowp$ (resp.\ $\rowc$).
  In the above equation, $\alpha$ quantifies the uncertainty that
@@ -61,10 +62,10 @@ Thus, we call $\alpha$ the \emph{input uncertainty level}.
 By setting $\beta_\text{max} = \sum_{i=1}^n\rowc(i)\log \rowc(i)$,
 we get
 \begin{equation}\label{eq:constraint}
-\sum_{i=1}^n\rowc(i)\log\rowp(i) \leq \frac{2(\beta_\text{max}-n\log n)-\text{F}^{-1}_{\chi^2_{n-1}}(\alpha)}{2},
+\sum_{i=1}^n\rowc(i)\log\rowp(i) = \frac{2(\beta_\text{max}-n\log n)-\text{F}^{-1}_{\chi^2_{n-1}}(1 - \alpha)}{2},
 \end{equation}
 where $\text{F}^{-1}_{\chi^2_{n-1}}$ is the inverse of the $\chi^2$ cdf. 
-In other words, for all vectors $\rowp$ for which inequality~\eqref{eq:constraint}
+In other words, for all vectors $\rowp$ for which Equation~\eqref{eq:constraint}
 is satisfied, $\rowc$ is within the $(1-\alpha)$-confidence interval of $\rowp$.
 
 Thus given $\countmatrix$ and $\alpha$, we define 
@@ -73,7 +74,7 @@ matrices} $\mathcal{P}_{\alpha}$ to be
 the 
 set of true transition matrices  such that
 for every matrix {\truetransitionmatrix} in $\mathcal{P}_{\alpha}$
-and every row $\rowp$ of {\truetransitionmatrix}, Inequality~\eqref{eq:constraint}
+and every row $\rowp$ of {\truetransitionmatrix}, Equation~\eqref{eq:constraint}
 is satisfied.
 
 % \iffalse
